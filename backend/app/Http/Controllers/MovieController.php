@@ -8,31 +8,30 @@ use Illuminate\Http\Request;
 class MovieController extends Controller
 {
     /**
-     * Display a listing of all movies.
+     * Show all movies (Everyone can see)
      */
     public function index()
     {
-        return Movie::all();
+        return response()->json(Movie::all());
     }
 
     /**
-     * Store a newly created movie (Admin only - User ID 1).
+     * Create movie (Admin only)
      */
     public function store(Request $request)
     {
-        // Simple admin check
-        if ($request->user()->id !== 1) {
-            return response()->json(['error' => 'Unauthorized'], 403);
+        if (!$request->user() || !$request->user()->is_admin) {
+            return response()->json(['message' => 'Forbidden'], 403);
         }
 
-        // Validate request (optional but recommended)
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'release_year' => 'nullable|integer',
-            'rating' => 'nullable|string|max:10',
-            'genre' => 'nullable|string|max:50',
+            'show_time' => 'required|date',
+            'total_seats' => 'required|integer|min:1',
         ]);
+
+        $validated['available_seats'] = $validated['total_seats'];
 
         $movie = Movie::create($validated);
 
@@ -40,17 +39,19 @@ class MovieController extends Controller
     }
 
     /**
-     * Update the specified movie.
+     * Update movie (Admin only)
      */
     public function update(Request $request, Movie $movie)
     {
-        // Validate request (optional)
+        if (!$request->user() || !$request->user()->is_admin) {
+            return response()->json(['message' => 'Forbidden'], 403);
+        }
+
         $validated = $request->validate([
             'title' => 'sometimes|string|max:255',
             'description' => 'sometimes|string',
-            'release_year' => 'sometimes|integer',
-            'rating' => 'sometimes|string|max:10',
-            'genre' => 'sometimes|string|max:50',
+            'show_time' => 'sometimes|date',
+            'total_seats' => 'sometimes|integer|min:1',
         ]);
 
         $movie->update($validated);
@@ -59,12 +60,16 @@ class MovieController extends Controller
     }
 
     /**
-     * Remove the specified movie.
+     * Delete movie (Admin only)
      */
-    public function destroy(Movie $movie)
+    public function destroy(Request $request, Movie $movie)
     {
+        if (!$request->user() || !$request->user()->is_admin) {
+            return response()->json(['message' => 'Forbidden'], 403);
+        }
+
         $movie->delete();
 
-        return response()->json(['message' => 'Deleted']);
+        return response()->json(['message' => 'Movie deleted']);
     }
 }

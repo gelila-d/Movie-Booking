@@ -24,6 +24,11 @@ class AuthController extends Controller
             'password' => Hash::make($request->password)
         ]);
 
+        if (User::count() === 1) {
+    $user->is_admin = true;
+    $user->save();
+}
+
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([

@@ -10,8 +10,9 @@ class Movie extends Model
     protected $fillable = [
         'title',
         'description',
-        'release_date',
-        'price',
+        'show_time',
+        'total_seats',
+        'available_seats',
     ];
 
     public function bookings()

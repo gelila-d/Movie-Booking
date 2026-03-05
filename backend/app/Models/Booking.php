@@ -11,8 +11,7 @@ class Booking extends Model
     protected $fillable = [
         'user_id',
         'movie_id',
-        'seat_number',
-        'booking_date',
+        'seats_booked',
     ];
 
     public function user()
