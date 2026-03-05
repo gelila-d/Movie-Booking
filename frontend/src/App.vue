@@ -1,24 +1,16 @@
+<template>
+  <div class="min-h-screen bg-gray-900 text-gray-100 font-sans">
+    <Navbar />
+    <main>
+      <router-view />
+    </main>
+  </div>
+</template>
+
 <script setup>
-
-import Register from "./components/Register.vue"
-import Login from "./components/Login.vue"
-import Movies from "./components/Movies.vue"
-import Admin from "./components/Admin.vue"
-
+import Navbar from "./components/Navbar.vue";
 </script>
 
-<template>
-
-<div>
-
-<Register />
-
-<Login />
-
-<Movies />
-
-<Admin />
-
-</div>
-
-</template>
+<style>
+/* Global styles are in style.css */
+</style>
