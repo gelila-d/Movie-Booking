@@ -34,7 +34,17 @@ import { useRouter } from "vue-router";
 import api from "../services/api";
 
 const router = useRouter();
-const user = ref(JSON.parse(localStorage.getItem("user")) || null);
+
+const getUserFromStorage = () => {
+    try {
+        const stored = localStorage.getItem("user");
+        return (stored && stored !== 'undefined') ? JSON.parse(stored) : null;
+    } catch (e) {
+        return null;
+    }
+};
+
+const user = ref(getUserFromStorage());
 
 const logout = async () => {
   try {
@@ -53,11 +63,11 @@ const logout = async () => {
 
 onMounted(() => {
     window.addEventListener('storage', () => {
-        user.value = JSON.parse(localStorage.getItem("user"));
+        user.value = getUserFromStorage();
     });
     
     setInterval(() => {
-        const storedUser = JSON.parse(localStorage.getItem("user"));
+        const storedUser = getUserFromStorage();
         if (JSON.stringify(storedUser) !== JSON.stringify(user.value)) {
             user.value = storedUser;
         }

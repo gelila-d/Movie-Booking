@@ -21,18 +21,35 @@ const router = createRouter({
   routes,
 });
 
-router.beforeEach((to, from, next) => {
-  const token = localStorage.getItem("token");
-  const user = JSON.parse(localStorage.getItem("user")) || null;
+router.beforeEach((to, from) => {
+  let token = localStorage.getItem("token");
+  let user = null;
+
+  try {
+    const userStr = localStorage.getItem("user");
+    if (userStr && userStr !== "undefined") {
+      user = JSON.parse(userStr);
+    }
+  } catch (err) {
+    console.error("Failed to parse user from localStorage", err);
+  }
+
+  // If we have a token but user is corrupted or missing, clear it
+  if (token && !user) {
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    token = null;
+    if (to.meta.requiresAuth || to.meta.requiresAdmin) {
+      return "/login";
+    }
+  }
 
   if (to.meta.requiresAuth && !token) {
-    next("/login");
+    return "/login";
   } else if (to.meta.guest && token) {
-    next("/movies");
+    return "/movies";
   } else if (to.meta.requiresAdmin && (!user || !user.is_admin)) {
-    next("/movies");
-  } else {
-    next();
+    return "/movies";
   }
 });
 

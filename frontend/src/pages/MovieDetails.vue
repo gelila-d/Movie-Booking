@@ -66,12 +66,18 @@ const handleBooking = async (seats) => {
   try {
     await api.post('/bookings', {
       movie_id: movie.value.id,
-      seats: seats
+      seats_booked: seats
     })
     alert('Tickets booked successfully!')
     router.push('/my-bookings')
   } catch (err) {
-    alert(err.response?.data?.message || 'Booking failed')
+    if (err.response && err.response.data && err.response.data.errors) {
+        const errors = err.response.data.errors;
+        const firstKey = Object.keys(errors)[0];
+        alert(errors[firstKey][0]);
+    } else {
+        alert(err.response?.data?.message || 'Booking failed. Check your connection.')
+    }
   } finally {
     booking.value = false
   }

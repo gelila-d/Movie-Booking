@@ -20,6 +20,11 @@
         <h2 class="text-xl font-bold text-white">{{ editingId ? 'Edit Movie' : 'Add New Movie' }}</h2>
         <button @click="closeForm" class="text-gray-500 hover:text-white transition-colors">Cancel</button>
       </div>
+
+      <!-- Error Message Box -->
+      <div v-if="errorMessage" class="p-3 bg-red-100 border border-red-400 text-red-700 rounded text-sm">
+        {{ errorMessage }}
+      </div>
       
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div class="space-y-1">
@@ -28,7 +33,8 @@
         </div>
         <div class="space-y-1">
           <label class="text-xs font-medium text-gray-400">Show Time</label>
-          <input v-model="form.show_time" placeholder="e.g. 19:30" />
+          <!-- Using datetime-local ensures it sends a valid date format to the backend -->
+          <input v-model="form.show_time" type="datetime-local" class="w-full text-black px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
         </div>
         <div class="md:col-span-2 space-y-1">
           <label class="text-xs font-medium text-gray-400">Description</label>
@@ -59,7 +65,7 @@
           <h3 class="text-lg font-bold text-white mb-1">{{ movie.title }}</h3>
           <p class="text-xs text-gray-500 mb-2 truncate max-w-md">{{ movie.description }}</p>
           <div class="flex items-center text-xs text-gray-400 space-x-4">
-            <span class="font-medium">🕒 {{ movie.show_time }}</span>
+            <span class="font-medium">🕒 {{ new Date(movie.show_time).toLocaleString() }}</span>
             <span class="font-medium">🪑 {{ movie.available_seats }} / {{ movie.total_seats }} Seats</span>
           </div>
         </div>
@@ -89,6 +95,7 @@ const loading = ref(true)
 const saving = ref(false)
 const showForm = ref(false)
 const editingId = ref(null)
+const errorMessage = ref("")
 
 const form = ref({
     title: "",
@@ -112,27 +119,33 @@ const loadMovies = async () => {
 const openCreate = () => {
     editingId.value = null
     form.value = { title: "", description: "", show_time: "", total_seats: "" }
+    errorMessage.value = ""
     showForm.value = true
 }
 
 const openEdit = (movie) => {
     editingId.value = movie.id
-    form.value = { ...movie }
+    // Simple way to format date for datetime-local input
+    const dateStr = movie.show_time ? new Date(movie.show_time).toISOString().slice(0, 16) : ""
+    form.value = { ...movie, show_time: dateStr }
+    errorMessage.value = ""
     showForm.value = true
 }
 
 const closeForm = () => {
     showForm.value = false
     editingId.value = null
+    errorMessage.value = ""
 }
 
 const saveMovie = async () => {
     if (!form.value.title || !form.value.description || !form.value.show_time || !form.value.total_seats) {
-        alert("All fields are required")
+        errorMessage.value = "All fields are required"
         return
     }
 
     saving.value = true
+    errorMessage.value = ""
     try {
         if (editingId.value) {
             await api.put(`/movies/${editingId.value}`, form.value)
@@ -142,7 +155,13 @@ const saveMovie = async () => {
         closeForm()
         loadMovies()
     } catch (err) {
-        alert("Failed to save movie")
+        if (err.response && err.response.data && err.response.data.errors) {
+            const errors = err.response.data.errors;
+            const firstKey = Object.keys(errors)[0];
+            errorMessage.value = errors[firstKey][0];
+        } else {
+            errorMessage.value = "Failed to save movie. Check your connection."
+        }
         console.error(err)
     } finally {
         saving.value = false
