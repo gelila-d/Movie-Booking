@@ -2,7 +2,7 @@
   <div class="space-y-4">
     <div class="flex items-end space-x-4">
       <div class="flex-grow space-y-1">
-        <label class="text-xs font-medium text-gray-400">Number of Seats</label>
+        <label class="text-xs font-medium text-gray-700">Number of Seats</label>
         <input 
           v-model="seats" 
           type="number" 

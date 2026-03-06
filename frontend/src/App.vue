@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gray-900 text-gray-100 font-sans">
+  <div class="min-h-screen bg-yellow-50 text-gray-900 font-sans">
     <Navbar v-if="!isAuthPage" />
     <main>
       <router-view />

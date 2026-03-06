@@ -16,7 +16,7 @@
             type="text" 
             required
             placeholder="Enter your name" 
-            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
           />
         </div>
 
@@ -27,7 +27,7 @@
             type="email" 
             required
             placeholder="Enter your email" 
-            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
           />
         </div>
 
@@ -38,14 +38,14 @@
             type="password" 
             required
             placeholder="Create a password (min. 6 characters)" 
-            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
           />
         </div>
 
         <button 
           type="submit"
           :disabled="loading" 
-          class="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-md transition-colors disabled:bg-blue-400"
+          class="w-full bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-medium py-2 px-4 rounded-md transition-colors disabled:bg-yellow-300"
         >
           {{ loading ? 'Creating account...' : 'Create Account' }}
         </button>
@@ -53,7 +53,7 @@
 
       <div class="mt-6 text-center text-sm text-gray-600">
         Already have an account? 
-        <router-link to="/login" class="text-blue-600 hover:underline">Sign in here</router-link>
+        <router-link to="/login" class="text-yellow-600 hover:text-yellow-700 hover:underline">Sign in here</router-link>
       </div>
     </div>
   </div>

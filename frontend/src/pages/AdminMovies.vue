@@ -2,8 +2,8 @@
   <div class="container space-y-10">
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
       <div>
-        <h1 class="text-3xl font-bold text-white mb-1">Admin Dashboard</h1>
-        <p class="text-gray-500">Manage the movie catalog and ticketing</p>
+        <h1 class="text-3xl font-bold text-gray-900 mb-1">Admin Dashboard</h1>
+        <p class="text-gray-600">Manage the movie catalog and ticketing</p>
       </div>
       <button 
         v-if="!showForm" 
@@ -15,10 +15,10 @@
     </div>
 
     <!-- Movie Form (Create/Edit) -->
-    <div v-if="showForm" class="card space-y-6 border-blue-900/30">
+    <div v-if="showForm" class="card space-y-6 border-yellow-200 shadow-sm">
       <div class="flex justify-between items-center">
-        <h2 class="text-xl font-bold text-white">{{ editingId ? 'Edit Movie' : 'Add New Movie' }}</h2>
-        <button @click="closeForm" class="text-gray-500 hover:text-white transition-colors">Cancel</button>
+        <h2 class="text-xl font-bold text-gray-900">{{ editingId ? 'Edit Movie' : 'Add New Movie' }}</h2>
+        <button @click="closeForm" class="text-gray-500 hover:text-gray-900 transition-colors">Cancel</button>
       </div>
 
       <!-- Error Message Box -->
@@ -28,20 +28,20 @@
       
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div class="space-y-1">
-          <label class="text-xs font-medium text-gray-400">Movie Title</label>
+          <label class="text-xs font-medium text-gray-700">Movie Title</label>
           <input v-model="form.title" placeholder="Title" />
         </div>
         <div class="space-y-1">
-          <label class="text-xs font-medium text-gray-400">Show Time</label>
+          <label class="text-xs font-medium text-gray-700">Show Time</label>
           <!-- Using datetime-local ensures it sends a valid date format to the backend -->
-          <input v-model="form.show_time" type="datetime-local" class="w-full text-black px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
+          <input v-model="form.show_time" type="datetime-local" class="w-full text-black px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500" />
         </div>
         <div class="md:col-span-2 space-y-1">
-          <label class="text-xs font-medium text-gray-400">Description</label>
+          <label class="text-xs font-medium text-gray-700">Description</label>
           <input v-model="form.description" placeholder="Movie description..." />
         </div>
         <div class="space-y-1">
-          <label class="text-xs font-medium text-gray-400">Total Capacity (Seats)</label>
+          <label class="text-xs font-medium text-gray-700">Total Capacity (Seats)</label>
           <input v-model="form.total_seats" type="number" placeholder="100" />
         </div>
         <div class="flex items-end">
@@ -54,23 +54,23 @@
 
     <!-- Movie List -->
     <div class="space-y-4">
-      <h2 class="text-xl font-bold text-white">Catalog ({{ movies.length }})</h2>
+      <h2 class="text-xl font-bold text-gray-900">Catalog ({{ movies.length }})</h2>
       
       <div v-if="loading" class="flex justify-center p-10">
-        <div class="animate-spin h-6 w-6 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+        <div class="animate-spin h-6 w-6 border-2 border-yellow-500 border-t-transparent rounded-full"></div>
       </div>
 
-      <div v-for="movie in movies" :key="movie.id" class="card flex flex-col md:flex-row md:items-center justify-between border-gray-800">
+      <div v-for="movie in movies" :key="movie.id" class="card flex flex-col md:flex-row md:items-center justify-between border-yellow-200">
         <div class="flex-grow">
-          <h3 class="text-lg font-bold text-white mb-1">{{ movie.title }}</h3>
-          <p class="text-xs text-gray-500 mb-2 truncate max-w-md">{{ movie.description }}</p>
-          <div class="flex items-center text-xs text-gray-400 space-x-4">
+          <h3 class="text-lg font-bold text-gray-900 mb-1">{{ movie.title }}</h3>
+          <p class="text-xs text-gray-600 mb-2 truncate max-w-md">{{ movie.description }}</p>
+          <div class="flex items-center text-xs text-gray-600 space-x-4">
             <span class="font-medium">🕒 {{ new Date(movie.show_time).toLocaleString() }}</span>
             <span class="font-medium">🪑 {{ movie.available_seats }} / {{ movie.total_seats }} Seats</span>
           </div>
         </div>
         <div class="mt-4 md:mt-0 flex space-x-2">
-          <button @click="openEdit(movie)" class="text-blue-500 hover:text-blue-400 text-sm font-bold bg-blue-500/10 px-3 py-1.5 rounded transition-colors">
+          <button @click="openEdit(movie)" class="text-yellow-700 hover:text-yellow-600 text-sm font-bold bg-yellow-500/10 px-3 py-1.5 rounded transition-colors">
             Edit
           </button>
           <button @click="deleteMovie(movie.id)" class="text-red-500 hover:text-red-400 text-sm font-bold bg-red-500/10 px-3 py-1.5 rounded transition-colors">
@@ -79,7 +79,7 @@
         </div>
       </div>
       
-      <div v-if="!loading && movies.length === 0" class="text-center py-20 bg-gray-900 border border-dashed border-gray-800 rounded-xl">
+      <div v-if="!loading && movies.length === 0" class="text-center py-20 bg-yellow-50 border border-dashed border-yellow-200 rounded-xl">
         <p class="text-gray-600">No movies found in the catalog.</p>
       </div>
     </div>

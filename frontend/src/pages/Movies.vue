@@ -1,16 +1,16 @@
 <template>
   <div class="container">
     <div class="mb-10">
-      <h1 class="text-3xl font-bold text-white mb-1">Available Movies</h1>
-      <p class="text-gray-500">Choose a movie to see details and book tickets</p>
+      <h1 class="text-3xl font-bold text-gray-900 mb-1">Available Movies</h1>
+      <p class="text-gray-600">Choose a movie to see details and book tickets</p>
     </div>
 
     <div v-if="loading" class="flex justify-center py-10">
-      <div class="animate-spin h-8 w-8 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+      <div class="animate-spin h-8 w-8 border-2 border-yellow-500 border-t-transparent rounded-full"></div>
     </div>
 
     <div v-else-if="movies.length === 0" class="card text-center py-20">
-      <p class="text-gray-500">No movies available at the moment.</p>
+      <p class="text-gray-600">No movies available at the moment.</p>
     </div>
 
     <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

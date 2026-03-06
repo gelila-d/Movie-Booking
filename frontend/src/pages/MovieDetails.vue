@@ -1,32 +1,32 @@
 <template>
   <div class="container mx-auto px-4 py-8 max-w-2xl">
     <div v-if="loading" class="text-center py-10">
-      <div class="animate-spin h-8 w-8 border-2 border-blue-500 border-t-transparent rounded-full mx-auto"></div>
+      <div class="animate-spin h-8 w-8 border-2 border-yellow-500 border-t-transparent rounded-full mx-auto"></div>
     </div>
 
-    <div v-else-if="movie" class="card space-y-6 border-gray-800">
-      <router-link to="/movies" class="text-blue-500 hover:underline text-sm font-medium">
+    <div v-else-if="movie" class="card space-y-6 border-yellow-200 shadow-sm">
+      <router-link to="/movies" class="text-yellow-600 hover:text-yellow-700 hover:underline text-sm font-medium">
         &larr; Back to Movies
       </router-link>
       
       <div>
-        <h1 class="text-3xl font-bold text-white mb-2">{{ movie.title }}</h1>
-        <p class="text-gray-400 leading-relaxed">{{ movie.description }}</p>
+        <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ movie.title }}</h1>
+        <p class="text-gray-600 leading-relaxed">{{ movie.description }}</p>
       </div>
 
-      <div class="grid grid-cols-2 gap-4 py-4 border-y border-gray-700">
+      <div class="grid grid-cols-2 gap-4 py-4 border-y border-gray-200">
         <div>
           <p class="text-gray-500 text-xs uppercase font-bold tracking-wider">Show Time</p>
-          <p class="text-white font-medium">{{ movie.show_time }}</p>
+          <p class="text-gray-900 font-medium">{{ movie.show_time ? new Date(movie.show_time).toLocaleString() : 'TBD' }}</p>
         </div>
         <div>
           <p class="text-gray-500 text-xs uppercase font-bold tracking-wider">Available Seats</p>
-          <p class="text-white font-medium">{{ movie.available_seats }} / {{ movie.total_seats }}</p>
+          <p class="text-gray-900 font-medium">{{ movie.available_seats }} / {{ movie.total_seats }}</p>
         </div>
       </div>
 
       <div class="pt-4">
-        <h2 class="text-xl font-bold text-white mb-4">Book Your Tickets</h2>
+        <h2 class="text-xl font-bold text-gray-900 mb-4">Book Your Tickets</h2>
         <BookingForm 
           :movieId="movie.id" 
           :availableSeats="movie.available_seats" 
