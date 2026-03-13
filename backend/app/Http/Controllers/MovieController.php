@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Movie;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class MovieController extends Controller
 {
@@ -29,9 +30,15 @@ class MovieController extends Controller
             'description' => 'nullable|string',
             'show_time' => 'required|date',
             'total_seats' => 'required|integer|min:1',
+            'image' => 'nullable|image|max:2048',
         ]);
 
         $validated['available_seats'] = $validated['total_seats'];
+
+        if ($request->hasFile('image')) {
+            $path = $request->file('image')->store('movies', 'public');
+            $validated['image'] = $path;
+        }
 
         $movie = Movie::create($validated);
 
@@ -52,7 +59,16 @@ class MovieController extends Controller
             'description' => 'sometimes|string',
             'show_time' => 'sometimes|date',
             'total_seats' => 'sometimes|integer|min:1',
+            'image' => 'nullable|image|max:2048',
         ]);
+
+        if ($request->hasFile('image')) {
+            if ($movie->image) {
+                Storage::disk('public')->delete($movie->image);
+            }
+            $path = $request->file('image')->store('movies', 'public');
+            $validated['image'] = $path;
+        }
 
         $movie->update($validated);
 
@@ -66,6 +82,10 @@ class MovieController extends Controller
     {
         if (!$request->user() || !$request->user()->is_admin) {
             return response()->json(['message' => 'Forbidden'], 403);
+        }
+
+        if ($movie->image) {
+            Storage::disk('public')->delete($movie->image);
         }
 
         $movie->delete();

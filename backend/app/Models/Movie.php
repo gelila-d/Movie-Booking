@@ -13,6 +13,7 @@ class Movie extends Model
         'show_time',
         'total_seats',
         'available_seats',
+        'image',
     ];
 
     public function bookings()

@@ -5,10 +5,14 @@
     </div>
 
     <div v-else-if="movie" class="card space-y-6 border-yellow-200 shadow-sm">
-      <router-link to="/movies" class="text-yellow-600 hover:text-yellow-700 hover:underline text-sm font-medium">
+      <router-link to="/movies" class="text-yellow-600 hover:text-yellow-700 hover:underline text-sm font-medium block">
         &larr; Back to Movies
       </router-link>
       
+      <div v-if="movie.image" class="w-full mb-6 max-h-96 bg-gray-100 rounded-lg overflow-hidden flex justify-center items-center">
+        <img :src="getImageUrl(movie.image)" alt="Movie Poster" class="h-full max-h-96 w-auto object-contain" />
+      </div>
+
       <div>
         <h1 class="text-3xl font-bold text-gray-900 mb-2">{{ movie.title }}</h1>
         <p class="text-gray-600 leading-relaxed">{{ movie.description }}</p>
@@ -49,6 +53,11 @@ const router = useRouter()
 const movie = ref(null)
 const loading = ref(true)
 const booking = ref(false)
+
+const getImageUrl = (path) => {
+    if (!path) return '';
+    return `http://localhost:8000/storage/${path}`;
+}
 
 const fetchMovie = async () => {
   try {

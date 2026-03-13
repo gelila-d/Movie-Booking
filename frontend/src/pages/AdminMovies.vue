@@ -40,6 +40,10 @@
           <label class="text-xs font-medium text-gray-700">Description</label>
           <input v-model="form.description" placeholder="Movie description..." />
         </div>
+        <div class="md:col-span-2 space-y-1">
+          <label class="text-xs font-medium text-gray-700">Movie Image</label>
+          <input type="file" @change="handleFileUpload" accept="image/*" class="w-full text-black px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500 bg-white" />
+        </div>
         <div class="space-y-1">
           <label class="text-xs font-medium text-gray-700">Total Capacity (Seats)</label>
           <input v-model="form.total_seats" type="number" placeholder="100" />
@@ -64,9 +68,12 @@
         <div class="flex-grow">
           <h3 class="text-lg font-bold text-gray-900 mb-1">{{ movie.title }}</h3>
           <p class="text-xs text-gray-600 mb-2 truncate max-w-md">{{ movie.description }}</p>
-          <div class="flex items-center text-xs text-gray-600 space-x-4">
+          <div class="flex items-center text-xs text-gray-600 space-x-4 mb-2">
             <span class="font-medium">🕒 {{ new Date(movie.show_time).toLocaleString() }}</span>
             <span class="font-medium">🪑 {{ movie.available_seats }} / {{ movie.total_seats }} Seats</span>
+          </div>
+          <div v-if="movie.image" class="mt-2">
+            <img :src="getImageUrl(movie.image)" alt="Movie Image" class="h-20 w-auto rounded border" />
           </div>
         </div>
         <div class="mt-4 md:mt-0 flex space-x-2">
@@ -96,6 +103,12 @@ const saving = ref(false)
 const showForm = ref(false)
 const editingId = ref(null)
 const errorMessage = ref("")
+const imageFile = ref(null)
+
+const getImageUrl = (path) => {
+    if (!path) return '';
+    return `http://localhost:8000/storage/${path}`;
+}
 
 const form = ref({
     title: "",
@@ -103,6 +116,10 @@ const form = ref({
     show_time: "",
     total_seats: ""
 })
+
+const handleFileUpload = (event) => {
+    imageFile.value = event.target.files[0]
+}
 
 const loadMovies = async () => {
     loading.value = true
@@ -119,6 +136,7 @@ const loadMovies = async () => {
 const openCreate = () => {
     editingId.value = null
     form.value = { title: "", description: "", show_time: "", total_seats: "" }
+    imageFile.value = null
     errorMessage.value = ""
     showForm.value = true
 }
@@ -128,6 +146,7 @@ const openEdit = (movie) => {
     // Simple way to format date for datetime-local input
     const dateStr = movie.show_time ? new Date(movie.show_time).toISOString().slice(0, 16) : ""
     form.value = { ...movie, show_time: dateStr }
+    imageFile.value = null
     errorMessage.value = ""
     showForm.value = true
 }
@@ -147,10 +166,24 @@ const saveMovie = async () => {
     saving.value = true
     errorMessage.value = ""
     try {
+        const formData = new FormData();
+        formData.append('title', form.value.title);
+        formData.append('description', form.value.description);
+        formData.append('show_time', form.value.show_time);
+        formData.append('total_seats', form.value.total_seats);
+        if (imageFile.value) {
+            formData.append('image', imageFile.value);
+        }
+
         if (editingId.value) {
-            await api.put(`/movies/${editingId.value}`, form.value)
+            formData.append('_method', 'PUT');
+            await api.post(`/movies/${editingId.value}`, formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
         } else {
-            await api.post("/movies", form.value)
+            await api.post("/movies", formData, {
+                headers: { 'Content-Type': 'multipart/form-data' }
+            });
         }
         closeForm()
         loadMovies()
