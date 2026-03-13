@@ -9,8 +9,8 @@
         &larr; Back to Movies
       </router-link>
       
-      <div v-if="movie.image" class="w-full mb-6 max-h-96 bg-gray-100 rounded-lg overflow-hidden flex justify-center items-center">
-        <img :src="getImageUrl(movie.image)" alt="Movie Poster" class="h-full max-h-96 w-auto object-contain" />
+      <div v-if="movie.image" class="w-full mb-6 h-96 bg-gray-900 rounded-lg overflow-hidden relative shadow-md">
+        <img :src="getImageUrl(movie.image)" alt="Movie Poster" class="absolute inset-0 w-full h-full object-cover opacity-90" />
       </div>
 
       <div>

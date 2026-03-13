@@ -5,6 +5,7 @@
         <label class="text-xs font-medium text-gray-700">Number of Seats</label>
         <input 
           v-model="seats" 
+          @input="seats = Math.abs($event.target.value) || 1"
           type="number" 
           min="1" 
           :max="availableSeats" 

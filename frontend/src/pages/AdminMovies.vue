@@ -46,7 +46,7 @@
         </div>
         <div class="space-y-1">
           <label class="text-xs font-medium text-gray-700">Total Capacity (Seats)</label>
-          <input v-model="form.total_seats" type="number" placeholder="100" />
+          <input v-model="form.total_seats" @input="form.total_seats = Math.abs($event.target.value) || ''" type="number" min="1" placeholder="100" />
         </div>
         <div class="flex items-end">
           <button @click="saveMovie" :disabled="saving" class="btn-primary w-full">

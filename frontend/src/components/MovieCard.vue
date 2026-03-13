@@ -1,20 +1,27 @@
 <template>
-  <div class="card flex flex-col h-full !p-0 overflow-hidden">
-    <div v-if="movie.image" class="w-full h-48 bg-gray-100 flex-shrink-0">
-      <img :src="getImageUrl(movie.image)" alt="Movie Poster" class="w-full h-full object-cover" />
+  <div class="flex flex-col h-[450px] rounded-2xl overflow-hidden relative group shadow-md hover:shadow-xl transition-shadow bg-gray-900 border border-gray-800">
+    <!-- Image Background -->
+    <div v-if="movie.image" class="absolute inset-0 w-full h-full z-0 overflow-hidden">
+      <img :src="getImageUrl(movie.image)" alt="Movie Poster" class="w-full h-full object-cover opacity-60 group-hover:opacity-80 group-hover:scale-105 transition-all duration-700 ease-in-out" />
+      <div class="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent"></div>
     </div>
-    <div class="flex-grow p-6">
-      <h3 class="text-xl font-bold text-gray-900 mb-2">{{ movie.title }}</h3>
-      <p class="text-gray-600 text-sm mb-4 line-clamp-2">{{ movie.description }}</p>
-      <div class="space-y-1 text-sm text-gray-600 mb-4">
-        <p>🕒 {{ movie.show_time ? new Date(movie.show_time).toLocaleString() : 'TBD' }}</p>
-        <p>🪑 {{ movie.available_seats }} seats available</p>
+    
+    <div v-else class="absolute inset-0 w-full h-full z-0 flex items-center justify-center bg-gray-800">
+      <span class="text-gray-500 font-bold text-xl">No Image</span>
+      <div class="absolute inset-0 bg-gradient-to-t from-black via-black/60 to-transparent"></div>
+    </div>
+
+    <!-- Content -->
+    <div class="relative z-10 flex flex-col h-full p-6 justify-end text-white">
+      <h3 class="text-2xl font-bold mb-2 text-white">{{ movie.title }}</h3>
+      <p class="text-gray-300 text-sm mb-4 line-clamp-2">{{ movie.description }}</p>
+      <div class="space-y-1 text-sm text-gray-400 mb-5">
+        <p class="flex items-center gap-2"><span>🕒</span> {{ movie.show_time ? new Date(movie.show_time).toLocaleString(undefined, {dateStyle: 'medium', timeStyle: 'short'}) : 'TBD' }}</p>
+        <p class="flex items-center gap-2"><span>🪑</span> {{ movie.available_seats }} seats available</p>
       </div>
-    </div>
-    <div class="px-6 pb-6">
       <router-link 
         :to="'/movies/' + movie.id" 
-        class="btn-primary text-center block w-full"
+        class="bg-yellow-500 text-black font-bold py-3 px-4 rounded-lg text-center block w-full hover:bg-yellow-400 transition-colors"
       >
         View Details
       </router-link>
