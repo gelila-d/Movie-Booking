@@ -1,12 +1,12 @@
 <template>
   <nav class="bg-white border-b border-yellow-200 px-6 py-4 flex justify-between items-center sticky top-0 z-50 shadow-sm">
     <div class="flex items-center space-x-8">
-      <router-link :to="user ? '/movies' : '/login'" class="text-xl font-bold text-gray-900 tracking-tight">
+      <router-link to="/movies" class="text-xl font-bold text-gray-900 tracking-tight">
         MovieBooking
       </router-link>
-      <div v-if="user" class="hidden md:flex space-x-6">
+      <div class="hidden md:flex space-x-6">
         <router-link to="/movies" class="text-gray-600 hover:text-yellow-600 transition-colors text-sm font-medium" active-class="text-yellow-600">Movies</router-link>
-        <router-link to="/my-bookings" class="text-gray-600 hover:text-yellow-600 transition-colors text-sm font-medium" active-class="text-yellow-600">My Bookings</router-link>
+        <router-link v-if="user" to="/my-bookings" class="text-gray-600 hover:text-yellow-600 transition-colors text-sm font-medium" active-class="text-yellow-600">My Bookings</router-link>
         <router-link v-if="user?.is_admin" to="/admin/movies" class="text-gray-600 hover:text-yellow-600 transition-colors text-sm font-medium" active-class="text-yellow-600">Admin</router-link>
       </div>
     </div>

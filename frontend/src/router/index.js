@@ -7,10 +7,10 @@ import MyBookings from "../pages/MyBookings.vue";
 import AdminMovies from "../pages/AdminMovies.vue";
 
 const routes = [
-  { path: "/", redirect: "/login" },
+  { path: "/", redirect: "/movies" },
   { path: "/login", component: Login, meta: { guest: true } },
   { path: "/register", component: Register, meta: { guest: true } },
-  { path: "/movies", component: Movies, meta: { requiresAuth: true } },
+  { path: "/movies", component: Movies },
   { path: "/movies/:id", component: MovieDetails, meta: { requiresAuth: true } },
   { path: "/my-bookings", component: MyBookings, meta: { requiresAuth: true } },
   { path: "/admin/movies", component: AdminMovies, meta: { requiresAuth: true, requiresAdmin: true } },
