@@ -34,6 +34,8 @@
         <BookingForm 
           :movieId="movie.id" 
           :availableSeats="movie.available_seats" 
+          :totalSeats="movie.total_seats"
+          :bookedSeats="bookedSeats"
           :loading="booking"
           @book="handleBooking"
         />
@@ -51,6 +53,7 @@ import BookingForm from '../components/BookingForm.vue'
 const route = useRoute()
 const router = useRouter()
 const movie = ref(null)
+const bookedSeats = ref([])
 const loading = ref(true)
 const booking = ref(false)
 
@@ -63,6 +66,11 @@ const fetchMovie = async () => {
   try {
     const res = await api.get('/movies')
     movie.value = res.data.find(m => m.id == route.params.id)
+    
+    if (movie.value) {
+      const seatsRes = await api.get(`/movies/${movie.value.id}/booked-seats`)
+      bookedSeats.value = seatsRes.data
+    }
   } catch (err) {
     console.error(err)
   } finally {
@@ -70,12 +78,12 @@ const fetchMovie = async () => {
   }
 }
 
-const handleBooking = async (seats) => {
+const handleBooking = async (selectedSeats) => {
   booking.value = true
   try {
     await api.post('/bookings', {
       movie_id: movie.value.id,
-      seats_booked: seats
+      seat_numbers: selectedSeats
     })
     alert('Tickets booked successfully!')
     router.push('/my-bookings')

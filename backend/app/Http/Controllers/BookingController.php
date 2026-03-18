@@ -15,30 +15,54 @@ class BookingController extends Controller
     public function store(Request $request)
     {
         // Validate the request
+        // Validate the request
         $validated = $request->validate([
             'movie_id' => 'required|exists:movies,id',
-            'seats_booked' => 'required|integer|min:1',
+            'seat_numbers' => 'required|array|min:1',
+            'seat_numbers.*' => 'string',
         ]);
 
+        $seatsRequested = $validated['seat_numbers'];
+
         // Use a DB transaction to prevent race conditions
-        return DB::transaction(function () use ($validated) {
+        return DB::transaction(function () use ($validated, $seatsRequested) {
 
             // Lock the movie row to prevent overbooking
             $movie = Movie::lockForUpdate()->find($validated['movie_id']);
 
-            if ($movie->available_seats < $validated['seats_booked']) {
+            $seatsCount = count($seatsRequested);
+
+            if ($movie->available_seats < $seatsCount) {
                 return response()->json(['message' => 'Not enough seats'], 400);
             }
 
+            // Check if any of the requested seats are already booked for this movie
+            $existingBookings = Booking::where('movie_id', $movie->id)->get();
+            $bookedSeats = [];
+            foreach ($existingBookings as $b) {
+                if ($b->seat_numbers) {
+                    $bookedSeats = array_merge($bookedSeats, $b->seat_numbers);
+                }
+            }
+
+            $overlappingSeats = array_intersect($seatsRequested, $bookedSeats);
+            if (count($overlappingSeats) > 0) {
+                return response()->json([
+                    'message' => 'Some seats are already booked',
+                    'unavailable_seats' => array_values($overlappingSeats)
+                ], 400);
+            }
+
             // Reduce available seats
-            $movie->available_seats -= $validated['seats_booked'];
+            $movie->available_seats -= $seatsCount;
             $movie->save();
 
             // Create the booking
             $booking = Booking::create([
                 'user_id' => auth()->id(),
                 'movie_id' => $movie->id,
-                'seats_booked' => $validated['seats_booked'],
+                'seats_booked' => $seatsCount,
+                'seat_numbers' => $seatsRequested,
             ]);
 
             return response()->json($booking, 201);
@@ -73,5 +97,20 @@ class BookingController extends Controller
         });
 
         return response()->json(['message' => 'Booking cancelled']);
+    }
+
+    /**
+     * Get booked seats for a movie
+     */
+    public function getBookedSeats($movieId)
+    {
+        $existingBookings = Booking::where('movie_id', $movieId)->get();
+        $bookedSeats = [];
+        foreach ($existingBookings as $b) {
+            if ($b->seat_numbers) {
+                $bookedSeats = array_merge($bookedSeats, $b->seat_numbers);
+            }
+        }
+        return response()->json(array_unique($bookedSeats));
     }
 }

@@ -12,6 +12,11 @@ class Booking extends Model
         'user_id',
         'movie_id',
         'seats_booked',
+        'seat_numbers',
+    ];
+
+    protected $casts = [
+        'seat_numbers' => 'array',
     ];
 
     public function user()

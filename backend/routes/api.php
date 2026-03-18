@@ -7,6 +7,7 @@ Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
 
 Route::get('/movies', [MovieController::class, 'index']);
+Route::get('/movies/{movie}/booked-seats', [BookingController::class, 'getBookedSeats']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
