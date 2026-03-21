@@ -56,7 +56,7 @@ class MovieController extends Controller
 
         $validated = $request->validate([
             'title' => 'sometimes|string|max:255',
-            'description' => 'sometimes|string',
+            'description' => 'nullable|string',
             'show_time' => 'sometimes|date',
             'total_seats' => 'sometimes|integer|min:1',
             'image' => 'nullable|image|max:2048',
@@ -68,6 +68,17 @@ class MovieController extends Controller
             }
             $path = $request->file('image')->store('movies', 'public');
             $validated['image'] = $path;
+        }
+
+        if (isset($validated['total_seats']) && $validated['total_seats'] != $movie->total_seats) {
+            $diff = $validated['total_seats'] - $movie->total_seats;
+            $validated['available_seats'] = $movie->available_seats + $diff;
+            
+            if ($validated['available_seats'] < 0) {
+                return response()->json([
+                    'errors' => ['total_seats' => ['Total seats cannot be less than seats already booked.']]
+                ], 422);
+            }
         }
 
         $movie->update($validated);
