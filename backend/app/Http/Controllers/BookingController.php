@@ -113,4 +113,4 @@ class BookingController extends Controller
         }
         return response()->json(array_unique($bookedSeats));
     }
-}
+}   

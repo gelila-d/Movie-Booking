@@ -103,4 +103,4 @@ class MovieController extends Controller
 
         return response()->json(['message' => 'Movie deleted']);
     }
-}
+}     
