@@ -14,6 +14,31 @@
       </button>
     </div>
 
+    <!-- Statistics Dashboard -->
+    <div v-if="stats" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div class="bg-white p-6 rounded-2xl shadow-sm border border-yellow-100 flex flex-col">
+        <span class="text-sm font-medium text-gray-500 mb-1">Total Movies</span>
+        <span class="text-3xl font-bold text-gray-900">{{ stats.summary.total_movies }}</span>
+      </div>
+      <div class="bg-white p-6 rounded-2xl shadow-sm border border-yellow-100 flex flex-col">
+        <span class="text-sm font-medium text-gray-500 mb-1">Total Tickets Sold</span>
+        <span class="text-3xl font-bold text-yellow-600">{{ stats.summary.booked_seats }}</span>
+      </div>
+      <div class="bg-white p-6 rounded-2xl shadow-sm border border-yellow-100 flex flex-col">
+        <span class="text-sm font-medium text-gray-500 mb-1">Remaining Seats</span>
+        <span class="text-3xl font-bold text-green-600">{{ stats.summary.available_seats }}</span>
+      </div>
+      <div class="bg-white p-6 rounded-2xl shadow-sm border border-yellow-100 flex flex-col">
+        <span class="text-sm font-medium text-gray-500 mb-1">Fill Rate</span>
+        <div class="flex items-end gap-2">
+          <span class="text-3xl font-bold text-blue-600">{{ stats.summary.overall_fill_rate }}%</span>
+          <div class="flex-grow h-2 bg-gray-100 rounded-full mb-2 overflow-hidden">
+            <div class="h-full bg-blue-500" :style="{ width: stats.summary.overall_fill_rate + '%' }"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Movie Form (Create/Edit) -->
     <div v-if="showForm" class="card space-y-6 border-yellow-200 shadow-sm">
       <div class="flex justify-between items-center">
@@ -98,6 +123,7 @@ import { ref, onMounted } from "vue"
 import api from "../services/api"
 
 const movies = ref([])
+const stats = ref(null)
 const loading = ref(true)
 const saving = ref(false)
 const showForm = ref(false)
@@ -124,8 +150,12 @@ const handleFileUpload = (event) => {
 const loadMovies = async () => {
     loading.value = true
     try {
-        const res = await api.get("/movies")
-        movies.value = res.data
+        const [moviesRes, statsRes] = await Promise.all([
+            api.get("/movies"),
+            api.get("/admin/stats")
+        ])
+        movies.value = moviesRes.data
+        stats.value = statsRes.data
     } catch (err) {
         console.error(err)
     } finally {

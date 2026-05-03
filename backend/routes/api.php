@@ -2,6 +2,7 @@
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\MovieController;
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\AdminStatsController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -20,4 +21,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/my-bookings', function () {
         return auth()->user()->bookings()->with('movie')->get();
     });
+
+    Route::get('/admin/stats', [AdminStatsController::class, 'index']);
 });
