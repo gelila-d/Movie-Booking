@@ -17,6 +17,14 @@ class MovieController extends Controller
     }
 
     /**
+     * Show a single movie
+     */
+    public function show(Movie $movie)
+    {
+        return response()->json($movie);
+    }
+
+    /**
      * Create movie (Admin only)
      */
     public function store(Request $request)

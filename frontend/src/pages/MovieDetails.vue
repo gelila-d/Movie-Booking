@@ -64,8 +64,8 @@ const getImageUrl = (path) => {
 
 const fetchMovie = async () => {
   try {
-    const res = await api.get('/movies')
-    movie.value = res.data.find(m => m.id == route.params.id)
+    const res = await api.get(`/movies/${route.params.id}`)
+    movie.value = res.data
     
     if (movie.value) {
       const seatsRes = await api.get(`/movies/${movie.value.id}/booked-seats`)

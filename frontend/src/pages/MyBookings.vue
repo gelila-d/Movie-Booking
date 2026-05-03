@@ -28,7 +28,15 @@
         <div class="flex-grow p-4 sm:p-5 flex flex-col justify-center">
           <div class="flex justify-between items-start mb-1">
             <h2 class="text-lg font-bold text-gray-900">{{ booking.movie.title }}</h2>
-            <span class="text-green-500 bg-green-50 px-2 py-0.5 rounded font-bold uppercase text-[10px] tracking-widest hidden sm:inline-block">Confirmed</span>
+            <div class="flex items-center gap-2">
+              <span class="text-green-500 bg-green-50 px-2 py-0.5 rounded font-bold uppercase text-[10px] tracking-widest hidden sm:inline-block">Confirmed</span>
+              <button 
+                @click="cancelBooking(booking.id)" 
+                class="text-red-500 hover:text-red-600 text-xs font-bold bg-red-50/50 px-2 py-1 rounded transition-colors"
+              >
+                Cancel
+              </button>
+            </div>
           </div>
           <div class="flex flex-wrap items-center text-xs sm:text-sm text-gray-600 gap-y-1.5 gap-x-4 mt-0.5">
             <span class="flex items-center whitespace-nowrap"><span class="mr-1.5 opacity-70">🕒</span> {{ booking.movie.show_time ? new Date(booking.movie.show_time).toLocaleString(undefined, {dateStyle: 'medium', timeStyle: 'short'}) : 'TBD' }}</span>
@@ -61,6 +69,16 @@ const loadBookings = async () => {
         console.error(err)
     } finally {
         loading.value = false
+    }
+}
+
+const cancelBooking = async (id) => {
+    if (!confirm("Are you sure you want to cancel this booking?")) return
+    try {
+        await api.delete(`/bookings/${id}`)
+        loadBookings()
+    } catch (err) {
+        alert("Cancellation failed")
     }
 }
 

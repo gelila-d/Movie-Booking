@@ -96,6 +96,9 @@
           <div class="flex items-center text-xs text-gray-600 space-x-4 mb-2">
             <span class="font-medium">🕒 {{ new Date(movie.show_time).toLocaleString() }}</span>
             <span class="font-medium">🪑 {{ movie.available_seats }} / {{ movie.total_seats }} Seats</span>
+            <span v-if="getFillRate(movie.id) !== null" class="px-2 py-0.5 rounded-full font-bold" :class="getFillRateColor(getFillRate(movie.id))">
+              {{ getFillRate(movie.id) }}% Full
+            </span>
           </div>
           <div v-if="movie.image" class="mt-2">
             <img :src="getImageUrl(movie.image)" alt="Movie Image" class="h-20 w-auto rounded border" />
@@ -142,6 +145,18 @@ const form = ref({
     show_time: "",
     total_seats: ""
 })
+
+const getFillRate = (movieId) => {
+    if (!stats.value || !stats.value.movie_stats) return null;
+    const movieStat = stats.value.movie_stats.find(s => s.id === movieId);
+    return movieStat ? movieStat.fill_rate : null;
+}
+
+const getFillRateColor = (rate) => {
+    if (rate >= 90) return 'bg-red-100 text-red-700';
+    if (rate >= 50) return 'bg-yellow-100 text-yellow-700';
+    return 'bg-green-100 text-green-700';
+}
 
 const handleFileUpload = (event) => {
     imageFile.value = event.target.files[0]
