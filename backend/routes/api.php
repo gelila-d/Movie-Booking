@@ -19,6 +19,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::delete('/movies/{movie}', [MovieController::class, 'destroy']);
 
     Route::post('/bookings', [BookingController::class, 'store']);
+    Route::delete('/bookings/{booking}', [BookingController::class, 'destroy']);
     Route::get('/my-bookings', function () {
         return auth()->user()->bookings()->with('movie')->get();
     });
