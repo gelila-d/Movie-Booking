@@ -113,4 +113,16 @@ class BookingController extends Controller
         }
         return response()->json(array_unique($bookedSeats));
     }
-}   
+    /**
+     * Get all bookings (Admin only)
+     */
+    public function allBookings(Request $request)
+    {
+        if (!$request->user() || !$request->user()->is_admin) {
+            return response()->json(['message' => 'Forbidden'], 403);
+        }
+
+        $bookings = Booking::with(['user', 'movie'])->latest()->get();
+        return response()->json($bookings);
+    }
+}

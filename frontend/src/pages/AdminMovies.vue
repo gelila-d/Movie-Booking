@@ -6,7 +6,7 @@
         <p class="text-gray-600">Manage the movie catalog and ticketing</p>
       </div>
       <button 
-        v-if="!showForm" 
+        v-if="!showForm && activeTab === 'catalog'" 
         @click="openCreate" 
         class="btn-primary"
       >
@@ -39,6 +39,24 @@
       </div>
     </div>
 
+    <!-- Tab Navigation -->
+    <div class="flex border-b border-gray-200">
+      <button 
+        @click="activeTab = 'catalog'" 
+        class="px-6 py-3 text-sm font-bold transition-colors border-b-2"
+        :class="activeTab === 'catalog' ? 'border-yellow-500 text-yellow-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
+      >
+        Movie Catalog
+      </button>
+      <button 
+        @click="activeTab = 'bookings'" 
+        class="px-6 py-3 text-sm font-bold transition-colors border-b-2"
+        :class="activeTab === 'bookings' ? 'border-yellow-500 text-yellow-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
+      >
+        Recent Bookings
+      </button>
+    </div>
+
     <!-- Movie Form (Create/Edit) -->
     <div v-if="showForm" class="card space-y-6 border-yellow-200 shadow-sm">
       <div class="flex justify-between items-center">
@@ -58,7 +76,6 @@
         </div>
         <div class="space-y-1">
           <label class="text-xs font-medium text-gray-700">Show Time</label>
-          <!-- Using datetime-local ensures it sends a valid date format to the backend -->
           <input v-model="form.show_time" type="datetime-local" class="w-full text-black px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500" />
         </div>
         <div class="md:col-span-2 space-y-1">
@@ -81,9 +98,12 @@
       </div>
     </div>
 
-    <!-- Movie List -->
-    <div class="space-y-4">
-      <h2 class="text-xl font-bold text-gray-900">Catalog ({{ movies.length }})</h2>
+    <!-- Catalog Tab Content -->
+    <div v-if="activeTab === 'catalog'" class="space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-xl font-bold text-gray-900">Catalog ({{ movies.length }})</h2>
+        <button @click="loadMovies" class="text-xs text-yellow-600 hover:underline">Refresh</button>
+      </div>
       
       <div v-if="loading" class="flex justify-center p-10">
         <div class="animate-spin h-6 w-6 border-2 border-yellow-500 border-t-transparent rounded-full"></div>
@@ -118,21 +138,72 @@
         <p class="text-gray-600">No movies found in the catalog.</p>
       </div>
     </div>
+
+    <!-- Bookings Tab Content -->
+    <div v-if="activeTab === 'bookings'" class="space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-xl font-bold text-gray-900">All Bookings ({{ allBookings.length }})</h2>
+        <button @click="loadAllBookings" class="text-xs text-yellow-600 hover:underline">Refresh</button>
+      </div>
+
+      <div v-if="loadingBookings" class="flex justify-center p-10">
+        <div class="animate-spin h-6 w-6 border-2 border-yellow-500 border-t-transparent rounded-full"></div>
+      </div>
+
+      <div v-else-if="allBookings.length === 0" class="text-center py-20 bg-gray-50 border border-dashed border-gray-200 rounded-xl">
+        <p class="text-gray-600">No bookings found in the system.</p>
+      </div>
+
+      <div v-else class="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
+        <table class="w-full text-left bg-white">
+          <thead class="bg-gray-50 border-b border-gray-200">
+            <tr>
+              <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase">User</th>
+              <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase">Movie</th>
+              <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase">Seats</th>
+              <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase">Numbers</th>
+              <th class="px-6 py-4 text-xs font-bold text-gray-500 uppercase">Date</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-gray-100">
+            <tr v-for="booking in allBookings" :key="booking.id" class="hover:bg-gray-50 transition-colors">
+              <td class="px-6 py-4">
+                <div class="flex flex-col">
+                  <span class="text-sm font-bold text-gray-900">{{ booking.user?.name || 'Unknown' }}</span>
+                  <span class="text-xs text-gray-500">{{ booking.user?.email || 'N/A' }}</span>
+                </div>
+              </td>
+              <td class="px-6 py-4 text-sm text-gray-700 font-medium">{{ booking.movie?.title || 'Deleted Movie' }}</td>
+              <td class="px-6 py-4">
+                <span class="px-2 py-1 bg-yellow-100 text-yellow-700 text-xs font-bold rounded-full">
+                  {{ booking.seats_booked }} Seats
+                </span>
+              </td>
+              <td class="px-6 py-4 text-xs text-gray-600">{{ booking.seat_numbers?.join(', ') || 'None' }}</td>
+              <td class="px-6 py-4 text-xs text-gray-500">{{ new Date(booking.created_at).toLocaleDateString() }}</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue"
+import { ref, onMounted, watch } from "vue"
 import api from "../services/api"
 
 const movies = ref([])
 const stats = ref(null)
+const allBookings = ref([])
 const loading = ref(true)
+const loadingBookings = ref(false)
 const saving = ref(false)
 const showForm = ref(false)
 const editingId = ref(null)
 const errorMessage = ref("")
 const imageFile = ref(null)
+const activeTab = ref('catalog')
 
 const getImageUrl = (path) => {
     if (!path) return '';
@@ -165,16 +236,33 @@ const handleFileUpload = (event) => {
 const loadMovies = async () => {
     loading.value = true
     try {
-        const [moviesRes, statsRes] = await Promise.all([
-            api.get("/movies"),
-            api.get("/admin/stats")
-        ])
-        movies.value = moviesRes.data
-        stats.value = statsRes.data
+        const res = await api.get("/movies")
+        movies.value = res.data
     } catch (err) {
-        console.error(err)
+        console.error("Failed to load movies:", err)
     } finally {
         loading.value = false
+    }
+}
+
+const loadStats = async () => {
+    try {
+        const res = await api.get("/admin/stats")
+        stats.value = res.data
+    } catch (err) {
+        console.error("Failed to load stats:", err)
+    }
+}
+
+const loadAllBookings = async () => {
+    loadingBookings.value = true
+    try {
+        const res = await api.get("/admin/bookings")
+        allBookings.value = res.data
+    } catch (err) {
+        console.error("Failed to load bookings:", err)
+    } finally {
+        loadingBookings.value = false
     }
 }
 
@@ -188,7 +276,6 @@ const openCreate = () => {
 
 const openEdit = (movie) => {
     editingId.value = movie.id
-    // Simple way to format date for datetime-local input
     const dateStr = movie.show_time ? new Date(movie.show_time).toISOString().slice(0, 16) : ""
     form.value = { ...movie, show_time: dateStr }
     imageFile.value = null
@@ -232,6 +319,7 @@ const saveMovie = async () => {
         }
         closeForm()
         loadMovies()
+        loadStats()
     } catch (err) {
         if (err.response && err.response.data && err.response.data.errors) {
             const errors = err.response.data.errors;
@@ -251,10 +339,20 @@ const deleteMovie = async (id) => {
     try {
         await api.delete(`/movies/${id}`)
         loadMovies()
+        loadStats()
     } catch (err) {
         alert("Deletion failed")
     }
 }
 
-onMounted(loadMovies)
-</script>
+watch(activeTab, (newTab) => {
+    if (newTab === 'bookings') {
+        loadAllBookings()
+    }
+})
+
+onMounted(() => {
+    loadMovies()
+    loadStats()
+})
+</script>

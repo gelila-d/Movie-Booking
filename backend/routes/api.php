@@ -25,4 +25,5 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     Route::get('/admin/stats', [AdminStatsController::class, 'index']);
+    Route::get('/admin/bookings', [BookingController::class, 'allBookings']);
 });
