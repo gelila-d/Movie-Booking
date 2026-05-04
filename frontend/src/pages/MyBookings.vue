@@ -1,8 +1,21 @@
 <template>
   <div class="container">
-    <div class="mb-10">
-      <h1 class="text-3xl font-bold text-gray-900 mb-1">My Bookings</h1>
-      <p class="text-gray-600">Your reservations and ticket history</p>
+    <div class="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div>
+        <h1 class="text-3xl font-bold text-gray-900 mb-1">My Bookings</h1>
+        <p class="text-gray-600">Your reservations and ticket history</p>
+      </div>
+      <div class="relative w-full md:w-80" v-if="bookings.length > 0 || searchQuery">
+        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+          🔍
+        </span>
+        <input 
+          v-model="searchQuery" 
+          type="text" 
+          placeholder="Search by movie title..." 
+          class="pl-10 pr-4 py-2 w-full border border-yellow-200 rounded-xl focus:ring-2 focus:ring-yellow-500 outline-none shadow-sm transition-all"
+        />
+      </div>
     </div>
 
     <div v-if="loading" class="flex justify-center py-10">
@@ -14,8 +27,13 @@
       <router-link to="/movies" class="btn-primary">Explore Movies</router-link>
     </div>
 
+    <div v-else-if="filteredBookings.length === 0" class="card text-center py-12 border-yellow-200 bg-gray-50 border-dashed">
+      <p class="text-gray-600">No bookings found for "{{ searchQuery }}"</p>
+      <button @click="searchQuery = ''" class="mt-4 text-yellow-600 font-bold hover:underline">Clear Search</button>
+    </div>
+
     <div v-else class="grid gap-3">
-      <div v-for="booking in bookings" :key="booking.id" class="card flex flex-col sm:flex-row shadow-sm border-yellow-200 overflow-hidden !p-0 transition-shadow hover:shadow-md">
+      <div v-for="booking in filteredBookings" :key="booking.id" class="card flex flex-col sm:flex-row shadow-sm border-yellow-200 overflow-hidden !p-0 transition-shadow hover:shadow-md">
         <!-- Thumbnail Image -->
         <div v-if="booking.movie.image" class="w-full sm:w-32 h-32 sm:h-auto bg-gray-100 flex-shrink-0">
           <img :src="getImageUrl(booking.movie.image)" alt="Movie Poster" class="w-full h-full object-cover" />
@@ -54,11 +72,20 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue"
+import { ref, onMounted, computed } from "vue"
 import api from "../services/api"
 
 const bookings = ref([])
 const loading = ref(true)
+const searchQuery = ref("")
+
+const filteredBookings = computed(() => {
+    if (!searchQuery.value) return bookings.value
+    const query = searchQuery.value.toLowerCase()
+    return bookings.value.filter(booking => 
+        booking.movie.title.toLowerCase().includes(query)
+    )
+})
 
 const loadBookings = async () => {
     loading.value = true

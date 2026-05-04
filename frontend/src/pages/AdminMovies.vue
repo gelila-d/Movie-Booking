@@ -39,22 +39,33 @@
       </div>
     </div>
 
-    <!-- Tab Navigation -->
-    <div class="flex border-b border-gray-200">
-      <button 
-        @click="activeTab = 'catalog'" 
-        class="px-6 py-3 text-sm font-bold transition-colors border-b-2"
-        :class="activeTab === 'catalog' ? 'border-yellow-500 text-yellow-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
-      >
-        Movie Catalog
-      </button>
-      <button 
-        @click="activeTab = 'bookings'" 
-        class="px-6 py-3 text-sm font-bold transition-colors border-b-2"
-        :class="activeTab === 'bookings' ? 'border-yellow-500 text-yellow-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
-      >
-        Recent Bookings
-      </button>
+    <!-- Tab Navigation & Search -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-gray-200 gap-4">
+      <div class="flex">
+        <button 
+          @click="activeTab = 'catalog'" 
+          class="px-6 py-3 text-sm font-bold transition-colors border-b-2"
+          :class="activeTab === 'catalog' ? 'border-yellow-500 text-yellow-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
+        >
+          Movie Catalog
+        </button>
+        <button 
+          @click="activeTab = 'bookings'" 
+          class="px-6 py-3 text-sm font-bold transition-colors border-b-2"
+          :class="activeTab === 'bookings' ? 'border-yellow-500 text-yellow-600' : 'border-transparent text-gray-500 hover:text-gray-700'"
+        >
+          Recent Bookings
+        </button>
+      </div>
+      <div class="relative w-full md:w-64 mb-2 md:mb-0">
+        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">🔍</span>
+        <input 
+          v-model="searchQuery" 
+          type="text" 
+          :placeholder="activeTab === 'catalog' ? 'Search movies...' : 'Search users or movies...'" 
+          class="pl-10 pr-4 py-1.5 w-full border border-gray-200 rounded-lg focus:ring-2 focus:ring-yellow-500 outline-none text-sm"
+        />
+      </div>
     </div>
 
     <!-- Movie Form (Create/Edit) -->
@@ -101,7 +112,7 @@
     <!-- Catalog Tab Content -->
     <div v-if="activeTab === 'catalog'" class="space-y-4">
       <div class="flex items-center justify-between">
-        <h2 class="text-xl font-bold text-gray-900">Catalog ({{ movies.length }})</h2>
+        <h2 class="text-xl font-bold text-gray-900">Catalog ({{ filteredMovies.length }})</h2>
         <button @click="loadMovies" class="text-xs text-yellow-600 hover:underline">Refresh</button>
       </div>
       
@@ -109,7 +120,12 @@
         <div class="animate-spin h-6 w-6 border-2 border-yellow-500 border-t-transparent rounded-full"></div>
       </div>
 
-      <div v-for="movie in movies" :key="movie.id" class="card flex flex-col md:flex-row md:items-center justify-between border-yellow-200">
+      <div v-else-if="filteredMovies.length === 0" class="text-center py-20 bg-gray-50 border border-dashed border-gray-200 rounded-xl">
+        <p class="text-gray-600">No movies found matching your search.</p>
+        <button v-if="searchQuery" @click="searchQuery = ''" class="mt-2 text-yellow-600 text-sm font-bold">Clear Search</button>
+      </div>
+
+      <div v-for="movie in filteredMovies" :key="movie.id" class="card flex flex-col md:flex-row md:items-center justify-between border-yellow-200">
         <div class="flex-grow">
           <h3 class="text-lg font-bold text-gray-900 mb-1">{{ movie.title }}</h3>
           <p class="text-xs text-gray-600 mb-2 truncate max-w-md">{{ movie.description }}</p>
@@ -142,7 +158,7 @@
     <!-- Bookings Tab Content -->
     <div v-if="activeTab === 'bookings'" class="space-y-4">
       <div class="flex items-center justify-between">
-        <h2 class="text-xl font-bold text-gray-900">All Bookings ({{ allBookings.length }})</h2>
+        <h2 class="text-xl font-bold text-gray-900">All Bookings ({{ filteredBookings.length }})</h2>
         <button @click="loadAllBookings" class="text-xs text-yellow-600 hover:underline">Refresh</button>
       </div>
 
@@ -150,8 +166,9 @@
         <div class="animate-spin h-6 w-6 border-2 border-yellow-500 border-t-transparent rounded-full"></div>
       </div>
 
-      <div v-else-if="allBookings.length === 0" class="text-center py-20 bg-gray-50 border border-dashed border-gray-200 rounded-xl">
-        <p class="text-gray-600">No bookings found in the system.</p>
+      <div v-else-if="filteredBookings.length === 0" class="text-center py-20 bg-gray-50 border border-dashed border-gray-200 rounded-xl">
+        <p class="text-gray-600">No bookings found matching your search.</p>
+        <button v-if="searchQuery" @click="searchQuery = ''" class="mt-2 text-yellow-600 text-sm font-bold">Clear Search</button>
       </div>
 
       <div v-else class="overflow-x-auto rounded-xl border border-gray-200 shadow-sm">
@@ -166,7 +183,7 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-100">
-            <tr v-for="booking in allBookings" :key="booking.id" class="hover:bg-gray-50 transition-colors">
+            <tr v-for="booking in filteredBookings" :key="booking.id" class="hover:bg-gray-50 transition-colors">
               <td class="px-6 py-4">
                 <div class="flex flex-col">
                   <span class="text-sm font-bold text-gray-900">{{ booking.user?.name || 'Unknown' }}</span>
@@ -190,7 +207,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, watch } from "vue"
+import { ref, onMounted, watch, computed } from "vue"
 import api from "../services/api"
 
 const movies = ref([])
@@ -204,6 +221,26 @@ const editingId = ref(null)
 const errorMessage = ref("")
 const imageFile = ref(null)
 const activeTab = ref('catalog')
+const searchQuery = ref("")
+
+const filteredMovies = computed(() => {
+    if (!searchQuery.value) return movies.value
+    const query = searchQuery.value.toLowerCase()
+    return movies.value.filter(movie => 
+        movie.title.toLowerCase().includes(query) || 
+        (movie.description && movie.description.toLowerCase().includes(query))
+    )
+})
+
+const filteredBookings = computed(() => {
+    if (!searchQuery.value) return allBookings.value
+    const query = searchQuery.value.toLowerCase()
+    return allBookings.value.filter(booking => 
+        (booking.user?.name && booking.user.name.toLowerCase().includes(query)) ||
+        (booking.user?.email && booking.user.email.toLowerCase().includes(query)) ||
+        (booking.movie?.title && booking.movie.title.toLowerCase().includes(query))
+    )
+})
 
 const getImageUrl = (path) => {
     if (!path) return '';
