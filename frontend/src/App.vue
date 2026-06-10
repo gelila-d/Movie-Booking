@@ -1,7 +1,8 @@
 <template>
-  <div class="min-h-screen bg-yellow-50 text-gray-900 font-sans">
+  <div class="min-h-screen bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900 text-slate-100 font-sans grid-bg">
+    <div class="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-purple-500/5 to-cyan-500/5"></div>
     <Navbar v-if="!isAuthPage" />
-    <main>
+    <main class="relative z-10">
       <router-view />
     </main>
   </div>
