@@ -1,67 +1,72 @@
 <template>
-  <div class="movie-card flex flex-col h-[500px] rounded-2xl overflow-hidden relative group transition-all duration-500 hover:scale-105">
-    <!-- Holographic border effect -->
-    <div class="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-500/30 via-violet-500/30 to-fuchsia-500/30 p-[2px] group-hover:from-purple-400 group-hover:via-violet-400 group-hover:to-fuchsia-400 transition-all duration-500">
-      <div class="h-full w-full rounded-2xl bg-slate-900/90 backdrop-blur-xl border border-slate-700/50 group-hover:border-purple-500/50 transition-all duration-500"></div>
-    </div>
-    
+  <div class="group relative w-full aspect-[2/3] overflow-hidden bg-gray-900 shadow-md hover:shadow-xl transition-all duration-300 border border-gray-800/60 hover:border-[#ef6a26]/50">
     <!-- Image Background -->
-    <div v-if="movie.image" class="absolute inset-[2px] w-[calc(100%-4px)] h-[calc(100%-4px)] z-0 overflow-hidden rounded-2xl">
-      <img :src="getImageUrl(movie.image)" alt="Movie Poster" class="w-full h-full object-cover opacity-85 group-hover:opacity-95 group-hover:scale-110 transition-all duration-700 ease-out" />
-      <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/30 to-transparent"></div>
-    </div>
-    
-    <div v-else class="absolute inset-[2px] w-[calc(100%-4px)] h-[calc(100%-4px)] z-0 flex items-center justify-center bg-slate-800/90 rounded-2xl">
-      <div class="text-center">
-        <div class="w-16 h-16 mx-auto mb-4 bg-slate-700 rounded-full flex items-center justify-center">
-          <span class="text-2xl">🎬</span>
-        </div>
-        <span class="text-slate-400 font-medium">No Image</span>
-      </div>
-      <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/70 to-transparent rounded-2xl"></div>
+    <img 
+      v-if="movie.image" 
+      :src="getImageUrl(movie.image)" 
+      alt="Movie Poster" 
+      class="w-full h-full object-cover transform group-hover:scale-108 transition-transform duration-500 ease-out" 
+    />
+    <div v-else class="w-full h-full flex flex-col items-center justify-center bg-gray-900 text-gray-500">
+      <svg class="w-8 h-8 mb-1 text-gray-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
+      </svg>
+      <span class="font-medium text-[10px] tracking-wider uppercase">No Poster</span>
     </div>
 
-    <!-- Scan line effect -->
-    <div class="scan-line absolute inset-0 z-20 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+    <!-- Top Badges -->
+    <div class="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between z-20 pointer-events-none">
+      <span class="bg-black/60 backdrop-blur-md text-white text-[9px] font-semibold px-2 py-0.5 uppercase tracking-wider border border-white/10">
+        4K HD
+      </span>
+      <span class="bg-[#ef6a26] text-white text-[10px] font-bold px-2 py-0.5 flex items-center gap-1 shadow-sm">
+        <svg class="w-2.5 h-2.5 fill-current" viewBox="0 0 24 24">
+          <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+        </svg>
+        {{ movie.rating || '8.5' }}
+      </span>
+    </div>
 
-    <!-- Content -->
-    <div class="relative z-30 flex flex-col h-full p-6 justify-end text-slate-100">
-      <!-- Rating badge -->
-      <div class="absolute top-6 right-6">
-        <div class="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-3 py-1 rounded-full text-xs font-bold">
-          ★ {{ (Math.random() * 2 + 7).toFixed(1) }}
-        </div>
-      </div>
-
-      <div class="space-y-4">
-        <h3 class="text-2xl font-bold text-white group-hover:text-purple-300 transition-colors duration-300 font-orbitron">
-          {{ movie.title.toUpperCase() }}
-        </h3>
-        
-        <p class="text-slate-300 text-sm line-clamp-3 leading-relaxed">{{ movie.description }}</p>
-        
-        <!-- Movie info with futuristic styling -->
-        <div class="space-y-2 text-sm">
-          <div class="flex items-center gap-3 text-slate-400">
-            <div class="w-1 h-1 bg-purple-400 rounded-full animate-pulse"></div>
-            <span class="font-mono">{{ movie.show_time ? new Date(movie.show_time).toLocaleString(undefined, {dateStyle: 'medium', timeStyle: 'short'}) : 'TBD' }}</span>
-          </div>
-          <div class="flex items-center gap-3 text-slate-400">
-            <div class="w-1 h-1 bg-green-400 rounded-full animate-pulse"></div>
-            <span class="font-mono">{{ movie.available_seats }} SEATS AVAILABLE</span>
-          </div>
-        </div>
-
-        <!-- Action button -->
-        <router-link 
-          :to="'/movies/' + movie.id" 
-          class="btn-primary w-full text-center block py-3 px-4 text-sm font-bold tracking-wider relative overflow-hidden group/btn"
-        >
-          <span class="relative z-10">ACCESS DETAILS</span>
-          <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-700"></div>
-        </router-link>
+    <!-- Center Play Icon Hover Overlay -->
+    <div class="absolute inset-0 z-20 flex items-center justify-center pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+      <div class="w-10 h-10 rounded-full bg-[#ef6a26]/90 text-white flex items-center justify-center shadow-md shadow-[#ef6a26]/40 transform scale-75 group-hover:scale-100 transition-transform duration-300">
+        <svg class="w-4 h-4 fill-current translate-x-0.5" viewBox="0 0 24 24">
+          <path d="M8 5v14l11-7z"/>
+        </svg>
       </div>
     </div>
+
+    <!-- Gradient Overlay -->
+    <div class="absolute inset-0 z-10 bg-gradient-to-t from-black via-black/40 to-transparent opacity-90 group-hover:opacity-95 transition-opacity duration-300"></div>
+
+    <!-- Content (Bottom Anchored) -->
+    <div class="absolute inset-x-0 bottom-0 z-20 p-3.5 sm:p-4 flex flex-col justify-end text-white text-left">
+      <!-- Info (Genre & Duration) -->
+      <div class="text-[10px] text-[#ef6a26] font-semibold uppercase tracking-wider mb-0.5 flex items-center space-x-1.5 truncate">
+        <span class="truncate">{{ movie.genre || 'Action, Thriller' }}</span>
+        <span class="text-gray-500">•</span>
+        <span class="text-gray-300 font-normal normal-case shrink-0">{{ movie.duration || '180' }}m</span>
+      </div>
+
+      <!-- Title -->
+      <h3 class="text-sm sm:text-base font-bold mb-2.5 leading-snug tracking-tight group-hover:text-[#ef6a26] transition-colors duration-300 line-clamp-2">
+        {{ movie.title }}
+      </h3>
+
+      <!-- Action Button -->
+      <router-link 
+        :to="'/movies/' + movie.id" 
+        class="inline-flex items-center justify-between bg-white hover:bg-[#ef6a26] text-black hover:text-white font-bold text-[10px] uppercase tracking-wider px-3.5 py-2 w-full transition-all duration-300 shadow-md group/btn"
+      >
+        <span>Get Ticket</span>
+        <svg class="w-3 h-3 transform group-hover/btn:translate-x-0.5 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
+        </svg>
+      </router-link>
+    </div>
+
+    <!-- Bottom Accent Line -->
+    <div class="absolute bottom-0 left-0 right-0 h-0.5 bg-[#ef6a26] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300 origin-left z-30"></div>
   </div>
 </template>
 
@@ -80,57 +85,11 @@ const getImageUrl = (path) => {
 </script>
 
 <style scoped>
-.line-clamp-3 {
+.line-clamp-2 {
   display: -webkit-box;
-  -webkit-line-clamp: 3;
-  line-clamp: 3;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   overflow: hidden;
-}
-
-.font-orbitron {
-  font-family: 'Orbitron', monospace;
-}
-
-.scan-line::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 2px;
-  background: linear-gradient(90deg, transparent, #c084fc, transparent);
-  animation: scan 2s linear infinite;
-}
-
-@keyframes scan {
-  0% { left: -100%; }
-  100% { left: 100%; }
-}
-
-.movie-card::before {
-  content: '';
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  bottom: -2px;
-  background: linear-gradient(45deg, #9333ea, #8b5cf6, #c084fc, #9333ea);
-  background-size: 400% 400%;
-  border-radius: 1rem;
-  opacity: 0;
-  z-index: -1;
-  transition: opacity 0.3s ease;
-  animation: gradient 3s ease infinite;
-}
-
-.movie-card:hover::before {
-  opacity: 0.7;
-}
-
-@keyframes gradient {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
 }
 </style>

@@ -1,6 +1,5 @@
 <template>
-  <div class="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-violet-900 text-slate-100 font-sans grid-bg">
-    <div class="absolute inset-0 bg-gradient-to-br from-purple-500/5 via-violet-500/5 to-fuchsia-500/5"></div>
+  <div class="min-h-screen font-sans">
     <Navbar v-if="!isAuthPage" />
     <main :class="['relative z-10', { 'pt-24': route.path !== '/' }]">
       <router-view />

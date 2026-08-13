@@ -3,24 +3,22 @@
 
 :root {
   font-family: 'Inter', system-ui, sans-serif;
-  color-scheme: dark;
-  background: linear-gradient(135deg, #1a0f2e 0%, #2d1b3d 50%, #3d2352 100%);
-  color: #e2e8f0;
+  color-scheme: light;
+  background: #f8f9fa;
+  color: #111827;
   min-height: 100vh;
 }
 
 body {
   margin: 0;
   min-height: 100vh;
-  background: linear-gradient(135deg, #1a0f2e 0%, #2d1b3d 50%, #3d2352 100%);
-  background-attachment: fixed;
+  background: #f8f9fa;
 }
 
 #app {
   width: 100%;
   min-height: 100vh;
-  background: linear-gradient(135deg, #1a0f2e 0%, #2d1b3d 50%, #3d2352 100%);
-  background-attachment: fixed;
+  background: #f8f9fa;
 }
 
 /* Futuristic glassmorphism card */

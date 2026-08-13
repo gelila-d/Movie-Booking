@@ -1,112 +1,75 @@
 <template>
-  <div class="container relative">
-    <!-- Hero section with futuristic styling -->
-    <div class="mb-12 relative">
-      <div class="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-cyan-500/10 rounded-3xl blur-xl"></div>
-      <div class="relative backdrop-blur-xl bg-slate-900/30 border border-blue-500/20 rounded-3xl p-8 mb-8">
-        <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
-          <div class="space-y-4">
-            <h1 class="neon-text text-4xl lg:text-5xl font-bold font-orbitron tracking-wider">
-              AVAILABLE MOVIES
-            </h1>
-            <p class="text-slate-300 text-lg font-light">
-              Experience cinema in a whole new dimension
-            </p>
-            <div class="flex items-center gap-4 text-sm text-slate-400 font-mono">
-              <div class="flex items-center gap-2">
-                <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                <span>{{ movies.length }} MOVIES ONLINE</span>
-              </div>
-              <div class="flex items-center gap-2">
-                <div class="w-2 h-2 bg-blue-400 rounded-full animate-pulse"></div>
-                <span>REAL-TIME BOOKING</span>
-              </div>
-            </div>
-          </div>
+  <div class="w-full max-w-7xl mx-auto px-6 py-10">
+    <!-- Header & Filter Bar -->
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 pb-6 border-b border-gray-200">
+      <div>
+        <div class="text-[#ef6a26] text-xs font-bold uppercase tracking-widest mb-1">Explore Cinema</div>
+        <h1 class="text-3xl lg:text-4xl font-extrabold text-gray-900 tracking-tight">
+          Now Showing & Featured Movies
+        </h1>
+      </div>
 
-          <!-- Futuristic search bar -->
-          <div class="w-full lg:w-96">
-            <div class="relative group">
-              <div class="absolute inset-0 bg-gradient-to-r from-blue-500/30 to-purple-500/30 rounded-xl blur opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <div class="relative flex items-center">
-                <div class="absolute left-4 text-blue-400 z-10">
-                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                  </svg>
-                </div>
-                <input 
-                  v-model="searchQuery" 
-                  type="text" 
-                  placeholder="SEARCH MOVIES..." 
-                  class="w-full pl-12 pr-4 py-3 bg-slate-800/50 border border-slate-600/50 rounded-xl text-slate-100 placeholder-slate-400 focus:border-blue-500/50 focus:bg-slate-800/70 transition-all duration-300 backdrop-blur-xl font-mono text-sm tracking-wide"
-                />
-                <div class="absolute right-3 opacity-50">
-                  <div class="w-1 h-4 bg-blue-400 animate-pulse"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+      <!-- Search Bar -->
+      <div class="relative w-full md:w-72 lg:w-80">
+        <input 
+          v-model="searchQuery" 
+          type="text" 
+          placeholder="Search movies by title or genre..." 
+          class="w-full bg-white border border-gray-300 rounded-full py-2.5 pl-4 pr-10 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#ef6a26] focus:ring-2 focus:ring-[#ef6a26]/20 transition-all shadow-sm"
+        />
+        <svg class="absolute right-3.5 top-3 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
       </div>
     </div>
 
-    <!-- Loading state -->
-    <div v-if="loading" class="flex justify-center py-20">
-      <div class="relative">
-        <div class="w-16 h-16 border-4 border-slate-700 border-t-blue-500 rounded-full animate-spin"></div>
-        <div class="absolute inset-0 w-16 h-16 border-4 border-transparent border-r-purple-500 rounded-full animate-spin" style="animation-direction: reverse; animation-duration: 1.5s;"></div>
-      </div>
+    <!-- Category Pills -->
+    <div class="flex items-center space-x-3 overflow-x-auto pb-4 mb-8 scrollbar-none">
+      <button 
+        v-for="category in categories" 
+        :key="category"
+        @click="selectedCategory = category"
+        :class="[
+          'px-5 py-2 rounded-full text-xs font-semibold uppercase tracking-wider transition-all whitespace-nowrap',
+          selectedCategory === category 
+            ? 'bg-[#ef6a26] text-white shadow-md shadow-[#ef6a26]/30' 
+            : 'bg-gray-200/70 text-gray-700 hover:bg-gray-300'
+        ]"
+      >
+        {{ category }}
+      </button>
     </div>
 
-    <!-- No movies found -->
-    <div v-else-if="filteredMovies.length === 0" class="relative">
-      <div class="absolute inset-0 bg-gradient-to-r from-red-500/10 to-orange-500/10 rounded-3xl blur-xl"></div>
-      <div class="relative card text-center py-20 bg-slate-800/30 border-dashed border-slate-600/50">
-        <div class="mb-6">
-          <div class="w-20 h-20 mx-auto bg-slate-700/50 rounded-full flex items-center justify-center mb-4">
-            <span class="text-3xl">🔍</span>
-          </div>
-          <p class="text-slate-300 text-lg font-mono">NO MOVIES FOUND</p>
-          <p class="text-slate-400 text-sm mt-2" v-if="searchQuery">
-            No results for "<span class="text-blue-400 font-mono">{{ searchQuery }}</span>"
-          </p>
-        </div>
-        <button 
-          v-if="searchQuery" 
-          @click="searchQuery = ''" 
-          class="btn-secondary px-6 py-2 mx-auto"
-        >
-          CLEAR SEARCH
-        </button>
-      </div>
+    <!-- Loading State -->
+    <div v-if="loading" class="flex flex-col items-center justify-center py-24 space-y-4">
+      <div class="w-12 h-12 border-4 border-gray-200 border-t-[#ef6a26] rounded-full animate-spin"></div>
+      <p class="text-sm font-medium text-gray-400 uppercase tracking-wider">Loading movies...</p>
     </div>
 
-    <!-- Movies grid -->
-    <div v-else class="relative">
-      <!-- Grid background effect -->
-      <div class="absolute inset-0 opacity-20 pointer-events-none">
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 h-full">
-          <div v-for="i in 6" :key="i" class="border border-blue-500/10 rounded-2xl"></div>
-        </div>
+    <!-- No Movies Found -->
+    <div v-else-if="filteredMovies.length === 0" class="text-center py-24 bg-white rounded-2xl border border-gray-200/80 shadow-sm">
+      <div class="w-16 h-16 mx-auto mb-4 rounded-full bg-gray-100 flex items-center justify-center text-gray-400">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+        </svg>
       </div>
-      
-      <div class="relative grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div 
-          v-for="(movie, index) in filteredMovies" 
-          :key="movie.id"
-          class="animate-float"
-          :style="{ animationDelay: `${index * 0.1}s` }"
-        >
-          <MovieCard :movie="movie" />
-        </div>
-      </div>
+      <h3 class="text-lg font-bold text-gray-800 mb-1">No movies found</h3>
+      <p class="text-gray-500 text-sm mb-4">We couldn't find any movies matching your search criteria.</p>
+      <button 
+        @click="resetFilters" 
+        class="bg-[#ef6a26] text-white text-xs font-bold uppercase tracking-wider px-6 py-2.5 rounded-full hover:bg-orange-600 transition-colors shadow-md"
+      >
+        Reset Filters
+      </button>
     </div>
 
-    <!-- Floating particles effect -->
-    <div class="fixed inset-0 pointer-events-none overflow-hidden z-0">
-      <div class="particle absolute w-1 h-1 bg-blue-400/30 rounded-full" style="left: 10%; top: 20%; animation: float 4s ease-in-out infinite;"></div>
-      <div class="particle absolute w-1 h-1 bg-purple-400/30 rounded-full" style="left: 80%; top: 60%; animation: float 5s ease-in-out infinite reverse;"></div>
-      <div class="particle absolute w-1 h-1 bg-cyan-400/30 rounded-full" style="left: 30%; top: 80%; animation: float 6s ease-in-out infinite;"></div>
+    <!-- Movies Grid -->
+    <div v-else class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4 sm:gap-5">
+      <MovieCard 
+        v-for="movie in filteredMovies" 
+        :key="movie.id"
+        :movie="movie" 
+      />
     </div>
   </div>
 </template>
@@ -119,15 +82,27 @@ import MovieCard from "../components/MovieCard.vue"
 const movies = ref([])
 const loading = ref(true)
 const searchQuery = ref("")
+const selectedCategory = ref("All")
+
+const categories = ["All", "Action", "Thriller", "Adventure", "Comedy", "Animation", "Sci-Fi"]
 
 const filteredMovies = computed(() => {
-    if (!searchQuery.value) return movies.value
-    const query = searchQuery.value.toLowerCase()
-    return movies.value.filter(movie => 
-        movie.title.toLowerCase().includes(query) || 
-        (movie.description && movie.description.toLowerCase().includes(query))
-    )
+    return movies.value.filter(movie => {
+        const matchesSearch = !searchQuery.value || 
+            movie.title.toLowerCase().includes(searchQuery.value.toLowerCase()) || 
+            (movie.description && movie.description.toLowerCase().includes(searchQuery.value.toLowerCase()));
+        
+        const matchesCategory = selectedCategory.value === "All" || 
+            (movie.genre && movie.genre.toLowerCase().includes(selectedCategory.value.toLowerCase()));
+
+        return matchesSearch && matchesCategory;
+    });
 })
+
+const resetFilters = () => {
+    searchQuery.value = "";
+    selectedCategory.value = "All";
+}
 
 const loadMovies = async () => {
     loading.value = true
