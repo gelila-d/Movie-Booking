@@ -10,57 +10,8 @@
     <div class="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-transparent"></div>
     <div class="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/80"></div>
 
-    <!-- Header / Navbar -->
-    <header class="relative z-10 flex items-center justify-between px-10 py-6">
-      <!-- Logo -->
-      <div class="flex items-center space-x-2">
-        <svg class="w-8 h-8 text-orange-500" viewBox="0 0 24 24" fill="currentColor">
-          <!-- Simple film reel icon to match 'aovis' logo -->
-          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z" />
-          <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2" stroke-dasharray="2 4"/>
-        </svg>
-        <span class="text-3xl font-bold tracking-tight">aovis</span>
-      </div>
-
-      <!-- Navigation Links -->
-      <nav class="hidden md:flex space-x-8 text-sm font-medium">
-        <router-link to="/" class="text-orange-500 flex items-center hover:text-orange-400 transition">
-          Home <span class="ml-1 text-[10px]">▼</span>
-        </router-link>
-        <router-link to="/movies" class="text-gray-300 flex items-center hover:text-white transition">
-          Movies <span class="ml-1 text-[10px]">▼</span>
-        </router-link>
-        <a href="#" class="text-gray-300 flex items-center hover:text-white transition">
-          Ticket <span class="ml-1 text-[10px]">▼</span>
-        </a>
-        <a href="#" class="text-gray-300 flex items-center hover:text-white transition">
-          Pages <span class="ml-1 text-[10px]">▼</span>
-        </a>
-        <a href="#" class="text-gray-300 flex items-center hover:text-white transition">
-          News <span class="ml-1 text-[10px]">▼</span>
-        </a>
-        <a href="#" class="text-gray-300 hover:text-white transition">
-          Contact
-        </a>
-      </nav>
-
-      <!-- Right Icons -->
-      <div class="flex items-center space-x-6">
-        <button class="text-white hover:text-orange-500 transition">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-          </svg>
-        </button>
-        <button class="text-white hover:text-orange-500 transition">
-          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
-          </svg>
-        </button>
-      </div>
-    </header>
-
     <!-- Main Content -->
-    <main class="relative z-10 flex flex-col h-full justify-center px-10 md:px-20 lg:px-32 -mt-16">
+    <main class="relative z-10 flex flex-col h-full justify-center px-10 md:px-20 lg:px-32">
       
       <!-- Top Subtitle -->
       <div class="mb-4 transform -rotate-2 origin-left">

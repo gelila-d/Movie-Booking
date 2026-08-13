@@ -1,75 +1,77 @@
 <template>
-  <nav class="relative backdrop-blur-xl bg-slate-900/70 border-b border-blue-500/20 px-6 py-4 flex justify-between items-center sticky top-0 z-50">
-    <div class="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-cyan-500/10"></div>
-    
-    <div class="relative flex items-center space-x-8">
-      <router-link to="/movies" class="neon-text text-2xl font-bold tracking-wider font-orbitron">
-        CINEMAX
+  <header :class="['w-full py-6 px-10 flex items-center justify-between z-50 transition-all duration-300', route.path === '/' ? 'absolute top-0 bg-transparent' : 'fixed top-0 bg-[#0f1014] shadow-md']">
+    <!-- Logo -->
+    <div class="flex items-center space-x-2">
+      <router-link to="/" class="flex items-center space-x-2 hover:opacity-80 transition">
+        <!-- Film Reel Icon mimicking the image -->
+        <svg class="w-8 h-8 text-[#ef6a26]" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+          <circle cx="12" cy="12" r="2.5"/>
+          <circle cx="12" cy="6.5" r="1.5"/>
+          <circle cx="17.23" cy="10.3" r="1.5"/>
+          <circle cx="15.23" cy="16.45" r="1.5"/>
+          <circle cx="8.77" cy="16.45" r="1.5"/>
+          <circle cx="6.77" cy="10.3" r="1.5"/>
+        </svg>
+        <span class="text-3xl font-bold tracking-tight text-white">aovis</span>
       </router-link>
-      <div class="hidden md:flex space-x-6">
-        <router-link 
-          to="/movies" 
-          class="nav-link text-slate-300 hover:text-blue-400 transition-all duration-300 text-sm font-medium relative" 
-          active-class="text-blue-400 nav-link-active"
-        >
-          MOVIES
-        </router-link>
-        <router-link 
-          v-if="user" 
-          to="/my-bookings" 
-          class="nav-link text-slate-300 hover:text-blue-400 transition-all duration-300 text-sm font-medium relative" 
-          active-class="text-blue-400 nav-link-active"
-        >
-          MY BOOKINGS
-        </router-link>
-        <router-link 
-          v-if="user?.is_admin" 
-          to="/admin/movies" 
-          class="nav-link text-slate-300 hover:text-blue-400 transition-all duration-300 text-sm font-medium relative" 
-          active-class="text-blue-400 nav-link-active"
-        >
-          ADMIN
-        </router-link>
-      </div>
     </div>
 
-    <div class="relative flex items-center space-x-4">
-      <template v-if="user">
-        <div class="hidden sm:flex items-center space-x-2 bg-slate-800/50 px-3 py-2 rounded-full border border-slate-600/50">
-          <div class="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-          <span class="text-sm text-slate-300">{{ user.name }}</span>
-        </div>
-        <button 
-          @click="logout" 
-          class="btn-secondary text-sm px-6 py-2 border border-red-500/50 hover:border-red-400 hover:bg-red-500/10 text-red-400 hover:text-red-300 transition-all duration-300"
-        >
-          LOGOUT
-        </button>
-      </template>
-      <template v-else>
-        <router-link 
-          to="/login" 
-          class="text-sm text-slate-300 hover:text-blue-400 transition-colors font-medium px-4 py-2 rounded-lg hover:bg-blue-500/10"
-        >
-          LOGIN
-        </router-link>
-        <router-link 
-          to="/register" 
-          class="btn-primary text-sm px-6 py-2 relative overflow-hidden"
-        >
-          REGISTER
-        </router-link>
-      </template>
+    <!-- Navigation Links -->
+    <nav class="hidden lg:flex items-center space-x-10 text-[15px] font-medium">
+      <router-link 
+        to="/" 
+        class="flex items-center transition" 
+        :class="[route.path === '/' ? 'text-[#ef6a26]' : 'text-white hover:text-[#ef6a26]']"
+      >
+        Home <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+      </router-link>
+      <router-link 
+        to="/movies" 
+        class="flex items-center transition" 
+        :class="[route.path.startsWith('/movies') ? 'text-[#ef6a26]' : 'text-white hover:text-[#ef6a26]']"
+      >
+        Movies <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+      </router-link>
+      <a href="#" class="text-white hover:text-[#ef6a26] flex items-center transition">
+        Ticket <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+      </a>
+      <a href="#" class="text-white hover:text-[#ef6a26] flex items-center transition">
+        Pages <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+      </a>
+      <a href="#" class="text-white hover:text-[#ef6a26] flex items-center transition">
+        News <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+      </a>
+      <a href="#" class="text-white hover:text-[#ef6a26] transition">
+        Contact
+      </a>
+    </nav>
+
+    <!-- Right Icons -->
+    <div class="flex items-center space-x-6 text-white">
+      <button class="hover:text-[#ef6a26] transition">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z"></path>
+        </svg>
+      </button>
+
+      <button @click="user ? logout() : router.push('/login')" class="hover:text-[#ef6a26] transition relative group" title="Account">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"></path>
+        </svg>
+        <span v-if="user" class="absolute -top-1 -right-1 w-2.5 h-2.5 bg-green-500 border-2 border-[#0f1014] rounded-full"></span>
+      </button>
     </div>
-  </nav>
+  </header>
 </template>
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { useRouter } from "vue-router";
+import { useRouter, useRoute } from "vue-router";
 import api from "../services/api";
 
 const router = useRouter();
+const route = useRoute();
 
 const getUserFromStorage = () => {
     try {
@@ -110,25 +112,3 @@ onMounted(() => {
     }, 1000);
 });
 </script>
-
-<style scoped>
-.nav-link::after {
-  content: '';
-  position: absolute;
-  bottom: -4px;
-  left: 0;
-  width: 0;
-  height: 2px;
-  background: linear-gradient(90deg, #3b82f6, #06b6d4);
-  transition: width 0.3s ease;
-}
-
-.nav-link:hover::after,
-.nav-link-active::after {
-  width: 100%;
-}
-
-.font-orbitron {
-  font-family: 'Orbitron', monospace;
-}
-</style>
