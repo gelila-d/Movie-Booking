@@ -1,15 +1,14 @@
 <template>
   <div class="movie-card flex flex-col h-[500px] rounded-2xl overflow-hidden relative group transition-all duration-500 hover:scale-105">
     <!-- Holographic border effect -->
-    <div class="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500/30 via-purple-500/30 to-cyan-500/30 p-[2px] group-hover:from-blue-400 group-hover:via-purple-400 group-hover:to-cyan-400 transition-all duration-500">
-      <div class="h-full w-full rounded-2xl bg-slate-900/90 backdrop-blur-xl border border-slate-700/50 group-hover:border-blue-500/50 transition-all duration-500"></div>
+    <div class="absolute inset-0 rounded-2xl bg-gradient-to-r from-purple-500/30 via-violet-500/30 to-fuchsia-500/30 p-[2px] group-hover:from-purple-400 group-hover:via-violet-400 group-hover:to-fuchsia-400 transition-all duration-500">
+      <div class="h-full w-full rounded-2xl bg-slate-900/90 backdrop-blur-xl border border-slate-700/50 group-hover:border-purple-500/50 transition-all duration-500"></div>
     </div>
     
     <!-- Image Background -->
     <div v-if="movie.image" class="absolute inset-[2px] w-[calc(100%-4px)] h-[calc(100%-4px)] z-0 overflow-hidden rounded-2xl">
-      <img :src="getImageUrl(movie.image)" alt="Movie Poster" class="w-full h-full object-cover opacity-40 group-hover:opacity-60 group-hover:scale-110 transition-all duration-700 ease-out" />
-      <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/70 to-transparent"></div>
-      <div class="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-cyan-500/10"></div>
+      <img :src="getImageUrl(movie.image)" alt="Movie Poster" class="w-full h-full object-cover opacity-85 group-hover:opacity-95 group-hover:scale-110 transition-all duration-700 ease-out" />
+      <div class="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/30 to-transparent"></div>
     </div>
     
     <div v-else class="absolute inset-[2px] w-[calc(100%-4px)] h-[calc(100%-4px)] z-0 flex items-center justify-center bg-slate-800/90 rounded-2xl">
@@ -35,7 +34,7 @@
       </div>
 
       <div class="space-y-4">
-        <h3 class="text-2xl font-bold text-white group-hover:text-blue-300 transition-colors duration-300 font-orbitron">
+        <h3 class="text-2xl font-bold text-white group-hover:text-purple-300 transition-colors duration-300 font-orbitron">
           {{ movie.title.toUpperCase() }}
         </h3>
         
@@ -44,7 +43,7 @@
         <!-- Movie info with futuristic styling -->
         <div class="space-y-2 text-sm">
           <div class="flex items-center gap-3 text-slate-400">
-            <div class="w-1 h-1 bg-blue-400 rounded-full animate-pulse"></div>
+            <div class="w-1 h-1 bg-purple-400 rounded-full animate-pulse"></div>
             <span class="font-mono">{{ movie.show_time ? new Date(movie.show_time).toLocaleString(undefined, {dateStyle: 'medium', timeStyle: 'short'}) : 'TBD' }}</span>
           </div>
           <div class="flex items-center gap-3 text-slate-400">
@@ -100,7 +99,7 @@ const getImageUrl = (path) => {
   left: -100%;
   width: 100%;
   height: 2px;
-  background: linear-gradient(90deg, transparent, #00d4ff, transparent);
+  background: linear-gradient(90deg, transparent, #c084fc, transparent);
   animation: scan 2s linear infinite;
 }
 
@@ -116,7 +115,7 @@ const getImageUrl = (path) => {
   left: -2px;
   right: -2px;
   bottom: -2px;
-  background: linear-gradient(45deg, #3b82f6, #8b5cf6, #06b6d4, #3b82f6);
+  background: linear-gradient(45deg, #9333ea, #8b5cf6, #c084fc, #9333ea);
   background-size: 400% 400%;
   border-radius: 1rem;
   opacity: 0;
