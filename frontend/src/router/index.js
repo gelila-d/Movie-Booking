@@ -5,9 +5,10 @@ import Movies from "../pages/Movies.vue";
 import MovieDetails from "../pages/MovieDetails.vue";
 import MyBookings from "../pages/MyBookings.vue";
 import AdminMovies from "../pages/AdminMovies.vue";
+import Home from "../pages/Home.vue";
 
 const routes = [
-  { path: "/", redirect: "/movies" },
+  { path: "/", component: Home },
   { path: "/login", component: Login, meta: { guest: true } },
   { path: "/register", component: Register, meta: { guest: true } },
   { path: "/movies", component: Movies },
