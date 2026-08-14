@@ -17,12 +17,7 @@ foreach (User::all() as $user) {
     echo "- ID: {$user->id}, Name: {$user->name}, Email: {$user->email}, Is Admin: " . ($user->is_admin ? 'Yes' : 'No') . "\n";
 }
 
-if (Movie::count() > 0) {
-    echo "First Movie: " . Movie::first()->title . "\n";
-}
-if (Booking::count() > 0) {
-    echo "Bookings:\n";
-    foreach (Booking::all() as $booking) {
-        echo "- ID: {$booking->id}, User ID: {$booking->user_id}, Movie ID: {$booking->movie_id}, Seats: {$booking->seats_booked}\n";
-    }
+echo "Movies:\n";
+foreach (Movie::all() as $movie) {
+    echo "- ID: {$movie->id}, Title: {$movie->title}, Description: {$movie->description}, Image: {$movie->image}, ShowTime: {$movie->show_time}\n";
 }

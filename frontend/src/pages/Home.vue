@@ -1,132 +1,169 @@
 <template>
-  <div class="relative w-full min-h-screen bg-black text-white font-sans overflow-x-hidden flex flex-col justify-between pt-20">
-    <!-- Background Image -->
+  <div 
+    class="relative w-full min-h-[110vh] md:min-h-[115vh] bg-black text-white font-sans overflow-x-hidden flex flex-col justify-between pt-20 select-none"
+    @mouseenter="pauseAutoPlay"
+    @mouseleave="startAutoPlay"
+  >
+    <!-- Background Image Slides with Smooth Crossfade (Full Page Cover) -->
     <div 
-      class="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-85 pointer-events-none z-0"
-      style="background-image: url('/bg-skull.png');"
+      v-for="(trailer, index) in trailers" 
+      :key="trailer.id || index"
+      class="absolute inset-0 bg-cover bg-center bg-no-repeat transition-all duration-1000 ease-in-out pointer-events-none z-0 transform"
+      :class="index === currentIndex ? 'opacity-100 scale-100' : 'opacity-0 scale-105'"
+      :style="{ backgroundImage: `url('${trailer.bgImage}')` }"
     ></div>
     
-    <!-- Gradient Overlays for Cinematic Look & Readability -->
-    <div class="absolute inset-0 bg-gradient-to-r from-black/90 via-black/50 to-transparent pointer-events-none z-0"></div>
-    <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-transparent to-black/90 pointer-events-none z-0"></div>
+    <!-- Subtle Gradient Overlay for Text Readability Only -->
+    <div class="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-transparent pointer-events-none z-0"></div>
 
     <!-- Main Hero Body -->
-    <div class="relative z-10 flex-1 flex flex-col justify-between px-8 md:px-16 lg:px-24 py-12">
+    <div class="relative z-10 flex-1 flex flex-col justify-between px-8 md:px-16 lg:px-24 py-16 md:py-24 lg:py-28">
       
       <!-- Top/Middle Left Text Content -->
-      <div class="max-w-3xl my-auto">
-        <!-- Subtitle -->
-        <div class="mb-3 transform -rotate-2 origin-left">
-          <span class="font-caveat text-5xl md:text-6xl text-[#ef6a26]">Action Movie</span>
+      <transition name="fade-slide" mode="out-in">
+        <div :key="currentTrailer.id || currentIndex" class="max-w-3xl my-auto">
+          <!-- Subtitle -->
+          <div class="mb-2 transform -rotate-2 origin-left">
+            <span class="font-caveat text-3xl md:text-4xl text-[#ef6a26] drop-shadow-md">{{ currentTrailer.subtitle }}</span>
+          </div>
+
+          <!-- Main Title -->
+          <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold leading-tight tracking-tight mb-4 text-white drop-shadow-xl whitespace-pre-line">
+            {{ currentTrailer.title }}
+          </h1>
+
+          <!-- Director Info -->
+          <p class="mt-6 text-gray-300 text-base md:text-lg font-light tracking-wide max-w-2xl line-clamp-2">
+            {{ currentTrailer.director }}
+          </p>
+
+          <!-- CTA Buttons -->
+          <div class="mt-8 flex flex-wrap items-center gap-4">
+            <router-link 
+              :to="currentTrailer.link || '/movies'" 
+              class="bg-white hover:bg-gray-100 text-black font-bold text-sm px-9 py-4 uppercase tracking-wider transition-all duration-300 shadow-xl hover:shadow-2xl hover:-translate-y-0.5"
+            >
+              More Info
+            </router-link>
+            <router-link 
+              :to="currentTrailer.ticketLink || '/movies'" 
+              class="bg-[#ef6a26] hover:bg-orange-600 text-white font-bold text-sm px-9 py-4 uppercase tracking-wider transition-all duration-300 shadow-xl hover:shadow-2xl hover:-translate-y-0.5"
+            >
+              Get Ticket
+            </router-link>
+            <button
+              @click="openTrailerModal(currentTrailer)"
+              class="border border-white/40 hover:border-white bg-black/40 hover:bg-black/70 text-white font-bold text-sm px-7 py-4 uppercase tracking-wider transition-all duration-300 backdrop-blur-sm flex items-center gap-2"
+            >
+              <svg class="w-4 h-4 fill-current text-[#ef6a26]" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+              Watch Trailer
+            </button>
+          </div>
         </div>
+      </transition>
 
-        <!-- Main Title -->
-        <h1 class="text-6xl md:text-8xl lg:text-[105px] font-extrabold leading-[0.95] tracking-tight mb-4 text-white">
-          The Witcher<br/>Season 2
-        </h1>
-
-        <!-- Director Info -->
-        <p class="mt-6 text-gray-300 text-base md:text-lg font-light tracking-wide">
-          Writen and Directed by Aleesha Rose / Ireland 2023
-        </p>
-
-        <!-- CTA Buttons -->
-        <div class="mt-8 flex flex-wrap items-center gap-4">
-          <router-link 
-            to="/movies" 
-            class="bg-white hover:bg-gray-100 text-black font-bold text-sm px-9 py-4 uppercase tracking-wider transition-colors shadow-xl"
-          >
-            More Info
-          </router-link>
-          <router-link 
-            to="/movies" 
-            class="bg-[#ef6a26] hover:bg-orange-600 text-white font-bold text-sm px-9 py-4 uppercase tracking-wider transition-colors shadow-xl"
-          >
-            Get Ticket
-          </router-link>
+      <!-- Right Release Date Box -->
+      <transition name="fade" mode="out-in">
+        <div :key="currentTrailer.id || currentIndex" class="absolute right-8 md:right-16 lg:right-24 top-28 flex flex-col items-end hidden sm:flex">
+          <span class="text-gray-300 text-xs md:text-sm tracking-widest uppercase mb-1">In theater</span>
+          <div class="relative">
+            <span class="text-3xl md:text-5xl font-extrabold text-white">{{ currentTrailer.releaseDate }}</span>
+            <!-- Hand-drawn Orange Underline -->
+            <svg class="absolute -bottom-3 left-0 w-full h-3 text-[#ef6a26]" viewBox="0 0 100 10" preserveAspectRatio="none">
+              <path d="M0 5 Q 50 10 100 5 Q 50 0 0 5 Z" fill="currentColor"/>
+            </svg>
+          </div>
         </div>
-      </div>
-
-      <!-- Right Release Date Box (In theater March 2023) -->
-      <div class="absolute right-8 md:right-16 lg:right-24 top-28 flex flex-col items-end hidden sm:flex">
-        <span class="text-gray-300 text-xs md:text-sm tracking-widest uppercase mb-1">In theater</span>
-        <div class="relative">
-          <span class="text-3xl md:text-5xl font-extrabold text-white">March 2023</span>
-          <!-- Hand-drawn Orange Underline -->
-          <svg class="absolute -bottom-3 left-0 w-full h-3 text-[#ef6a26]" viewBox="0 0 100 10" preserveAspectRatio="none">
-            <path d="M0 5 Q 50 10 100 5 Q 50 0 0 5 Z" fill="currentColor"/>
-          </svg>
-        </div>
-      </div>
+      </transition>
 
       <!-- Bottom Right Trailers Section -->
-      <div class="relative mt-12 self-end w-full lg:w-auto">
-        <div class="bg-[#0b0c10]/85 backdrop-blur-md border-t border-l border-gray-800/80 p-6 md:p-8 flex flex-col sm:flex-row items-start sm:items-center gap-6">
+      <div class="relative mt-8 self-end w-full lg:w-auto">
+        <div class="bg-transparent p-0 md:p-2 flex items-start space-x-5">
           
-          <!-- Hand-drawn Arrow & Label -->
-          <div class="flex items-center space-x-3">
-            <!-- Curly Hand-drawn Arrow -->
-            <svg class="w-10 h-10 text-white stroke-current fill-none transform -rotate-12" viewBox="0 0 50 50">
-              <path d="M 10 10 Q 30 5 35 25 T 20 40 Q 35 38 40 32" stroke-width="2.5" stroke-linecap="round"/>
-              <path d="M 32 30 L 40 32 L 38 40" stroke-width="2.5" stroke-linecap="round"/>
-            </svg>
+          <!-- Curly Hand-drawn Arrow (Matching reference image) -->
+          <svg class="w-12 h-16 text-white stroke-current fill-none shrink-0 transform -rotate-6 mt-1" viewBox="0 0 50 60">
+            <path d="M 25 5 C 10 15, 10 32, 28 30 C 40 28, 42 12, 24 10 C 10 8, 12 40, 28 52" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M 20 44 L 28 52 L 32 42" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
 
-            <div class="flex flex-col">
-              <div class="flex items-center justify-between w-full space-x-6">
-                <span class="text-lg font-semibold text-white tracking-wide">Trailers</span>
-                <!-- Pagination Dots -->
-                <div class="flex items-center space-x-1.5 text-xs text-gray-500">
-                  <span class="w-1.5 h-1.5 rounded-full bg-white"></span>
-                  <span class="w-1.5 h-1.5 rounded-full bg-gray-600"></span>
-                  <span class="w-1.5 h-1.5 rounded-full bg-gray-600"></span>
+          <!-- Main Trailers Container -->
+          <div class="flex flex-col space-y-4">
+            
+            <!-- Top Header Row: "Trailers" text on left, 3 Dots on right -->
+            <div class="flex items-center justify-between w-full">
+              <span class="text-xl font-normal text-white tracking-wide font-sans">Trailers</span>
+              
+              <!-- 3 Pagination Dots (Exactly 3 dots) -->
+              <div class="flex items-center space-x-2">
+                <span 
+                  v-for="(t, idx) in trailers.slice(0, 3)" 
+                  :key="t.id || idx"
+                  @click="selectSlide(idx)"
+                  :class="[
+                    'w-2.5 h-2.5 rounded-full cursor-pointer transition-all duration-300', 
+                    idx === currentIndex ? 'bg-white' : 'bg-gray-500/70 hover:bg-gray-400'
+                  ]"
+                ></span>
+              </div>
+            </div>
+
+            <!-- Video Thumbnails Grid (First 3 only) -->
+            <div class="flex items-center space-x-4 sm:space-x-5">
+              <div 
+                v-for="(trailer, idx) in trailers.slice(0, 3)" 
+                :key="trailer.id || idx"
+                @click="selectSlide(idx)"
+                :class="[
+                  'relative w-44 sm:w-52 md:w-60 h-24 sm:h-28 md:h-32 overflow-hidden group cursor-pointer shrink-0 transition-all duration-300',
+                  idx === currentIndex 
+                    ? 'border-2 border-[#ef6a26]' 
+                    : 'border-2 border-white'
+                ]"
+              >
+                <!-- Thumbnail Image -->
+                <img :src="trailer.bgImage" :alt="trailer.title" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
+                <div class="absolute inset-0 bg-black/20 group-hover:bg-black/10 transition-colors"></div>
+                
+                <!-- Center Circular Play Button -->
+                <div class="absolute inset-0 flex items-center justify-center">
+                  <div 
+                    @click.stop="openTrailerModal(trailer)"
+                    class="w-10 h-10 rounded-full bg-white text-black flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform"
+                    title="Play Trailer"
+                  >
+                    <svg class="w-5 h-5 fill-current text-black translate-x-0.5" viewBox="0 0 24 24">
+                      <path d="M8 5v14l11-7z"/>
+                    </svg>
+                  </div>
                 </div>
               </div>
             </div>
+
           </div>
 
-          <!-- Video Thumbnails List -->
-          <div class="flex items-center space-x-4">
-            <!-- Thumbnail 1 (Active) -->
-            <div class="relative w-36 md:w-44 h-24 border-2 border-[#ef6a26] overflow-hidden group cursor-pointer shadow-lg">
-              <img src="/bg-skull.png" alt="Trailer 1" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-              <div class="absolute inset-0 bg-black/30 group-hover:bg-black/10 transition-colors"></div>
-              <div class="absolute inset-0 flex items-center justify-center">
-                <div class="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center shadow-md transform group-hover:scale-110 transition-transform">
-                  <svg class="w-4 h-4 fill-current translate-x-0.5" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z"/>
-                  </svg>
-                </div>
-              </div>
-            </div>
-
-            <!-- Thumbnail 2 -->
-            <div class="relative w-36 md:w-44 h-24 border border-white/80 overflow-hidden group cursor-pointer shadow-lg">
-              <img src="/bg-dandelion.png" alt="Trailer 2" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
-              <div class="absolute inset-0 bg-black/40 group-hover:bg-black/10 transition-colors"></div>
-              <div class="absolute inset-0 flex items-center justify-center">
-                <div class="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center shadow-md transform group-hover:scale-110 transition-transform">
-                  <svg class="w-4 h-4 fill-current translate-x-0.5" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z"/>
-                  </svg>
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
 
     </div>
 
-    <!-- Floating Right Sidebar Widget (Hexagon Tab) -->
-    <div class="fixed right-0 top-1/2 transform -translate-y-1/2 bg-white rounded-l-full p-3 cursor-pointer hover:bg-gray-100 transition shadow-2xl z-30 hidden lg:block">
-      <svg class="w-5 h-5 text-[#ef6a26]" fill="currentColor" viewBox="0 0 24 24">
+    <!-- Floating Right Sidebar Widget (Hexagon Tab matching screenshot) -->
+    <div 
+      @click="nextSlide"
+      class="fixed right-0 top-1/2 transform -translate-y-1/2 bg-white rounded-l-full px-3 py-4 cursor-pointer hover:bg-gray-100 transition shadow-2xl z-30 hidden lg:flex items-center justify-center"
+      title="Next Slide"
+    >
+      <svg class="w-6 h-6 text-[#106eba]" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
         <path d="M12 2L22 7.77V16.23L12 22L2 16.23V7.77L12 2Z"/>
       </svg>
     </div>
 
-    <!-- Floating Refresh Icon Widget (Bottom Right) -->
-    <div class="fixed bottom-12 right-6 bg-white p-3 rounded-md cursor-pointer hover:bg-gray-100 transition shadow-2xl z-30 hidden md:block">
-      <svg class="w-6 h-6 text-[#ef6a26]" fill="currentColor" viewBox="0 0 24 24">
+    <!-- Floating Refresh Icon Widget (Bottom Right - Cycle Slide) -->
+    <div 
+      @click="nextSlide"
+      class="fixed bottom-12 right-6 bg-white/90 hover:bg-white p-3.5 rounded-full cursor-pointer hover:scale-110 transition-all duration-300 shadow-2xl z-30 hidden md:block group"
+      title="Next Trailer Slide"
+    >
+      <svg class="w-6 h-6 text-[#ef6a26] group-hover:rotate-180 transition-transform duration-700" fill="currentColor" viewBox="0 0 24 24">
         <path d="M17.65 6.35C16.2 4.9 14.21 4 12 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08c-.82 2.33-3.04 4-5.65 4-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/>
       </svg>
     </div>
@@ -137,15 +174,230 @@
         <div v-for="i in 60" :key="i" class="w-3.5 h-3.5 bg-black shrink-0"></div>
       </div>
     </div>
+
+    <!-- Trailer Video Modal -->
+    <Teleport to="body">
+      <div 
+        v-if="activeModalTrailer" 
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md animate-fade-in"
+        @click.self="closeTrailerModal"
+      >
+        <div class="relative w-full max-w-4xl bg-slate-900 rounded-2xl border border-gray-800 overflow-hidden shadow-2xl">
+          <!-- Modal Header -->
+          <div class="flex items-center justify-between p-4 border-b border-gray-800 bg-black/40">
+            <div>
+              <span class="text-[#ef6a26] text-xs font-bold uppercase tracking-widest">{{ activeModalTrailer.subtitle }}</span>
+              <h3 class="text-xl font-bold text-white">{{ activeModalTrailer.title }}</h3>
+            </div>
+            <button @click="closeTrailerModal" class="text-gray-400 hover:text-white p-2 rounded-full hover:bg-gray-800 transition">
+              <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+          <!-- Video Frame or Featured Backdrop Image -->
+          <div class="relative aspect-video w-full bg-black flex items-center justify-center">
+            <iframe 
+              v-if="activeModalTrailer.videoEmbed"
+              :src="activeModalTrailer.videoEmbed"
+              class="w-full h-full border-0"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowfullscreen
+            ></iframe>
+            <div v-else class="relative w-full h-full flex items-center justify-center">
+              <img :src="activeModalTrailer.bgImage" class="w-full h-full object-cover opacity-60" />
+              <div class="absolute inset-0 bg-gradient-to-t from-black via-black/40 to-transparent flex flex-col items-center justify-center p-6 text-center">
+                <div class="w-16 h-16 rounded-full bg-[#ef6a26] text-white flex items-center justify-center mb-4 shadow-lg animate-bounce">
+                  <svg class="w-8 h-8 fill-current translate-x-1" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                </div>
+                <h4 class="text-2xl font-bold text-white mb-2">{{ activeModalTrailer.title }}</h4>
+                <p class="text-sm text-gray-300 max-w-lg mb-6">{{ activeModalTrailer.director }}</p>
+                <router-link 
+                  :to="activeModalTrailer.ticketLink || '/movies'"
+                  @click="closeTrailerModal"
+                  class="bg-[#ef6a26] hover:bg-orange-600 text-white font-bold text-sm px-8 py-3 uppercase tracking-wider transition-colors rounded-full shadow-lg"
+                >
+                  Book Tickets Now
+                </router-link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Teleport>
   </div>
 </template>
 
 <script setup>
-// Full Homepage Hero Component matching exact reference photos
+import { ref, computed, onMounted, onUnmounted } from 'vue'
+import api from '../services/api'
+
+// Featured Default Slides (3 distinct items)
+const defaultTrailers = [
+  {
+    id: 'dandelion',
+    title: 'Dandelion &\nThe Wild',
+    subtitle: 'Fantasy Adventure',
+    director: 'Written and Directed by Marcus Vance / UK 2024',
+    releaseDate: 'April 2024',
+    bgImage: '/bg-dandelion.png',
+    link: '/movies',
+    ticketLink: '/movies',
+    videoEmbed: 'https://www.youtube.com/embed/d9MyW72ELq0?autoplay=1'
+  },
+  {
+    id: 'witcher',
+    title: 'The Witcher\nSeason 2',
+    subtitle: 'Action Movie',
+    director: 'Written and Directed by Aleesha Rose / Ireland 2023',
+    releaseDate: 'March 2023',
+    bgImage: '/bg-skull.png',
+    link: '/movies',
+    ticketLink: '/movies',
+    videoEmbed: 'https://www.youtube.com/embed/TJFYIom53hU?autoplay=1'
+  },
+  {
+    id: 'avatar',
+    title: 'Avatar: The Way\nof Water',
+    subtitle: 'Sci-Fi Epic',
+    director: 'Written and Directed by James Cameron / USA 2023',
+    releaseDate: 'Dec 2022',
+    bgImage: 'http://localhost:8000/storage/movies/XOP0koOlpALsrf2OJFhfSu79DMYpLEwHLBLMiciy.jpg',
+    link: '/movies/5',
+    ticketLink: '/movies/5',
+    videoEmbed: null
+  }
+]
+
+const trailers = ref(defaultTrailers.slice(0, 3))
+const currentIndex = ref(0)
+const activeModalTrailer = ref(null)
+let autoPlayTimer = null
+
+const currentTrailer = computed(() => {
+  return trailers.value[currentIndex.value] || defaultTrailers[0]
+})
+
+const getImageUrl = (path) => {
+  if (!path) return '/bg-skull.png'
+  if (path.startsWith('http') || path.startsWith('/')) return path
+  return `http://localhost:8000/storage/${path}`
+}
+
+const fetchMoviesForTrailers = async () => {
+  try {
+    const res = await api.get('/movies')
+    if (res.data && res.data.length > 0) {
+      const apiMovieTrailers = res.data.map(movie => ({
+        id: movie.id,
+        title: movie.title,
+        subtitle: 'Now Showing',
+        director: movie.description ? movie.description : `Showtime: ${new Date(movie.show_time).toLocaleString()}`,
+        releaseDate: movie.show_time ? new Date(movie.show_time).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'March 2026',
+        bgImage: getImageUrl(movie.image),
+        link: `/movies/${movie.id}`,
+        ticketLink: `/movies/${movie.id}`,
+        videoEmbed: null
+      }))
+      
+      // Ensure strictly unique background images across all 3 trailer items
+      const uniqueList = []
+      const usedImages = new Set()
+      
+      const candidates = [...defaultTrailers, ...apiMovieTrailers]
+      for (const item of candidates) {
+        if (!usedImages.has(item.bgImage)) {
+          usedImages.add(item.bgImage)
+          uniqueList.push(item)
+        }
+        if (uniqueList.length >= 3) break
+      }
+      
+      trailers.value = uniqueList.slice(0, 3)
+    } else {
+      trailers.value = defaultTrailers.slice(0, 3)
+    }
+  } catch (err) {
+    console.error('Failed to load movies for homepage trailers:', err)
+    trailers.value = defaultTrailers.slice(0, 3)
+  }
+}
+
+const selectSlide = (index) => {
+  currentIndex.value = index
+}
+
+const nextSlide = () => {
+  currentIndex.value = (currentIndex.value + 1) % trailers.value.length
+}
+
+const prevSlide = () => {
+  currentIndex.value = (currentIndex.value - 1 + trailers.value.length) % trailers.value.length
+}
+
+const startAutoPlay = () => {
+  stopAutoPlay()
+  autoPlayTimer = setInterval(() => {
+    nextSlide()
+  }, 6000)
+}
+
+const pauseAutoPlay = () => {
+  stopAutoPlay()
+}
+
+const stopAutoPlay = () => {
+  if (autoPlayTimer) {
+    clearInterval(autoPlayTimer)
+    autoPlayTimer = null
+  }
+}
+
+const openTrailerModal = (trailer) => {
+  activeModalTrailer.value = trailer
+}
+
+const closeTrailerModal = () => {
+  activeModalTrailer.value = null
+}
+
+onMounted(() => {
+  fetchMoviesForTrailers()
+  startAutoPlay()
+})
+
+onUnmounted(() => {
+  stopAutoPlay()
+})
 </script>
 
 <style scoped>
 .font-caveat {
   font-family: 'Caveat', cursive;
+}
+
+.fade-slide-enter-active,
+.fade-slide-leave-active {
+  transition: all 0.5s ease-out;
+}
+
+.fade-slide-enter-from {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.fade-slide-leave-to {
+  opacity: 0;
+  transform: translateY(-20px);
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.4s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

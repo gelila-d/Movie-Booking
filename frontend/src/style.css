@@ -200,20 +200,14 @@ textarea:focus {
   background-size: 50px 50px;
 }
 
-/* Scrollbar styling */
+/* Scrollbar styling - Hidden / Clean */
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 0px;
+  height: 0px;
+  display: none;
 }
 
-::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
-}
-
-::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #9333ea, #6b21a8);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, #6b21a8, #581c87);
+html, body {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
 }

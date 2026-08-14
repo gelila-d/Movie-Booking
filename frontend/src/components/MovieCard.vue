@@ -49,7 +49,7 @@
       </div>
 
       <!-- Title -->
-      <h3 class="text-sm sm:text-base font-bold mb-2.5 leading-snug tracking-tight group-hover:text-[#ef6a26] transition-colors duration-300 line-clamp-2">
+      <h3 class="text-xs sm:text-sm font-semibold mb-2.5 leading-snug tracking-tight group-hover:text-[#ef6a26] transition-colors duration-300 line-clamp-2">
         {{ movie.title }}
       </h3>
 

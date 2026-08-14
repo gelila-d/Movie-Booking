@@ -61,7 +61,7 @@
             <!-- Movie info -->
             <div class="space-y-6">
               <div>
-                <h1 class="neon-text text-4xl font-bold font-orbitron tracking-wider mb-4">
+                <h1 class="neon-text text-2xl sm:text-3xl font-semibold font-orbitron tracking-wider mb-4">
                   {{ movie.title.toUpperCase() }}
                 </h1>
                 <!-- Enhanced description visibility -->
