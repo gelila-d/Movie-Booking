@@ -2,8 +2,8 @@
   <div class="container mx-auto px-4 py-8 max-w-4xl">
     <div v-if="loading" class="flex justify-center py-20">
       <div class="relative">
-        <div class="w-16 h-16 border-4 border-slate-700 border-t-purple-500 rounded-full animate-spin"></div>
-        <div class="absolute inset-0 w-16 h-16 border-4 border-transparent border-r-violet-500 rounded-full animate-spin" style="animation-direction: reverse; animation-duration: 1.5s;"></div>
+        <div class="w-16 h-16 border-4 border-slate-700 border-t-[#ef6a26] rounded-full animate-spin"></div>
+        <div class="absolute inset-0 w-16 h-16 border-4 border-transparent border-r-orange-500 rounded-full animate-spin" style="animation-direction: reverse; animation-duration: 1.5s;"></div>
       </div>
     </div>
 
@@ -11,7 +11,7 @@
       <!-- Back button -->
       <router-link 
         to="/movies" 
-        class="inline-flex items-center gap-2 text-purple-400 hover:text-purple-300 transition-colors text-sm font-medium group"
+        class="inline-flex items-center gap-2 text-[#ef6a26] hover:text-orange-400 transition-colors text-sm font-medium group"
       >
         <svg class="w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
@@ -22,7 +22,7 @@
       <!-- Movie details card -->
       <div class="relative">
         <!-- Holographic border effect -->
-        <div class="absolute inset-0 rounded-3xl bg-gradient-to-r from-purple-500/30 via-violet-500/30 to-fuchsia-500/30 p-[2px]">
+        <div class="absolute inset-0 rounded-3xl bg-gradient-to-r from-orange-500/30 via-amber-500/30 to-orange-500/30 p-[2px]">
           <div class="h-full w-full rounded-3xl bg-slate-900/90 backdrop-blur-xl"></div>
         </div>
         
@@ -74,10 +74,10 @@
 
               <!-- Movie details with futuristic styling -->
               <div class="grid grid-cols-2 gap-6">
-                <div class="bg-slate-800/20 border border-purple-500/20 rounded-xl p-4 backdrop-blur-sm">
-                  <p class="text-purple-400 text-xs uppercase font-bold tracking-wider mb-2 font-mono">Show Time</p>
+                <div class="bg-slate-800/20 border border-[#ef6a26]/20 rounded-xl p-4 backdrop-blur-sm">
+                  <p class="text-[#ef6a26] text-xs uppercase font-bold tracking-wider mb-2 font-mono">Show Time</p>
                   <div class="flex items-center gap-2">
-                    <div class="w-2 h-2 bg-purple-400 rounded-full animate-pulse"></div>
+                    <div class="w-2 h-2 bg-[#ef6a26] rounded-full animate-pulse"></div>
                     <p class="text-slate-200 font-medium font-mono text-sm">
                       {{ movie.show_time ? new Date(movie.show_time).toLocaleString() : 'TBD' }}
                     </p>
@@ -99,7 +99,7 @@
 
           <!-- Booking section -->
           <div class="border-t border-slate-700/50 p-8 bg-slate-800/10">
-            <h2 class="text-2xl font-bold text-purple-300 mb-6 font-orbitron tracking-wide">
+            <h2 class="text-2xl font-bold text-[#ef6a26] mb-6 font-orbitron tracking-wide">
               BOOK YOUR TICKETS
             </h2>
             <BookingForm 
