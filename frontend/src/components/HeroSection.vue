@@ -1,6 +1,6 @@
 <template>
   <div 
-    class="relative w-full min-h-[110vh] md:min-h-[115vh] bg-black text-white font-sans overflow-x-hidden flex flex-col justify-between pt-20 select-none"
+    class="relative w-full min-h-[100vh] bg-black text-white font-sans overflow-hidden flex flex-col justify-between pt-20 select-none"
     @mouseenter="pauseAutoPlay"
     @mouseleave="startAutoPlay"
   >
@@ -17,56 +17,58 @@
     <div class="absolute inset-0 bg-gradient-to-r from-black/50 via-transparent to-transparent pointer-events-none z-0"></div>
 
     <!-- Main Hero Body -->
-    <div class="relative z-10 flex-1 flex flex-col justify-between px-8 md:px-16 lg:px-24 py-16 md:py-24 lg:py-28">
+    <div class="relative z-10 flex-1 flex flex-col justify-between px-8 md:px-16 lg:px-24 py-12 md:py-20 lg:py-24">
       
-      <!-- Top/Middle Left Text Content -->
-      <transition name="fade-slide" mode="out-in">
-        <div :key="currentTrailer.id || currentIndex" class="max-w-3xl my-auto">
-          <!-- Subtitle -->
-          <div class="mb-2 transform -rotate-2 origin-left">
-            <span class="font-caveat text-3xl md:text-4xl text-[#ef6a26] drop-shadow-md">{{ currentTrailer.subtitle }}</span>
+      <!-- Top/Middle Left Text Content (Fixed min-height prevents layout shifting) -->
+      <div class="max-w-3xl my-auto min-h-[320px] sm:min-h-[360px] flex items-center">
+        <transition name="fade" mode="out-in">
+          <div :key="currentTrailer.id || currentIndex" class="w-full">
+            <!-- Subtitle -->
+            <div class="mb-2 transform -rotate-2 origin-left">
+              <span class="font-caveat text-3xl md:text-4xl text-[#ef6a26] drop-shadow-md">{{ currentTrailer.subtitle }}</span>
+            </div>
+
+            <!-- Main Title -->
+            <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold leading-tight tracking-tight mb-4 text-white drop-shadow-xl whitespace-pre-line">
+              {{ currentTrailer.title }}
+            </h1>
+
+            <!-- Director Info -->
+            <p class="mt-6 text-gray-300 text-base md:text-lg font-light tracking-wide max-w-2xl line-clamp-2">
+              {{ currentTrailer.director }}
+            </p>
+
+            <!-- CTA Buttons -->
+            <div class="mt-8 flex flex-wrap items-center gap-4">
+              <router-link 
+                :to="currentTrailer.link || '/movies'" 
+                class="bg-white hover:bg-gray-100 text-black font-bold text-sm px-9 py-4 uppercase tracking-wider transition-all duration-300 shadow-xl hover:shadow-2xl hover:-translate-y-0.5"
+              >
+                More Info
+              </router-link>
+              <router-link 
+                :to="currentTrailer.ticketLink || '/movies'" 
+                class="bg-[#ef6a26] hover:bg-orange-600 text-white font-bold text-sm px-9 py-4 uppercase tracking-wider transition-all duration-300 shadow-xl hover:shadow-2xl hover:-translate-y-0.5"
+              >
+                Get Ticket
+              </router-link>
+              <button
+                @click="openTrailerModal(currentTrailer)"
+                class="border border-white/40 hover:border-white bg-black/40 hover:bg-black/70 text-white font-bold text-sm px-7 py-4 uppercase tracking-wider transition-all duration-300 backdrop-blur-sm flex items-center gap-2"
+              >
+                <svg class="w-4 h-4 fill-current text-[#ef6a26]" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                Watch Trailer
+              </button>
+            </div>
           </div>
-
-          <!-- Main Title -->
-          <h1 class="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-semibold leading-tight tracking-tight mb-4 text-white drop-shadow-xl whitespace-pre-line">
-            {{ currentTrailer.title }}
-          </h1>
-
-          <!-- Director Info -->
-          <p class="mt-6 text-gray-300 text-base md:text-lg font-light tracking-wide max-w-2xl line-clamp-2">
-            {{ currentTrailer.director }}
-          </p>
-
-          <!-- CTA Buttons -->
-          <div class="mt-8 flex flex-wrap items-center gap-4">
-            <router-link 
-              :to="currentTrailer.link || '/movies'" 
-              class="bg-white hover:bg-gray-100 text-black font-bold text-sm px-9 py-4 uppercase tracking-wider transition-all duration-300 shadow-xl hover:shadow-2xl hover:-translate-y-0.5"
-            >
-              More Info
-            </router-link>
-            <router-link 
-              :to="currentTrailer.ticketLink || '/movies'" 
-              class="bg-[#ef6a26] hover:bg-orange-600 text-white font-bold text-sm px-9 py-4 uppercase tracking-wider transition-all duration-300 shadow-xl hover:shadow-2xl hover:-translate-y-0.5"
-            >
-              Get Ticket
-            </router-link>
-            <button
-              @click="openTrailerModal(currentTrailer)"
-              class="border border-white/40 hover:border-white bg-black/40 hover:bg-black/70 text-white font-bold text-sm px-7 py-4 uppercase tracking-wider transition-all duration-300 backdrop-blur-sm flex items-center gap-2"
-            >
-              <svg class="w-4 h-4 fill-current text-[#ef6a26]" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-              Watch Trailer
-            </button>
-          </div>
-        </div>
-      </transition>
+        </transition>
+      </div>
 
       <!-- Right Release Date Box -->
       <transition name="fade" mode="out-in">
         <div :key="currentTrailer.id || currentIndex" class="absolute right-8 md:right-16 lg:right-24 top-28 flex flex-col items-end hidden sm:flex">
           <span class="text-gray-300 text-xs md:text-sm tracking-widest uppercase mb-1">In theater</span>
-          <div class="relative">
+          <div class="relative min-h-[50px]">
             <span class="text-3xl md:text-5xl font-extrabold text-white">{{ currentTrailer.releaseDate }}</span>
             <!-- Hand-drawn Orange Underline -->
             <svg class="absolute -bottom-3 left-0 w-full h-3 text-[#ef6a26]" viewBox="0 0 100 10" preserveAspectRatio="none">
