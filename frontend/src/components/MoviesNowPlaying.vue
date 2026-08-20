@@ -1,5 +1,5 @@
 <template>
-  <section class="relative w-full bg-white pt-10 sm:pt-14 pb-16 sm:pb-20 select-none overflow-hidden">
+  <section class="relative w-full bg-white pt-10 sm:pt-14 pb-0 sm:pb-0 select-none overflow-hidden">
     <!-- Light film strip background behind MoviesNowPlaying cards -->
     <div class="absolute inset-0 pointer-events-none opacity-15 film-strip-background"></div>
 
