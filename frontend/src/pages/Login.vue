@@ -1,48 +1,69 @@
 <template>
-  <div class="min-h-screen flex items-center justify-center bg-gray-100">
-    <div class="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-      <h1 class="text-2xl font-bold text-center text-gray-800 mb-6">Login to MovieBooking</h1>
+  <div class="min-h-screen flex items-center justify-center bg-[#050505] p-4 relative select-none overflow-hidden">
+    <!-- Light film strip background pattern -->
+    <div class="absolute inset-0 pointer-events-none film-strip-dark"></div>
+
+    <!-- Ambient Glowing Backdrop Effect -->
+    <div class="absolute w-[500px] h-[500px] bg-[#ea580c]/15 rounded-full blur-[140px] pointer-events-none top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"></div>
+
+    <!-- Card Container -->
+    <div class="relative z-10 bg-[#0f1015]/95 border border-gray-800/80 shadow-[0_20px_60px_rgba(0,0,0,0.8)] backdrop-blur-xl p-8 sm:p-10 rounded-2xl w-full max-w-md">
+      
+      <!-- Brand Logo Header -->
+      <div class="flex flex-col items-center mb-8">
+        <router-link to="/" class="flex items-center space-x-2.5 mb-3 group">
+          <div class="w-10 h-10 rounded-full bg-[#ea580c] flex items-center justify-center shadow-lg shadow-[#ea580c]/30 group-hover:scale-105 transition-transform duration-300">
+            <svg class="w-6 h-6 fill-current text-white" viewBox="0 0 24 24">
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z"/>
+              <circle cx="12" cy="12" r="1.5"/>
+            </svg>
+          </div>
+          <span class="text-3xl font-extrabold tracking-tight text-white">movies</span>
+        </router-link>
+        <h1 class="text-xl font-bold text-gray-200">Welcome Back</h1>
+        <p class="text-xs text-gray-400 mt-1">Sign in to book your movie tickets</p>
+      </div>
 
       <!-- Error Message Box -->
-      <div v-if="errorMessage" class="mb-4 p-3 bg-red-100 border border-red-400 text-red-700 rounded text-sm">
+      <div v-if="errorMessage" class="mb-5 p-3.5 bg-red-950/60 border border-red-800/60 text-red-300 rounded-xl text-xs text-center font-medium">
         {{ errorMessage }}
       </div>
       
-      <form @submit.prevent="login" class="space-y-4">
+      <form @submit.prevent="login" class="space-y-5">
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+          <label class="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-1.5">Email Address</label>
           <input 
             v-model="email" 
             type="email" 
             required
-            placeholder="Enter your email" 
-            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
+            placeholder="name@example.com" 
+            class="w-full px-4 py-3 bg-[#161820] text-white border border-gray-700/80 rounded-xl focus:outline-none focus:border-[#ea580c] focus:ring-2 focus:ring-[#ea580c]/30 placeholder-gray-500 text-sm transition-all shadow-inner"
           />
         </div>
 
         <div>
-          <label class="block text-sm font-medium text-gray-700 mb-1">Password</label>
+          <label class="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-1.5">Password</label>
           <input 
             v-model="password" 
             type="password" 
             required
-            placeholder="Enter your password" 
-            class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-yellow-500"
+            placeholder="••••••••" 
+            class="w-full px-4 py-3 bg-[#161820] text-white border border-gray-700/80 rounded-xl focus:outline-none focus:border-[#ea580c] focus:ring-2 focus:ring-[#ea580c]/30 placeholder-gray-500 text-sm transition-all shadow-inner"
           />
         </div>
 
         <button 
           type="submit"
           :disabled="loading" 
-          class="w-full bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-medium py-2 px-4 rounded-md transition-colors disabled:bg-yellow-300"
+          class="w-full bg-[#ea580c] hover:bg-[#d64800] text-white font-extrabold py-3.5 px-4 rounded-xl transition-all duration-300 shadow-lg shadow-[#ea580c]/25 uppercase tracking-wider text-xs disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer transform hover:-translate-y-0.5"
         >
           {{ loading ? 'Signing in...' : 'Sign in' }}
         </button>
       </form>
 
-      <div class="mt-6 text-center text-sm text-gray-600">
+      <div class="mt-8 text-center text-xs text-gray-400">
         Don't have an account? 
-        <router-link to="/register" class="text-yellow-600 hover:text-yellow-700 hover:underline">Register here</router-link>
+        <router-link to="/register" class="text-[#ea580c] hover:text-orange-400 font-bold ml-1 transition-colors">Register here</router-link>
       </div>
     </div>
   </div>
@@ -62,7 +83,7 @@ const errorMessage = ref("")
 const login = async () => {
     if (!email.value || !password.value) return
     loading.value = true
-    errorMessage.value = "" // Clear previous errors
+    errorMessage.value = ""
 
     try {
         const res = await api.post("/login", { email: email.value, password: password.value })
@@ -85,5 +106,4 @@ const login = async () => {
 </script>
 
 <style scoped>
-/* Removed complex animations and custom styles for simplicity */
 </style>

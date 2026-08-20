@@ -41,12 +41,6 @@
         Movies <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
       </router-link>
       <router-link to="/movies" class="text-white hover:text-[#ef6a26] flex items-center transition">
-        Ticket <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-      </router-link>
-      <router-link to="/movies" class="text-white hover:text-[#ef6a26] flex items-center transition">
-        Pages <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
-      </router-link>
-      <router-link to="/movies" class="text-white hover:text-[#ef6a26] flex items-center transition">
         News <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
       </router-link>
       <router-link to="/movies" class="text-white hover:text-[#ef6a26] transition">
