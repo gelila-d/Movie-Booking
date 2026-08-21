@@ -103,14 +103,17 @@ body {
 
 /* Futuristic inputs */
 .form-input,
+input,
+select,
+textarea,
 .card input,
 .card select,
 .card textarea {
-  background: rgba(255, 255, 255, 0.05);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   border-radius: 1rem;
   padding: 1rem 1.5rem;
-  color: #e2e8f0;
+  color: #ffffff;
   width: 100%;
   outline: none;
   transition: all 0.3s ease;
@@ -119,15 +122,16 @@ body {
 
 input::placeholder,
 textarea::placeholder {
-  color: rgba(226, 232, 240, 0.5);
+  color: rgba(255, 255, 255, 0.7);
 }
 
 input:focus,
 select:focus,
 textarea:focus {
   border-color: #ef6a26;
-  background: rgba(255, 255, 255, 0.08);
+  background: rgba(255, 255, 255, 0.12);
   box-shadow: 0 0 20px rgba(239, 106, 38, 0.4);
+  color: #ffffff;
 }
 
 .container {

@@ -1,10 +1,10 @@
 <template>
   <div class="w-full max-w-7xl mx-auto px-6 py-10">
     <!-- Header & Filter Bar -->
-    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 pb-6 border-b border-gray-200">
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 pb-6 border-b border-slate-800">
       <div>
         <div class="text-[#ef6a26] text-xs font-bold uppercase tracking-widest mb-1">Explore Cinema</div>
-        <h1 class="text-3xl lg:text-4xl font-extrabold text-gray-900 tracking-tight">
+        <h1 class="text-3xl lg:text-4xl font-extrabold text-white tracking-tight">
           Now Showing & Featured Movies
         </h1>
       </div>
@@ -15,9 +15,9 @@
           v-model="searchQuery" 
           type="text" 
           placeholder="Search movies by title or genre..." 
-          class="w-full bg-white border border-gray-300 rounded-full py-2.5 pl-4 pr-10 text-sm text-gray-900 placeholder-gray-400 focus:outline-none focus:border-[#ef6a26] focus:ring-2 focus:ring-[#ef6a26]/20 transition-all shadow-sm"
+          class="w-full bg-slate-900/90 border border-slate-700/80 rounded-full py-2.5 pl-4 pr-10 text-sm text-white placeholder-slate-400 focus:outline-none focus:border-[#ef6a26] focus:ring-2 focus:ring-[#ef6a26]/30 transition-all shadow-md"
         />
-        <svg class="absolute right-3.5 top-3 w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="absolute right-3.5 top-3 w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
         </svg>
       </div>

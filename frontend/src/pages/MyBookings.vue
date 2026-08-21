@@ -2,18 +2,18 @@
   <div class="container">
     <div class="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
       <div>
-        <h1 class="text-3xl font-bold text-gray-900 mb-1">My Bookings</h1>
-        <p class="text-gray-600">Your reservations and ticket history</p>
+        <h1 class="text-3xl font-bold text-white mb-1">My Bookings</h1>
+        <p class="text-slate-300">Your reservations and ticket history</p>
       </div>
       <div class="relative w-full md:w-80" v-if="bookings.length > 0 || searchQuery">
-        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">
+        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
           🔍
         </span>
         <input 
           v-model="searchQuery" 
           type="text" 
           placeholder="Search by movie title..." 
-          class="pl-10 pr-4 py-2 w-full border border-[#ef6a26]/30 rounded-xl focus:ring-2 focus:ring-[#ef6a26] outline-none shadow-sm transition-all bg-slate-900/40 text-slate-200"
+          class="pl-10 pr-4 py-2.5 w-full border border-[#ef6a26]/40 rounded-xl focus:ring-2 focus:ring-[#ef6a26] outline-none shadow-sm transition-all bg-slate-900/90 text-white placeholder-slate-400"
         />
       </div>
     </div>

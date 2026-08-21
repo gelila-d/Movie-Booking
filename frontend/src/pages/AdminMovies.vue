@@ -2,8 +2,8 @@
   <div class="container space-y-10">
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
       <div>
-        <h1 class="text-3xl font-bold text-gray-900 mb-1">Admin Dashboard</h1>
-        <p class="text-gray-600">Manage the movie catalog and ticketing</p>
+        <h1 class="text-3xl font-bold text-white mb-1">Admin Dashboard</h1>
+        <p class="text-slate-300">Manage the movie catalog and ticketing</p>
       </div>
       <button 
         v-if="!showForm && activeTab === 'catalog'" 
@@ -58,12 +58,12 @@
         </button>
       </div>
       <div class="relative w-full md:w-64 mb-2 md:mb-0">
-        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-gray-400">🔍</span>
+        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">🔍</span>
         <input 
           v-model="searchQuery" 
           type="text" 
           :placeholder="activeTab === 'catalog' ? 'Search movies...' : 'Search users or movies...'" 
-          class="pl-10 pr-4 py-1.5 w-full border border-gray-200 rounded-lg focus:ring-2 focus:ring-yellow-500 outline-none text-sm"
+          class="pl-10 pr-4 py-2 w-full border border-slate-700 rounded-xl focus:ring-2 focus:ring-[#ef6a26] outline-none text-sm bg-slate-900/90 text-white placeholder-slate-400"
         />
       </div>
     </div>
