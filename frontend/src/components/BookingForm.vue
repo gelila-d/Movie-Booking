@@ -40,9 +40,9 @@
                 :disabled="seat.unavailable"
                 class="seat-button w-10 h-10 rounded-lg flex items-center justify-center text-xs font-bold transition-all duration-300 relative group flex-shrink-0 border-2"
                 :class="{
-                  'bg-slate-600/50 border-slate-500/50 text-slate-400 cursor-not-allowed': seat.unavailable,
+                  'bg-red-950/30 border-red-800/40 text-red-400/50 cursor-not-allowed opacity-60 line-through': seat.unavailable,
                   'bg-gradient-to-br from-[#ef6a26] to-orange-600 border-orange-400 text-white shadow-lg shadow-[#ef6a26]/30 scale-110 animate-pulse': !seat.unavailable && selectedSeats.includes(seat.id),
-                  'bg-slate-700/30 border-slate-500/50 text-slate-300 hover:border-[#ef6a26]/70 hover:bg-[#ef6a26]/20 hover:text-orange-200 cursor-pointer hover:scale-105': !seat.unavailable && !selectedSeats.includes(seat.id)
+                  'bg-emerald-950/40 border-emerald-500/40 text-emerald-300 hover:border-[#ef6a26]/70 hover:bg-[#ef6a26]/20 hover:text-orange-200 cursor-pointer hover:scale-105': !seat.unavailable && !selectedSeats.includes(seat.id)
                 }"
               >
                 {{ cIndex + 1 }}
@@ -60,16 +60,16 @@
     <!-- Legend with futuristic styling -->
     <div class="flex items-center justify-center gap-8 py-4">
       <div class="flex items-center gap-2">
-        <div class="w-5 h-5 bg-slate-700/30 border-2 border-slate-500/50 rounded-lg"></div>
-        <span class="text-sm text-slate-300 font-mono">AVAILABLE</span>
+        <div class="w-5 h-5 bg-emerald-950/40 border-2 border-emerald-500/50 rounded-lg"></div>
+        <span class="text-sm text-emerald-400 font-mono font-medium">AVAILABLE</span>
       </div>
       <div class="flex items-center gap-2">
         <div class="w-5 h-5 bg-gradient-to-br from-[#ef6a26] to-orange-600 border-2 border-orange-400 rounded-lg animate-pulse"></div>
-        <span class="text-sm text-slate-300 font-mono">SELECTED</span>
+        <span class="text-sm text-orange-400 font-mono font-medium">SELECTED</span>
       </div>
       <div class="flex items-center gap-2">
-        <div class="w-5 h-5 bg-slate-600/50 border-2 border-slate-500/50 rounded-lg"></div>
-        <span class="text-sm text-slate-300 font-mono">BOOKED</span>
+        <div class="w-5 h-5 bg-red-950/30 border-2 border-red-800/40 rounded-lg opacity-60"></div>
+        <span class="text-sm text-red-400/70 font-mono font-medium">BOOKED</span>
       </div>
     </div>
 

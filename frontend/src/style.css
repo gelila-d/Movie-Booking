@@ -35,19 +35,19 @@ body {
 
 .card:hover {
   background: rgba(255, 255, 255, 0.08);
-  border-color: rgba(147, 51, 234, 0.3);
+  border-color: rgba(239, 106, 38, 0.3);
   transform: translateY(-2px);
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
 /* Futuristic buttons */
 .btn-primary {
-  background: linear-gradient(135deg, #9333ea, #6b21a8);
+  background: linear-gradient(135deg, #ef6a26, #c2410c);
   color: #ffffff;
   font-weight: 600;
   padding: 0.875rem 2rem;
   border-radius: 1rem;
-  border: 1px solid rgba(147, 51, 234, 0.5);
+  border: 1px solid rgba(239, 106, 38, 0.5);
   cursor: pointer;
   transition: all 0.3s ease;
   position: relative;
@@ -72,8 +72,8 @@ body {
 }
 
 .btn-primary:hover {
-  background: linear-gradient(135deg, #6b21a8, #581c87);
-  box-shadow: 0 8px 25px rgba(147, 51, 234, 0.4);
+  background: linear-gradient(135deg, #d9530f, #9a3412);
+  box-shadow: 0 8px 25px rgba(239, 106, 38, 0.4);
   transform: translateY(-2px);
 }
 
@@ -167,11 +167,11 @@ textarea:focus {
 
   0%,
   100% {
-    box-shadow: 0 0 20px rgba(147, 51, 234, 0.3);
+    box-shadow: 0 0 20px rgba(239, 106, 38, 0.3);
   }
 
   50% {
-    box-shadow: 0 0 40px rgba(147, 51, 234, 0.6);
+    box-shadow: 0 0 40px rgba(239, 106, 38, 0.6);
   }
 }
 
@@ -186,19 +186,19 @@ textarea:focus {
 /* Neon text effect */
 .neon-text {
   font-family: 'Orbitron', monospace;
-  color: #c084fc;
+  color: #ef6a26;
   text-shadow:
-    0 0 5px #c084fc,
-    0 0 10px #c084fc,
-    0 0 20px #c084fc,
-    0 0 40px #c084fc;
+    0 0 5px #ef6a26,
+    0 0 10px #ef6a26,
+    0 0 20px #ef6a26,
+    0 0 40px #ef6a26;
 }
 
 /* Grid pattern background */
 .grid-bg {
   background-image:
-    linear-gradient(rgba(147, 51, 234, 0.1) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(147, 51, 234, 0.1) 1px, transparent 1px);
+    linear-gradient(rgba(239, 106, 38, 0.1) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(239, 106, 38, 0.1) 1px, transparent 1px);
   background-size: 50px 50px;
 }
 
