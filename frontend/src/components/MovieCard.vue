@@ -1,5 +1,5 @@
 <template>
-  <div class="group relative w-full aspect-[2/3] overflow-hidden bg-gray-900 shadow-md hover:shadow-xl transition-all duration-300 border border-gray-800/60 hover:border-[#ef6a26]/50">
+  <div class="group relative w-full aspect-[2/3] overflow-hidden bg-gray-900 shadow-md hover:shadow-xl transition-all duration-300 border border-gray-800/60 hover:border-[#ef6a26]/50 rounded-2xl">
     <!-- Image Background -->
     <img 
       v-if="movie.image" 
@@ -14,17 +14,30 @@
       <span class="font-medium text-[10px] tracking-wider uppercase">No Poster</span>
     </div>
 
-    <!-- Top Badges -->
-    <div class="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between z-20 pointer-events-none">
-      <span class="bg-black/60 backdrop-blur-md text-white text-[9px] font-semibold px-2 py-0.5 uppercase tracking-wider border border-white/10">
+    <!-- Top Badges & Heart Toggle -->
+    <div class="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between z-30">
+      <span class="bg-black/60 backdrop-blur-md text-white text-[9px] font-semibold px-2 py-0.5 uppercase tracking-wider border border-white/10 rounded">
         4K HD
       </span>
-      <span class="bg-[#ef6a26] text-white text-[10px] font-bold px-2 py-0.5 flex items-center gap-1 shadow-sm">
-        <svg class="w-2.5 h-2.5 fill-current" viewBox="0 0 24 24">
-          <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
-        </svg>
-        {{ movie.rating || '8.5' }}
-      </span>
+      
+      <div class="flex items-center gap-1.5">
+        <span class="bg-[#ef6a26] text-white text-[10px] font-bold px-2 py-0.5 flex items-center gap-1 shadow-sm rounded">
+          <svg class="w-2.5 h-2.5 fill-current" viewBox="0 0 24 24">
+            <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
+          </svg>
+          {{ movie.rating || '8.5' }}
+        </span>
+
+        <!-- Watchlist Heart Toggle Button -->
+        <button 
+          @click.stop.prevent="toggleWatchlist" 
+          class="w-7 h-7 rounded-full bg-black/60 backdrop-blur-md border border-white/20 flex items-center justify-center text-xs transition-transform hover:scale-115 active:scale-95 shadow-md"
+          :title="inWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist'"
+        >
+          <span v-if="inWatchlist" class="text-red-500 scale-110">❤️</span>
+          <span v-else class="text-slate-300 opacity-80 hover:opacity-100">🤍</span>
+        </button>
+      </div>
     </div>
 
     <!-- Center Play Icon Hover Overlay -->
@@ -56,7 +69,7 @@
       <!-- Action Button -->
       <router-link 
         :to="'/movies/' + movie.id" 
-        class="inline-flex items-center justify-between bg-white hover:bg-[#ef6a26] text-black hover:text-white font-bold text-[10px] uppercase tracking-wider px-3.5 py-2 w-full transition-all duration-300 shadow-md group/btn"
+        class="inline-flex items-center justify-between bg-white hover:bg-[#ef6a26] text-black hover:text-white font-bold text-[10px] uppercase tracking-wider px-3.5 py-2 w-full transition-all duration-300 shadow-md group/btn rounded-lg"
       >
         <span>Get Ticket</span>
         <svg class="w-3 h-3 transform group-hover/btn:translate-x-0.5 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -71,17 +84,65 @@
 </template>
 
 <script setup>
-defineProps({
+import { ref, onMounted } from 'vue'
+import api from '../services/api'
+
+const props = defineProps({
   movie: {
     type: Object,
     required: true
+  },
+  isWatchlisted: {
+    type: Boolean,
+    default: false
   }
 })
+
+const emit = defineEmits(['watchlistToggled'])
+
+const inWatchlist = ref(props.isWatchlisted)
 
 const getImageUrl = (path) => {
     if (!path) return '';
     return `http://localhost:8000/storage/${path}`;
 }
+
+const checkWatchlistState = async () => {
+    if (props.isWatchlisted) {
+        inWatchlist.value = true;
+        return;
+    }
+    if (!localStorage.getItem('token')) return;
+    try {
+        const res = await api.get('/watchlist/ids');
+        if (Array.isArray(res.data) && res.data.includes(props.movie.id)) {
+            inWatchlist.value = true;
+        }
+    } catch (e) {
+        // Guest user or error
+    }
+}
+
+const toggleWatchlist = async () => {
+    if (!localStorage.getItem('token')) {
+        alert("Please log in to save movies to your watchlist.");
+        return;
+    }
+
+    try {
+        const res = await api.post('/watchlist/toggle', { movie_id: props.movie.id });
+        if (res.data.status === 'added') {
+            inWatchlist.value = true;
+        } else {
+            inWatchlist.value = false;
+            emit('watchlistToggled', props.movie.id);
+        }
+    } catch (err) {
+        console.error("Failed to toggle watchlist:", err);
+    }
+}
+
+onMounted(checkWatchlistState)
 </script>
 
 <style scoped>

@@ -59,9 +59,18 @@
             <!-- Movie info -->
             <div class="space-y-6">
               <div>
-                <h1 class="neon-text text-2xl sm:text-3xl font-semibold font-orbitron tracking-wider mb-4">
-                  {{ movie.title.toUpperCase() }}
-                </h1>
+                <div class="flex justify-between items-start gap-4 mb-4">
+                  <h1 class="neon-text text-2xl sm:text-3xl font-semibold font-orbitron tracking-wider">
+                    {{ movie.title.toUpperCase() }}
+                  </h1>
+                  <button 
+                    @click="toggleWatchlist"
+                    class="px-3.5 py-2 rounded-xl text-xs font-bold font-mono transition-all flex items-center gap-1.5 flex-shrink-0 border"
+                    :class="inWatchlist ? 'bg-red-950/60 border-red-500/50 text-red-300 shadow-md shadow-red-900/30' : 'bg-slate-800/80 border-slate-700 text-slate-300 hover:border-amber-500/50 hover:text-white'"
+                  >
+                    <span>{{ inWatchlist ? '💖 Saved in Watchlist' : '❤️ Add to Watchlist' }}</span>
+                  </button>
+                </div>
                 <div class="bg-slate-800/30 border border-slate-600/30 rounded-xl p-6 backdrop-blur-sm">
                   <p class="text-slate-200 leading-relaxed text-lg font-light">
                     {{ movie.description }}
@@ -173,6 +182,37 @@ const booking = ref(false)
 
 const showTicketModal = ref(false)
 const createdBooking = ref(null)
+const inWatchlist = ref(false)
+
+const checkWatchlistState = async () => {
+  if (!localStorage.getItem('token') || !route.params.id) return;
+  try {
+    const res = await api.get('/watchlist/ids');
+    if (Array.isArray(res.data) && res.data.includes(Number(route.params.id))) {
+      inWatchlist.value = true;
+    }
+  } catch (e) {
+    // Guest or error
+  }
+}
+
+const toggleWatchlist = async () => {
+  if (!localStorage.getItem('token')) {
+    alert("Please log in to save movies to your watchlist.");
+    return;
+  }
+
+  try {
+    const res = await api.post('/watchlist/toggle', { movie_id: Number(route.params.id) });
+    if (res.data.status === 'added') {
+      inWatchlist.value = true;
+    } else {
+      inWatchlist.value = false;
+    }
+  } catch (err) {
+    console.error("Failed to toggle watchlist:", err);
+  }
+}
 
 const getImageUrl = (path) => {
     if (!path) return '';
@@ -248,5 +288,8 @@ const closeTicketModal = () => {
   router.push('/my-bookings')
 }
 
-onMounted(fetchMovieAndShowtimes)
+onMounted(() => {
+  fetchMovieAndShowtimes()
+  checkWatchlistState()
+})
 </script>

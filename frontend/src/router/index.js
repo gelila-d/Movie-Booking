@@ -4,6 +4,7 @@ import Register from "../pages/Register.vue";
 import Movies from "../pages/Movies.vue";
 import MovieDetails from "../pages/MovieDetails.vue";
 import MyBookings from "../pages/MyBookings.vue";
+import Watchlist from "../pages/Watchlist.vue";
 import AdminMovies from "../pages/AdminMovies.vue";
 import Home from "../pages/Home.vue";
 
@@ -14,6 +15,7 @@ const routes = [
   { path: "/movies", component: Movies },
   { path: "/movies/:id", component: MovieDetails, meta: { requiresAuth: true } },
   { path: "/my-bookings", component: MyBookings, meta: { requiresAuth: true } },
+  { path: "/watchlist", component: Watchlist, meta: { requiresAuth: true } },
   { path: "/admin/movies", component: AdminMovies, meta: { requiresAuth: true, requiresAdmin: true } },
 ];
 

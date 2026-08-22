@@ -47,6 +47,13 @@
       >
         My Bookings <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
       </router-link>
+      <router-link 
+        to="/watchlist" 
+        class="flex items-center transition" 
+        :class="[route.path === '/watchlist' ? 'text-[#ef6a26]' : 'text-white hover:text-[#ef6a26]']"
+      >
+        Watchlist <span class="ml-1 text-xs">❤️</span>
+      </router-link>
       <router-link to="/movies" class="text-white hover:text-[#ef6a26] flex items-center transition">
         News <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
       </router-link>
@@ -112,6 +119,16 @@
                   <path stroke-linecap="round" stroke-linejoin="round" d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"/>
                 </svg>
                 <span>My Bookings</span>
+              </router-link>
+
+              <router-link 
+                v-if="user"
+                to="/watchlist" 
+                @click="dropdownOpen = false"
+                class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium text-slate-200 hover:bg-[#ef6a26]/15 hover:text-[#ef6a26] transition-colors group"
+              >
+                <span class="text-xs">❤️</span>
+                <span>My Watchlist</span>
               </router-link>
 
               <router-link 
