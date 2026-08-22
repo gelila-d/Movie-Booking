@@ -3,9 +3,9 @@
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
       <div>
         <h1 class="text-3xl font-bold text-white mb-1 font-orbitron">ADMIN DASHBOARD</h1>
-        <p class="text-slate-300">Manage movies, showtimes, auditoriums, and ticket reservations</p>
+        <p class="text-slate-300">Manage movies, showtimes, cinemas, auditoriums, and ticket reservations</p>
       </div>
-      <div class="flex gap-3">
+      <div class="flex gap-3 flex-wrap">
         <button 
           v-if="!showForm && activeTab === 'catalog'" 
           @click="openCreate" 
@@ -18,7 +18,21 @@
           @click="openCreateShowtime" 
           class="btn-primary"
         >
-          + Add New Showtime
+          + Schedule Showtime
+        </button>
+        <button 
+          v-if="activeTab === 'cinemas' && !showCinemaForm && !showAuditoriumForm" 
+          @click="openCreateCinema" 
+          class="btn-primary"
+        >
+          + Add Cinema
+        </button>
+        <button 
+          v-if="activeTab === 'cinemas' && !showCinemaForm && !showAuditoriumForm" 
+          @click="openCreateAuditorium" 
+          class="px-5 py-2.5 rounded-xl border border-emerald-500/40 text-emerald-300 bg-emerald-950/40 hover:bg-emerald-900/60 font-bold text-sm transition-all"
+        >
+          + Add Auditorium / Hall
         </button>
       </div>
     </div>
@@ -66,6 +80,13 @@
           Showtimes Management
         </button>
         <button 
+          @click="activeTab = 'cinemas'" 
+          class="px-6 py-3 text-sm font-bold transition-colors border-b-2 whitespace-nowrap"
+          :class="activeTab === 'cinemas' ? 'border-[#ef6a26] text-[#ef6a26]' : 'border-transparent text-slate-400 hover:text-white'"
+        >
+          Cinemas & Auditoriums
+        </button>
+        <button 
           @click="activeTab = 'bookings'" 
           class="px-6 py-3 text-sm font-bold transition-colors border-b-2 whitespace-nowrap"
           :class="activeTab === 'bookings' ? 'border-[#ef6a26] text-[#ef6a26]' : 'border-transparent text-slate-400 hover:text-white'"
@@ -78,7 +99,7 @@
         <input 
           v-model="searchQuery" 
           type="text" 
-          :placeholder="activeTab === 'catalog' ? 'Search movies...' : activeTab === 'showtimes' ? 'Search showtimes...' : 'Search users or movies...'" 
+          :placeholder="activeTab === 'catalog' ? 'Search movies...' : activeTab === 'showtimes' ? 'Search showtimes...' : activeTab === 'cinemas' ? 'Search cinemas/halls...' : 'Search users or movies...'" 
           class="pl-10 pr-4 py-2 w-full border border-slate-700/80 rounded-xl focus:ring-2 focus:ring-[#ef6a26] outline-none text-sm bg-slate-900/90 text-white placeholder-slate-400"
         />
       </div>
@@ -91,7 +112,6 @@
         <button @click="closeForm" class="text-slate-400 hover:text-white transition-colors text-sm font-bold">Cancel</button>
       </div>
 
-      <!-- Error Message Box -->
       <div v-if="errorMessage" class="p-3.5 bg-red-950/60 border border-red-800/60 text-red-300 rounded-xl text-xs text-center font-medium">
         {{ errorMessage }}
       </div>
@@ -132,7 +152,6 @@
         <button @click="closeShowtimeForm" class="text-slate-400 hover:text-white transition-colors text-sm font-bold">Cancel</button>
       </div>
 
-      <!-- Error Message Box -->
       <div v-if="showtimeError" class="p-4 bg-red-950/80 border border-red-500/60 text-red-200 rounded-xl text-xs text-center font-bold tracking-wide">
         ⚠️ {{ showtimeError }}
       </div>
@@ -147,16 +166,21 @@
         </div>
 
         <div class="space-y-1.5">
-          <label class="text-xs font-semibold uppercase tracking-wider text-purple-300 font-mono">Cinema / Auditorium</label>
-          <div class="flex gap-2">
-            <select v-model="showtimeForm.auditorium" class="w-full text-white bg-slate-900 px-4 py-2.5 border border-white/10 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30">
-              <option value="Auditorium 1">Auditorium 1</option>
-              <option value="Auditorium 2">Auditorium 2</option>
-              <option value="Auditorium 3 (IMAX)">Auditorium 3 (IMAX)</option>
-              <option value="VIP Screen 1">VIP Screen 1</option>
-              <option value="Screen 4">Screen 4</option>
-            </select>
-          </div>
+          <label class="text-xs font-semibold uppercase tracking-wider text-purple-300 font-mono">Cinema Venue</label>
+          <select v-model="selectedCinemaId" @change="handleCinemaChange" class="w-full text-white bg-slate-900 px-4 py-2.5 border border-white/10 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30">
+            <option value="">Select Cinema...</option>
+            <option v-for="c in cinemas" :key="c.id" :value="c.id">{{ c.name }} ({{ c.location || 'Main' }})</option>
+          </select>
+        </div>
+
+        <div class="space-y-1.5">
+          <label class="text-xs font-semibold uppercase tracking-wider text-purple-300 font-mono">Auditorium / Hall</label>
+          <select v-model="showtimeForm.auditorium_id" @change="handleAuditoriumSelect" class="w-full text-white bg-slate-900 px-4 py-2.5 border border-white/10 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30">
+            <option value="">Choose Hall...</option>
+            <option v-for="a in availableAuditoriums" :key="a.id" :value="a.id">
+              {{ a.name }} — {{ a.total_seats }} seats ({{ a.rows_count }} Rows x {{ a.seats_per_row }} Seats)
+            </option>
+          </select>
         </div>
 
         <div class="space-y-1.5">
@@ -175,8 +199,8 @@
         </div>
 
         <div class="space-y-1.5">
-          <label class="text-xs font-semibold uppercase tracking-wider text-purple-300 font-mono">Auditorium Seat Capacity</label>
-          <input v-model="showtimeForm.total_seats" type="number" min="1" placeholder="50" class="w-full text-white bg-black/40 px-4 py-2.5 border border-white/10 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30 placeholder-slate-400" />
+          <label class="text-xs font-semibold uppercase tracking-wider text-purple-300 font-mono">Total Capacity (Auto-filled)</label>
+          <input v-model="showtimeForm.total_seats" type="number" readonly class="w-full text-slate-300 bg-slate-800/80 px-4 py-2.5 border border-white/10 rounded-xl cursor-not-allowed font-mono" />
         </div>
 
         <div class="md:col-span-2 flex justify-end gap-3 pt-2">
@@ -185,6 +209,71 @@
           </button>
           <button @click="saveShowtime" :disabled="savingShowtime" class="btn-primary py-2.5 px-8">
             {{ savingShowtime ? 'SAVING...' : (editingShowtimeId ? 'UPDATE SHOWTIME' : 'CREATE SHOWTIME') }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Cinema Form (Create/Edit) -->
+    <div v-if="showCinemaForm && activeTab === 'cinemas'" class="card space-y-6 border-blue-500/40 bg-black/60 backdrop-blur-2xl shadow-2xl">
+      <div class="flex justify-between items-center border-b border-white/10 pb-4">
+        <h2 class="text-xl font-bold text-white font-orbitron">{{ editingCinemaId ? 'Edit Cinema' : 'Add New Cinema' }}</h2>
+        <button @click="closeCinemaForm" class="text-slate-400 hover:text-white transition-colors text-sm font-bold">Cancel</button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div class="space-y-1.5">
+          <label class="text-xs font-semibold uppercase tracking-wider text-blue-300 font-mono">Cinema Name</label>
+          <input v-model="cinemaForm.name" placeholder="e.g. Starlight Multiplex" class="w-full text-white bg-black/40 px-4 py-2.5 border border-white/10 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 placeholder-slate-400" />
+        </div>
+        <div class="space-y-1.5">
+          <label class="text-xs font-semibold uppercase tracking-wider text-blue-300 font-mono">Location / Address</label>
+          <input v-model="cinemaForm.location" placeholder="e.g. Downtown Mall, Level 3" class="w-full text-white bg-black/40 px-4 py-2.5 border border-white/10 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 placeholder-slate-400" />
+        </div>
+        <div class="md:col-span-2 flex justify-end gap-3 pt-2">
+          <button @click="saveCinema" class="btn-primary py-2.5 px-8">
+            SAVE CINEMA
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Auditorium Form (Create/Edit) -->
+    <div v-if="showAuditoriumForm && activeTab === 'cinemas'" class="card space-y-6 border-emerald-500/40 bg-black/60 backdrop-blur-2xl shadow-2xl">
+      <div class="flex justify-between items-center border-b border-white/10 pb-4">
+        <h2 class="text-xl font-bold text-white font-orbitron">{{ editingAuditoriumId ? 'Edit Auditorium / Hall' : 'Add New Auditorium / Hall' }}</h2>
+        <button @click="closeAuditoriumForm" class="text-slate-400 hover:text-white transition-colors text-sm font-bold">Cancel</button>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <div class="space-y-1.5">
+          <label class="text-xs font-semibold uppercase tracking-wider text-emerald-300 font-mono">Select Cinema Venue</label>
+          <select v-model="auditoriumForm.cinema_id" class="w-full text-white bg-slate-900 px-4 py-2.5 border border-white/10 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30">
+            <option value="" disabled>Choose cinema...</option>
+            <option v-for="c in cinemas" :key="c.id" :value="c.id">{{ c.name }}</option>
+          </select>
+        </div>
+        <div class="space-y-1.5">
+          <label class="text-xs font-semibold uppercase tracking-wider text-emerald-300 font-mono">Hall Name / Number</label>
+          <input v-model="auditoriumForm.name" placeholder="e.g. Hall A, IMAX Hall, VIP Lounge" class="w-full text-white bg-black/40 px-4 py-2.5 border border-white/10 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30 placeholder-slate-400" />
+        </div>
+        <div class="space-y-1.5">
+          <label class="text-xs font-semibold uppercase tracking-wider text-emerald-300 font-mono">Number of Rows (A to Z)</label>
+          <input v-model="auditoriumForm.rows_count" type="number" min="1" max="26" placeholder="10" class="w-full text-white bg-black/40 px-4 py-2.5 border border-white/10 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30" />
+        </div>
+        <div class="space-y-1.5">
+          <label class="text-xs font-semibold uppercase tracking-wider text-emerald-300 font-mono">Seats Per Row</label>
+          <input v-model="auditoriumForm.seats_per_row" type="number" min="1" max="30" placeholder="12" class="w-full text-white bg-black/40 px-4 py-2.5 border border-white/10 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30" />
+        </div>
+
+        <div class="md:col-span-2 bg-emerald-950/30 border border-emerald-500/30 p-4 rounded-xl flex justify-between items-center">
+          <span class="text-xs font-mono text-emerald-300 font-bold uppercase">Computed Total Capacity:</span>
+          <span class="text-2xl font-bold font-mono text-emerald-400">{{ (auditoriumForm.rows_count || 0) * (auditoriumForm.seats_per_row || 0) }} Seats</span>
+        </div>
+
+        <div class="md:col-span-2 flex justify-end gap-3 pt-2">
+          <button @click="saveAuditorium" class="btn-primary py-2.5 px-8">
+            SAVE AUDITORIUM
           </button>
         </div>
       </div>
@@ -211,10 +300,9 @@
           <h3 class="text-lg font-bold text-white mb-1">{{ movie.title }}</h3>
           <p class="text-xs text-slate-300 mb-2 truncate max-w-md">{{ movie.description }}</p>
           <div class="flex flex-wrap items-center text-xs text-slate-300 gap-4 mb-2">
-            <span class="font-medium">🕒 Release/Default: {{ movie.show_time ? new Date(movie.show_time).toLocaleString() : 'N/A' }}</span>
-            <span class="font-medium">🪑 {{ movie.available_seats }} / {{ movie.total_seats }} Seats</span>
+            <span class="font-medium">🕒 Release: {{ movie.show_time ? new Date(movie.show_time).toLocaleString() : 'N/A' }}</span>
             <span v-if="getFillRate(movie.id) !== null" class="px-2.5 py-0.5 rounded-full font-bold text-[11px]" :class="getFillRateColor(getFillRate(movie.id))">
-              {{ getFillRate(movie.id) }}% Full
+              {{ getFillRate(movie.id) }}% Booked
             </span>
           </div>
           <div v-if="movie.image" class="mt-2">
@@ -229,10 +317,6 @@
             Delete
           </button>
         </div>
-      </div>
-      
-      <div v-if="!loading && movies.length === 0" class="text-center py-20 bg-black/40 border border-dashed border-white/10 rounded-xl">
-        <p class="text-slate-300">No movies found in the catalog.</p>
       </div>
     </div>
 
@@ -259,7 +343,6 @@
           class="card flex flex-col md:flex-row md:items-center justify-between border-purple-500/30 bg-black/50 backdrop-blur-xl hover:border-purple-500/70 transition-all gap-4"
         >
           <div class="flex items-start md:items-center gap-4">
-            <!-- Movie Poster Thumbnail -->
             <div v-if="st.movie?.image" class="w-16 h-20 bg-slate-800 rounded-lg overflow-hidden flex-shrink-0 border border-white/10">
               <img :src="getImageUrl(st.movie.image)" alt="Poster" class="w-full h-full object-cover" />
             </div>
@@ -271,7 +354,7 @@
               <div class="flex items-center gap-3 flex-wrap">
                 <h3 class="text-lg font-bold text-white">{{ st.movie?.title || 'Unknown Movie' }}</h3>
                 <span class="px-3 py-0.5 rounded-full text-xs font-bold font-mono bg-purple-500/20 border border-purple-500/40 text-purple-300">
-                  🏛️ {{ st.auditorium }}
+                  🏛️ {{ st.auditoriumDetail?.cinema?.name ? `${st.auditoriumDetail.cinema.name} - ${st.auditoriumDetail.name}` : st.auditorium }}
                 </span>
                 <span class="px-2.5 py-0.5 rounded-full text-xs font-bold font-mono bg-emerald-500/20 border border-emerald-500/40 text-emerald-300">
                   ${{ Number(st.price).toFixed(2) }} / ticket
@@ -303,6 +386,75 @@
       </div>
     </div>
 
+    <!-- Cinemas & Auditoriums Tab Content -->
+    <div v-if="activeTab === 'cinemas'" class="space-y-6">
+      <div class="flex items-center justify-between">
+        <h2 class="text-xl font-bold text-white">Cinemas & Auditorium Layouts ({{ cinemas.length }})</h2>
+        <button @click="loadCinemas" class="text-xs font-bold text-blue-400 hover:underline">Refresh</button>
+      </div>
+
+      <div v-if="loadingCinemas" class="flex justify-center p-10">
+        <div class="animate-spin h-6 w-6 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+      </div>
+
+      <div v-else-if="cinemas.length === 0" class="text-center py-20 bg-black/40 border border-dashed border-white/10 rounded-xl">
+        <p class="text-slate-300">No cinemas configured yet.</p>
+        <button @click="openCreateCinema" class="mt-3 text-blue-400 text-sm font-bold hover:underline">+ Add Cinema</button>
+      </div>
+
+      <div v-else class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div v-for="cinema in filteredCinemas" :key="cinema.id" class="card bg-black/50 backdrop-blur-xl border-blue-500/30 space-y-4">
+          <div class="flex justify-between items-start border-b border-white/10 pb-3">
+            <div>
+              <h3 class="text-xl font-bold text-white font-orbitron">{{ cinema.name }}</h3>
+              <p class="text-xs text-slate-400 font-mono mt-0.5">📍 {{ cinema.location || 'Main Location' }}</p>
+            </div>
+            <div class="flex space-x-2">
+              <button @click="openEditCinema(cinema)" class="text-blue-300 hover:text-blue-100 text-xs font-bold bg-blue-500/20 border border-blue-500/40 px-2.5 py-1 rounded">
+                Edit
+              </button>
+              <button @click="deleteCinema(cinema.id)" class="text-red-400 hover:text-red-300 text-xs font-bold bg-red-500/10 border border-red-500/20 px-2.5 py-1 rounded">
+                Delete
+              </button>
+            </div>
+          </div>
+
+          <!-- Auditoriums List inside Cinema -->
+          <div class="space-y-2">
+            <div class="flex justify-between items-center">
+              <span class="text-xs font-mono font-bold text-slate-300 uppercase">Halls / Auditoriums ({{ cinema.auditoriums?.length || 0 }})</span>
+              <button @click="openCreateAuditoriumForCinema(cinema.id)" class="text-xs text-emerald-400 font-bold hover:underline">
+                + Add Hall
+              </button>
+            </div>
+
+            <div v-if="!cinema.auditoriums || cinema.auditoriums.length === 0" class="p-4 bg-slate-900/60 rounded-xl border border-dashed border-white/10 text-xs text-slate-400 text-center">
+              No halls added to this cinema yet.
+            </div>
+
+            <div v-else class="space-y-2">
+              <div 
+                v-for="aud in cinema.auditoriums" 
+                :key="aud.id" 
+                class="p-3 bg-slate-900/80 rounded-xl border border-white/10 flex justify-between items-center hover:border-emerald-500/40 transition-colors"
+              >
+                <div>
+                  <div class="text-sm font-bold text-emerald-300 font-mono">🏛️ {{ aud.name }}</div>
+                  <div class="text-xs text-slate-400 font-mono mt-0.5">
+                    🪑 {{ aud.total_seats }} Seats ({{ aud.rows_count }} Rows x {{ aud.seats_per_row }} Seats)
+                  </div>
+                </div>
+                <div class="flex space-x-2">
+                  <button @click="openEditAuditorium(aud)" class="text-xs text-emerald-400 hover:underline">Edit</button>
+                  <button @click="deleteAuditorium(aud.id)" class="text-xs text-red-400 hover:underline">Delete</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- Bookings Tab Content -->
     <div v-if="activeTab === 'bookings'" class="space-y-4">
       <div class="flex items-center justify-between">
@@ -325,7 +477,7 @@
             <tr>
               <th class="px-6 py-4 text-xs font-bold text-slate-300 uppercase tracking-wider">User</th>
               <th class="px-6 py-4 text-xs font-bold text-slate-300 uppercase tracking-wider">Movie / Showtime</th>
-              <th class="px-6 py-4 text-xs font-bold text-slate-300 uppercase tracking-wider">Auditorium</th>
+              <th class="px-6 py-4 text-xs font-bold text-slate-300 uppercase tracking-wider">Cinema / Hall</th>
               <th class="px-6 py-4 text-xs font-bold text-slate-300 uppercase tracking-wider">Seats</th>
               <th class="px-6 py-4 text-xs font-bold text-slate-300 uppercase tracking-wider">Total Price</th>
               <th class="px-6 py-4 text-xs font-bold text-slate-300 uppercase tracking-wider">Date</th>
@@ -346,7 +498,7 @@
                 </div>
               </td>
               <td class="px-6 py-4 text-xs text-slate-300 font-mono">
-                {{ booking.showtime?.auditorium || 'Main Screen' }}
+                {{ booking.showtime?.auditoriumDetail?.cinema?.name ? `${booking.showtime.auditoriumDetail.cinema.name} - ${booking.showtime.auditoriumDetail.name}` : (booking.showtime?.auditorium || 'Main Screen') }}
               </td>
               <td class="px-6 py-4">
                 <span class="px-2.5 py-1 bg-orange-500/15 border border-orange-500/30 text-orange-400 text-xs font-bold rounded-md block w-max">
@@ -371,22 +523,32 @@ import api from "../services/api"
 
 const movies = ref([])
 const showtimes = ref([])
+const cinemas = ref([])
 const stats = ref(null)
 const allBookings = ref([])
 const loading = ref(true)
 const loadingShowtimes = ref(false)
+const loadingCinemas = ref(false)
 const loadingBookings = ref(false)
 const saving = ref(false)
 const savingShowtime = ref(false)
+
 const showForm = ref(false)
 const showShowtimeForm = ref(false)
+const showCinemaForm = ref(false)
+const showAuditoriumForm = ref(false)
+
 const editingId = ref(null)
 const editingShowtimeId = ref(null)
+const editingCinemaId = ref(null)
+const editingAuditoriumId = ref(null)
+
 const errorMessage = ref("")
 const showtimeError = ref("")
 const imageFile = ref(null)
 const activeTab = ref('catalog')
 const searchQuery = ref("")
+const selectedCinemaId = ref("")
 
 const filteredMovies = computed(() => {
     if (!searchQuery.value) return movies.value
@@ -406,6 +568,15 @@ const filteredShowtimes = computed(() => {
     )
 })
 
+const filteredCinemas = computed(() => {
+    if (!searchQuery.value) return cinemas.value
+    const query = searchQuery.value.toLowerCase()
+    return cinemas.value.filter(c => 
+        c.name.toLowerCase().includes(query) ||
+        (c.location && c.location.toLowerCase().includes(query))
+    )
+})
+
 const filteredBookings = computed(() => {
     if (!searchQuery.value) return allBookings.value
     const query = searchQuery.value.toLowerCase()
@@ -415,6 +586,12 @@ const filteredBookings = computed(() => {
         (booking.movie?.title && booking.movie.title.toLowerCase().includes(query)) ||
         (booking.showtime?.auditorium && booking.showtime.auditorium.toLowerCase().includes(query))
     )
+})
+
+const availableAuditoriums = computed(() => {
+    if (!selectedCinemaId.value) return []
+    const cinema = cinemas.value.find(c => c.id === Number(selectedCinemaId.value))
+    return cinema ? cinema.auditoriums || [] : []
 })
 
 const getImageUrl = (path) => {
@@ -431,18 +608,54 @@ const form = ref({
 
 const showtimeForm = ref({
     movie_id: "",
-    auditorium: "Auditorium 1",
+    auditorium_id: "",
+    auditorium: "",
     start_time: "",
     end_time: "",
     price: "12.50",
-    total_seats: "50"
+    total_seats: 50
 })
+
+const cinemaForm = ref({
+    name: "",
+    location: ""
+})
+
+const auditoriumForm = ref({
+    cinema_id: "",
+    name: "",
+    rows_count: 10,
+    seats_per_row: 12
+})
+
+const formatForDateTimeInput = (dateStr) => {
+    if (!dateStr) return "";
+    const d = new Date(dateStr);
+    if (isNaN(d.getTime())) return "";
+    const pad = (n) => String(n).padStart(2, '0');
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
 
 const autoSetEndTime = () => {
     if (showtimeForm.value.start_time) {
         const start = new Date(showtimeForm.value.start_time)
-        const end = new Date(start.getTime() + 2 * 60 * 60 * 1000) // Default +2 hours
-        showtimeForm.value.end_time = end.toISOString().slice(0, 16)
+        const end = new Date(start.getTime() + 2 * 60 * 60 * 1000)
+        showtimeForm.value.end_time = formatForDateTimeInput(end)
+    }
+}
+
+const handleCinemaChange = () => {
+    showtimeForm.value.auditorium_id = ""
+    showtimeForm.value.total_seats = 50
+}
+
+const handleAuditoriumSelect = () => {
+    if (showtimeForm.value.auditorium_id) {
+        const aud = availableAuditoriums.value.find(a => a.id === Number(showtimeForm.value.auditorium_id))
+        if (aud) {
+            showtimeForm.value.total_seats = aud.total_seats
+            showtimeForm.value.auditorium = aud.name
+        }
     }
 }
 
@@ -492,6 +705,18 @@ const loadShowtimes = async () => {
     }
 }
 
+const loadCinemas = async () => {
+    loadingCinemas.value = true
+    try {
+        const res = await api.get("/cinemas")
+        cinemas.value = res.data
+    } catch (err) {
+        console.error("Failed to load cinemas:", err)
+    } finally {
+        loadingCinemas.value = false
+    }
+}
+
 const loadStats = async () => {
     try {
         const res = await api.get("/admin/stats")
@@ -523,7 +748,7 @@ const openCreate = () => {
 
 const openEdit = (movie) => {
     editingId.value = movie.id
-    const dateStr = movie.show_time ? new Date(movie.show_time).toISOString().slice(0, 16) : ""
+    const dateStr = formatForDateTimeInput(movie.show_time)
     form.value = { ...movie, show_time: dateStr }
     imageFile.value = null
     errorMessage.value = ""
@@ -538,13 +763,15 @@ const closeForm = () => {
 
 const openCreateShowtime = () => {
     editingShowtimeId.value = null
+    selectedCinemaId.value = cinemas.value.length ? cinemas.value[0].id : ""
     showtimeForm.value = {
         movie_id: movies.value.length ? movies.value[0].id : "",
-        auditorium: "Auditorium 1",
+        auditorium_id: availableAuditoriums.value.length ? availableAuditoriums.value[0].id : "",
+        auditorium: availableAuditoriums.value.length ? availableAuditoriums.value[0].name : "",
         start_time: "",
         end_time: "",
         price: "12.50",
-        total_seats: "50"
+        total_seats: availableAuditoriums.value.length ? availableAuditoriums.value[0].total_seats : 50
     }
     showtimeError.value = ""
     showShowtimeForm.value = true
@@ -552,11 +779,13 @@ const openCreateShowtime = () => {
 
 const openEditShowtime = (st) => {
     editingShowtimeId.value = st.id
+    selectedCinemaId.value = st.auditoriumDetail?.cinema_id || ""
     showtimeForm.value = {
         movie_id: st.movie_id,
+        auditorium_id: st.auditorium_id,
         auditorium: st.auditorium,
-        start_time: st.start_time ? new Date(st.start_time).toISOString().slice(0, 16) : "",
-        end_time: st.end_time ? new Date(st.end_time).toISOString().slice(0, 16) : "",
+        start_time: formatForDateTimeInput(st.start_time),
+        end_time: formatForDateTimeInput(st.end_time),
         price: st.price,
         total_seats: st.total_seats
     }
@@ -568,6 +797,61 @@ const closeShowtimeForm = () => {
     showShowtimeForm.value = false
     editingShowtimeId.value = null
     showtimeError.value = ""
+}
+
+const openCreateCinema = () => {
+    editingCinemaId.value = null
+    cinemaForm.value = { name: "", location: "" }
+    showCinemaForm.value = true
+}
+
+const openEditCinema = (c) => {
+    editingCinemaId.value = c.id
+    cinemaForm.value = { name: c.name, location: c.location }
+    showCinemaForm.value = true
+}
+
+const closeCinemaForm = () => {
+    showCinemaForm.value = false
+    editingCinemaId.value = null
+}
+
+const openCreateAuditorium = () => {
+    editingAuditoriumId.value = null
+    auditoriumForm.value = {
+        cinema_id: cinemas.value.length ? cinemas.value[0].id : "",
+        name: "",
+        rows_count: 10,
+        seats_per_row: 12
+    }
+    showAuditoriumForm.value = true
+}
+
+const openCreateAuditoriumForCinema = (cinemaId) => {
+    editingAuditoriumId.value = null
+    auditoriumForm.value = {
+        cinema_id: cinemaId,
+        name: "",
+        rows_count: 10,
+        seats_per_row: 12
+    }
+    showAuditoriumForm.value = true
+}
+
+const openEditAuditorium = (aud) => {
+    editingAuditoriumId.value = aud.id
+    auditoriumForm.value = {
+        cinema_id: aud.cinema_id,
+        name: aud.name,
+        rows_count: aud.rows_count,
+        seats_per_row: aud.seats_per_row
+    }
+    showAuditoriumForm.value = true
+}
+
+const closeAuditoriumForm = () => {
+    showAuditoriumForm.value = false
+    editingAuditoriumId.value = null
 }
 
 const saveMovie = async () => {
@@ -616,8 +900,8 @@ const saveMovie = async () => {
 }
 
 const saveShowtime = async () => {
-    if (!showtimeForm.value.movie_id || !showtimeForm.value.auditorium || !showtimeForm.value.start_time || !showtimeForm.value.end_time || !showtimeForm.value.price || !showtimeForm.value.total_seats) {
-        showtimeError.value = "All showtime fields are required."
+    if (!showtimeForm.value.movie_id || (!showtimeForm.value.auditorium_id && !showtimeForm.value.auditorium) || !showtimeForm.value.start_time || !showtimeForm.value.end_time || !showtimeForm.value.price) {
+        showtimeError.value = "Movie, auditorium, start/end times, and price are required."
         return
     }
 
@@ -647,6 +931,36 @@ const saveShowtime = async () => {
     }
 }
 
+const saveCinema = async () => {
+    if (!cinemaForm.value.name) return
+    try {
+        if (editingCinemaId.value) {
+            await api.put(`/cinemas/${editingCinemaId.value}`, cinemaForm.value)
+        } else {
+            await api.post('/cinemas', cinemaForm.value)
+        }
+        closeCinemaForm()
+        loadCinemas()
+    } catch (err) {
+        alert("Failed to save cinema")
+    }
+}
+
+const saveAuditorium = async () => {
+    if (!auditoriumForm.value.cinema_id || !auditoriumForm.value.name || !auditoriumForm.value.rows_count || !auditoriumForm.value.seats_per_row) return
+    try {
+        if (editingAuditoriumId.value) {
+            await api.put(`/auditoriums/${editingAuditoriumId.value}`, auditoriumForm.value)
+        } else {
+            await api.post('/auditoriums', auditoriumForm.value)
+        }
+        closeAuditoriumForm()
+        loadCinemas()
+    } catch (err) {
+        alert("Failed to save auditorium")
+    }
+}
+
 const deleteMovie = async (id) => {
     if(!confirm("Remove this movie from the catalog?")) return
     try {
@@ -669,9 +983,32 @@ const deleteShowtime = async (id) => {
     }
 }
 
+const deleteCinema = async (id) => {
+    if (!confirm("Delete this cinema and all its auditoriums?")) return
+    try {
+        await api.delete(`/cinemas/${id}`)
+        loadCinemas()
+    } catch (err) {
+        alert("Deletion failed")
+    }
+}
+
+const deleteAuditorium = async (id) => {
+    if (!confirm("Delete this auditorium hall?")) return
+    try {
+        await api.delete(`/auditoriums/${id}`)
+        loadCinemas()
+    } catch (err) {
+        alert("Deletion failed")
+    }
+}
+
 watch(activeTab, (newTab) => {
     if (newTab === 'showtimes') {
         loadShowtimes()
+        loadCinemas()
+    } else if (newTab === 'cinemas') {
+        loadCinemas()
     } else if (newTab === 'bookings') {
         loadAllBookings()
     }
@@ -680,6 +1017,7 @@ watch(activeTab, (newTab) => {
 onMounted(() => {
     loadMovies()
     loadShowtimes()
+    loadCinemas()
     loadStats()
 })
 </script>

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Showtime;
 use App\Models\Movie;
 use App\Models\Booking;
+use App\Models\Auditorium;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -15,13 +16,12 @@ class ShowtimeController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Showtime::with('movie')->orderBy('start_time', 'asc');
+        $query = Showtime::with(['movie', 'auditoriumDetail.cinema'])->orderBy('start_time', 'asc');
 
         if ($request->has('movie_id')) {
             $query->where('movie_id', $request->query('movie_id'));
         }
 
-        // Optional filter for future showtimes only for non-admins
         if (!$request->user() || !$request->user()->is_admin) {
             $query->where('start_time', '>=', Carbon::now()->subHours(2));
         }
@@ -34,7 +34,7 @@ class ShowtimeController extends Controller
      */
     public function show(Showtime $showtime)
     {
-        return response()->json($showtime->load('movie'));
+        return response()->json($showtime->load(['movie', 'auditoriumDetail.cinema']));
     }
 
     /**
@@ -48,42 +48,57 @@ class ShowtimeController extends Controller
 
         $validated = $request->validate([
             'movie_id' => 'required|exists:movies,id',
-            'auditorium' => 'required|string|max:255',
+            'auditorium_id' => 'nullable|exists:auditoriums,id',
+            'auditorium' => 'required_without:auditorium_id|nullable|string|max:255',
             'start_time' => 'required|date',
             'end_time' => 'required|date|after:start_time',
             'price' => 'required|numeric|min:0',
-            'total_seats' => 'required|integer|min:1',
+            'total_seats' => 'nullable|integer|min:1',
         ]);
 
         $startTime = Carbon::parse($validated['start_time']);
         $endTime = Carbon::parse($validated['end_time']);
-        $auditorium = trim($validated['auditorium']);
+
+        if (!empty($validated['auditorium_id'])) {
+            $auditoriumModel = Auditorium::with('cinema')->find($validated['auditorium_id']);
+            $auditoriumName = $auditoriumModel->cinema ? "{$auditoriumModel->cinema->name} - {$auditoriumModel->name}" : $auditoriumModel->name;
+            $totalSeats = $auditoriumModel->total_seats;
+            $auditoriumId = $auditoriumModel->id;
+        } else {
+            $auditoriumName = trim($validated['auditorium']);
+            $totalSeats = $validated['total_seats'] ?? 50;
+            $auditoriumId = null;
+        }
 
         // Prevent overlapping showtimes in the same auditorium
-        $overlap = Showtime::where('auditorium', $auditorium)
-            ->where(function ($query) use ($startTime, $endTime) {
-                $query->where(function ($q) use ($startTime, $endTime) {
-                    $q->where('start_time', '<', $endTime)
-                      ->where('end_time', '>', $startTime);
-                });
-            })
-            ->first();
+        $overlapQuery = Showtime::query();
+        if ($auditoriumId) {
+            $overlapQuery->where('auditorium_id', $auditoriumId);
+        } else {
+            $overlapQuery->where('auditorium', $auditoriumName);
+        }
+
+        $overlap = $overlapQuery->where(function ($query) use ($startTime, $endTime) {
+            $query->where('start_time', '<', $endTime)
+                  ->where('end_time', '>', $startTime);
+        })->first();
 
         if ($overlap) {
             $existingMovie = $overlap->movie ? $overlap->movie->title : 'Another show';
             return response()->json([
-                'message' => "Overlapping showtime detected! Auditorium '{$auditorium}' is already scheduled for '{$existingMovie}' from " . 
+                'message' => "Overlapping showtime detected! Auditorium '{$auditoriumName}' is already scheduled for '{$existingMovie}' from " . 
                              Carbon::parse($overlap->start_time)->format('Y-m-d H:i') . " to " . 
                              Carbon::parse($overlap->end_time)->format('H:i') . "."
             ], 422);
         }
 
-        $validated['auditorium'] = $auditorium;
-        $validated['available_seats'] = $validated['total_seats'];
+        $validated['auditorium'] = $auditoriumName;
+        $validated['total_seats'] = $totalSeats;
+        $validated['available_seats'] = $totalSeats;
 
         $showtime = Showtime::create($validated);
 
-        return response()->json($showtime->load('movie'), 201);
+        return response()->json($showtime->load(['movie', 'auditoriumDetail.cinema']), 201);
     }
 
     /**
@@ -97,6 +112,7 @@ class ShowtimeController extends Controller
 
         $validated = $request->validate([
             'movie_id' => 'sometimes|exists:movies,id',
+            'auditorium_id' => 'nullable|exists:auditoriums,id',
             'auditorium' => 'sometimes|string|max:255',
             'start_time' => 'sometimes|date',
             'end_time' => 'sometimes|date|after:start_time',
@@ -106,23 +122,34 @@ class ShowtimeController extends Controller
 
         $startTime = isset($validated['start_time']) ? Carbon::parse($validated['start_time']) : $showtime->start_time;
         $endTime = isset($validated['end_time']) ? Carbon::parse($validated['end_time']) : $showtime->end_time;
-        $auditorium = isset($validated['auditorium']) ? trim($validated['auditorium']) : $showtime->auditorium;
+        $auditoriumId = isset($validated['auditorium_id']) ? $validated['auditorium_id'] : $showtime->auditorium_id;
+
+        if ($auditoriumId) {
+            $auditoriumModel = Auditorium::with('cinema')->find($auditoriumId);
+            $auditoriumName = $auditoriumModel->cinema ? "{$auditoriumModel->cinema->name} - {$auditoriumModel->name}" : $auditoriumModel->name;
+            $validated['total_seats'] = $auditoriumModel->total_seats;
+            $validated['auditorium'] = $auditoriumName;
+        } else {
+            $auditoriumName = isset($validated['auditorium']) ? trim($validated['auditorium']) : $showtime->auditorium;
+        }
 
         // Check overlapping showtimes in the same auditorium excluding current showtime
-        $overlap = Showtime::where('auditorium', $auditorium)
-            ->where('id', '!=', $showtime->id)
-            ->where(function ($query) use ($startTime, $endTime) {
-                $query->where(function ($q) use ($startTime, $endTime) {
-                    $q->where('start_time', '<', $endTime)
-                      ->where('end_time', '>', $startTime);
-                });
-            })
-            ->first();
+        $overlapQuery = Showtime::where('id', '!=', $showtime->id);
+        if ($auditoriumId) {
+            $overlapQuery->where('auditorium_id', $auditoriumId);
+        } else {
+            $overlapQuery->where('auditorium', $auditoriumName);
+        }
+
+        $overlap = $overlapQuery->where(function ($query) use ($startTime, $endTime) {
+            $query->where('start_time', '<', $endTime)
+                  ->where('end_time', '>', $startTime);
+        })->first();
 
         if ($overlap) {
             $existingMovie = $overlap->movie ? $overlap->movie->title : 'Another show';
             return response()->json([
-                'message' => "Overlapping showtime detected! Auditorium '{$auditorium}' is already scheduled for '{$existingMovie}' from " . 
+                'message' => "Overlapping showtime detected! Auditorium '{$auditoriumName}' is already scheduled for '{$existingMovie}' from " . 
                              Carbon::parse($overlap->start_time)->format('Y-m-d H:i') . " to " . 
                              Carbon::parse($overlap->end_time)->format('H:i') . "."
             ], 422);
@@ -139,13 +166,9 @@ class ShowtimeController extends Controller
             $validated['available_seats'] = $newAvailable;
         }
 
-        if (isset($validated['auditorium'])) {
-            $validated['auditorium'] = $auditorium;
-        }
-
         $showtime->update($validated);
 
-        return response()->json($showtime->load('movie'));
+        return response()->json($showtime->load(['movie', 'auditoriumDetail.cinema']));
     }
 
     /**

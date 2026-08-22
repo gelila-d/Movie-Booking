@@ -23,7 +23,7 @@
         <!-- Futuristic Screen -->
         <div class="w-full max-w-md mx-auto mb-12 relative">
           <div class="h-10 bg-gradient-to-r from-orange-500/30 via-amber-400/50 to-orange-500/30 rounded-t-3xl border-t border-l border-r border-[#ef6a26]/40 flex justify-center items-center backdrop-blur-sm">
-            <span class="text-xs font-bold text-orange-300 uppercase tracking-widest font-mono">◢ SCREEN ◣</span>
+            <span class="text-xs font-bold text-orange-300 uppercase tracking-widest font-mono">◢ AUDITORIUM SCREEN ◣</span>
           </div>
           <!-- Screen glow effect -->
           <div class="absolute inset-0 bg-gradient-to-r from-transparent via-[#ef6a26]/30 to-transparent blur-sm rounded-t-3xl"></div>
@@ -133,6 +133,14 @@ const props = defineProps({
     type: Number,
     required: true
   },
+  rowsCount: {
+    type: Number,
+    default: null
+  },
+  seatsPerRow: {
+    type: Number,
+    default: null
+  },
   bookedSeats: {
     type: Array,
     default: () => []
@@ -150,34 +158,51 @@ const totalPrice = computed(() => {
   return (selectedSeats.value.length * (props.price || 0)).toFixed(2)
 })
 
-// Generate a grid. Let's make it 10 columns wide maximum.
+// Generate a grid based on rowsCount and seatsPerRow if provided, or default calculation
 const seatGrid = computed(() => {
     const grid = [];
-    const maxCols = 10;
-    const total = props.totalSeats;
-    let seatCount = 0;
-    
-    const getRowLabel = (index) => String.fromCharCode(65 + index);
+    const getRowLabel = (index) => String.fromCharCode(65 + index); // A, B, C...
 
-    let rIndex = 0;
-    while (seatCount < total) {
-        const rowSeats = [];
-        const colsInThisRow = Math.min(maxCols, total - seatCount);
-        
-        for (let c = 0; c < colsInThisRow; c++) {
-            const seatId = `${getRowLabel(rIndex)}${c + 1}`;
-            rowSeats.push({
-                id: seatId,
-                unavailable: props.bookedSeats.includes(seatId)
+    if (props.rowsCount && props.seatsPerRow) {
+        for (let r = 0; r < props.rowsCount; r++) {
+            const rowLabel = getRowLabel(r);
+            const rowSeats = [];
+            for (let c = 0; c < props.seatsPerRow; c++) {
+                const seatId = `${rowLabel}${c + 1}`;
+                rowSeats.push({
+                    id: seatId,
+                    unavailable: props.bookedSeats.includes(seatId)
+                });
+            }
+            grid.push({
+                label: rowLabel,
+                seats: rowSeats
             });
-            seatCount++;
         }
-        
-        grid.push({
-            label: getRowLabel(rIndex),
-            seats: rowSeats
-        });
-        rIndex++;
+    } else {
+        const maxCols = 10;
+        const total = props.totalSeats;
+        let seatCount = 0;
+        let rIndex = 0;
+        while (seatCount < total) {
+            const rowSeats = [];
+            const colsInThisRow = Math.min(maxCols, total - seatCount);
+            
+            for (let c = 0; c < colsInThisRow; c++) {
+                const seatId = `${getRowLabel(rIndex)}${c + 1}`;
+                rowSeats.push({
+                    id: seatId,
+                    unavailable: props.bookedSeats.includes(seatId)
+                });
+                seatCount++;
+            }
+            
+            grid.push({
+                label: getRowLabel(rIndex),
+                seats: rowSeats
+            });
+            rIndex++;
+        }
     }
     
     return grid;

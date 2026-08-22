@@ -72,14 +72,14 @@
               <!-- Available Showtimes Selector -->
               <div class="space-y-3">
                 <h3 class="text-xs uppercase font-bold tracking-wider text-[#ef6a26] font-mono flex items-center gap-2">
-                  <span>📅 SELECT SHOWTIME & AUDITORIUM</span>
+                  <span>📅 SELECT CINEMA, HALL & SHOWTIME</span>
                 </h3>
 
                 <div v-if="showtimes.length === 0" class="p-4 bg-slate-800/30 border border-amber-500/30 rounded-xl text-slate-300 text-sm">
-                  No showtimes currently scheduled for this movie. Check back soon or contact support!
+                  No showtimes currently scheduled for this movie. Check back soon!
                 </div>
 
-                <div v-else class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-60 overflow-y-auto pr-1">
+                <div v-else class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-64 overflow-y-auto pr-1">
                   <button
                     v-for="st in showtimes"
                     :key="st.id"
@@ -90,8 +90,8 @@
                       : 'bg-slate-800/40 border-slate-700/60 hover:border-slate-500 hover:bg-slate-800/80'"
                   >
                     <div class="flex items-center justify-between mb-1">
-                      <span class="text-xs font-mono font-bold text-purple-300 bg-purple-950/60 border border-purple-500/30 px-2 py-0.5 rounded">
-                        🏛️ {{ st.auditorium }}
+                      <span class="text-xs font-mono font-bold text-purple-300 bg-purple-950/60 border border-purple-500/30 px-2 py-0.5 rounded truncate max-w-[150px]">
+                        🏛️ {{ st.auditoriumDetail?.cinema?.name ? `${st.auditoriumDetail.cinema.name} - ${st.auditoriumDetail.name}` : st.auditorium }}
                       </span>
                       <span class="text-sm font-bold text-emerald-400 font-mono">
                         ${{ Number(st.price).toFixed(2) }}
@@ -121,7 +121,7 @@
                 BOOK YOUR TICKETS
               </h2>
               <div v-if="selectedShowtime" class="text-xs font-mono text-slate-300 bg-black/40 px-3 py-1.5 rounded-lg border border-white/10">
-                Selected: <span class="text-purple-300 font-bold">{{ selectedShowtime.auditorium }}</span> @ <span class="text-white font-bold">{{ new Date(selectedShowtime.start_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) }}</span>
+                Selected: <span class="text-purple-300 font-bold">{{ selectedShowtime.auditoriumDetail?.cinema?.name ? `${selectedShowtime.auditoriumDetail.cinema.name} (${selectedShowtime.auditoriumDetail.name})` : selectedShowtime.auditorium }}</span> @ <span class="text-white font-bold">{{ new Date(selectedShowtime.start_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) }}</span>
               </div>
             </div>
 
@@ -131,6 +131,8 @@
               :price="selectedShowtime ? Number(selectedShowtime.price) : 0"
               :availableSeats="selectedShowtime ? selectedShowtime.available_seats : movie.available_seats" 
               :totalSeats="selectedShowtime ? selectedShowtime.total_seats : movie.total_seats"
+              :rowsCount="selectedShowtime?.auditoriumDetail?.rows_count || null"
+              :seatsPerRow="selectedShowtime?.auditoriumDetail?.seats_per_row || null"
               :bookedSeats="bookedSeats"
               :loading="booking"
               @book="handleBooking"
