@@ -145,6 +145,13 @@
         </div>
       </div>
     </div>
+
+    <!-- DIGITAL E-TICKET CONFIRMATION PASS MODAL -->
+    <TicketModal 
+      :show="showTicketModal" 
+      :booking="createdBooking" 
+      @close="closeTicketModal" 
+    />
   </div>
 </template>
 
@@ -153,6 +160,7 @@ import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import api from '../services/api'
 import BookingForm from '../components/BookingForm.vue'
+import TicketModal from '../components/TicketModal.vue'
 
 const route = useRoute()
 const router = useRouter()
@@ -162,6 +170,9 @@ const selectedShowtime = ref(null)
 const bookedSeats = ref([])
 const loading = ref(true)
 const booking = ref(false)
+
+const showTicketModal = ref(false)
+const createdBooking = ref(null)
 
 const getImageUrl = (path) => {
     if (!path) return '';
@@ -216,9 +227,9 @@ const handleBooking = async ({ selectedSeats, ticketDetails, paymentMethod }) =>
       payload.movie_id = movie.value.id
     }
 
-    await api.post('/bookings', payload)
-    alert('Payment confirmed & tickets booked successfully!')
-    router.push('/my-bookings')
+    const res = await api.post('/bookings', payload)
+    createdBooking.value = res.data
+    showTicketModal.value = true
   } catch (err) {
     if (err.response && err.response.data && err.response.data.errors) {
         const errors = err.response.data.errors;
@@ -230,6 +241,11 @@ const handleBooking = async ({ selectedSeats, ticketDetails, paymentMethod }) =>
   } finally {
     booking.value = false
   }
+}
+
+const closeTicketModal = () => {
+  showTicketModal.value = false
+  router.push('/my-bookings')
 }
 
 onMounted(fetchMovieAndShowtimes)

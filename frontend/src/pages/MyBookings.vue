@@ -63,12 +63,20 @@
                 </div>
               </div>
               
-              <div class="flex items-center gap-3">
+              <div class="flex items-center gap-2 flex-wrap">
                 <!-- Payment Badge -->
                 <span class="px-3 py-1 rounded-full font-bold uppercase text-xs font-mono flex items-center gap-1.5" :class="getPaymentBadgeStyle(booking.payment_method)">
                   <span>{{ getPaymentIcon(booking.payment_method) }}</span>
                   <span>{{ getPaymentName(booking.payment_method) }}</span>
                 </span>
+
+                <!-- View Ticket Pass Button -->
+                <button 
+                  @click="openTicket(booking)" 
+                  class="text-amber-300 hover:text-white text-xs font-bold bg-amber-500/20 border border-amber-500/40 px-3 py-1 rounded-xl transition-all hover:scale-105 flex items-center gap-1"
+                >
+                  <span>🎟️</span> View E-Ticket Pass
+                </button>
 
                 <button 
                   @click="cancelBooking(booking.id)" 
@@ -95,7 +103,7 @@
               </span>
 
               <span class="flex items-center font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-xl">
-                Total Paid: {{ booking.total_price ? `${Number(booking.total_price).toFixed(0)} Birr` : 'Paid' }}
+                Total Paid: {{ booking.total_price ? `${Number(booking.total_price).toLocaleString()} ETB` : 'Paid' }}
               </span>
             </div>
 
@@ -106,7 +114,7 @@
                 :key="td.seat_id"
                 class="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700 text-xs font-mono text-slate-300"
               >
-                Seat {{ td.seat_id }} ({{ td.type }}: {{ td.price }} Birr)
+                Seat {{ td.seat_id }} ({{ td.type }}: {{ td.price }} ETB)
               </span>
             </div>
           </div>
@@ -114,12 +122,12 @@
           <!-- Transaction Footer & Digital E-Ticket Barcode -->
           <div class="text-xs text-slate-400 font-mono border-t border-white/10 pt-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
             <div>
-              <span class="block text-slate-500">Transaction Ref: <strong class="text-white">{{ booking.transaction_ref || `TB-${booking.id}98234` }}</strong></span>
+              <span class="block text-slate-500">Booking Ref: <strong class="text-amber-300">{{ booking.transaction_ref || `MV-${booking.id}98` }}</strong></span>
               <span class="block text-[11px] text-slate-500">Issued on: {{ new Date(booking.created_at).toLocaleDateString() }}</span>
             </div>
 
-            <!-- Simulated E-Ticket QR Code / Barcode -->
-            <div class="flex items-center gap-3 bg-black/60 p-2 px-3 rounded-xl border border-white/10">
+            <!-- Simulated E-Ticket QR Code / Barcode Button -->
+            <button @click="openTicket(booking)" class="flex items-center gap-3 bg-black/80 hover:bg-black p-2 px-3 rounded-xl border border-amber-500/40 transition-colors group">
               <div class="flex flex-col items-center">
                 <!-- Barcode visual simulation -->
                 <div class="flex items-center gap-0.5 h-6">
@@ -134,23 +142,38 @@
                   <div class="w-1.5 h-full bg-white"></div>
                   <div class="w-0.5 h-full bg-white"></div>
                 </div>
-                <span class="text-[9px] text-slate-400 tracking-widest mt-0.5 font-mono">SCAN AT ENTRY</span>
+                <span class="text-[9px] text-amber-300 group-hover:text-amber-200 tracking-widest mt-0.5 font-mono">CLICK TO SCAN QR PASS</span>
               </div>
-            </div>
+            </button>
           </div>
         </div>
       </div>
     </div>
+
+    <!-- DIGITAL E-TICKET PASS MODAL -->
+    <TicketModal 
+      :show="showTicketModal" 
+      :booking="activeBooking" 
+      @close="showTicketModal = false" 
+    />
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, computed } from "vue"
 import api from "../services/api"
+import TicketModal from "../components/TicketModal.vue"
 
 const bookings = ref([])
 const loading = ref(true)
 const searchQuery = ref("")
+const showTicketModal = ref(false)
+const activeBooking = ref(null)
+
+const openTicket = (booking) => {
+  activeBooking.value = booking
+  showTicketModal.value = true
+}
 
 const filteredBookings = computed(() => {
     if (!searchQuery.value) return bookings.value
