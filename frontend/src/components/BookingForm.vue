@@ -111,7 +111,7 @@
       </div>
     </div>
 
-    <!-- Submit Area -->
+    <!-- Submit Area & Payment Trigger -->
     <div class="flex flex-col sm:flex-row justify-between items-center gap-4 border-t border-slate-700/50 pt-6">
       <div class="bg-slate-800/30 border border-[#ef6a26]/30 rounded-xl px-4 py-3 backdrop-blur-sm w-full sm:w-auto">
         <div class="flex items-center justify-between sm:justify-start gap-4">
@@ -124,17 +124,122 @@
         </div>
       </div>
       
-      <!-- Book button -->
+      <!-- Trigger Payment Modal Button -->
       <button 
-        @click="handleSubmit" 
+        @click="openPaymentModal" 
         :disabled="loading || selectedSeatDetails.length === 0"
-        class="btn-primary px-8 py-3 text-sm font-bold tracking-wider relative overflow-hidden group/btn min-w-[160px] w-full sm:w-auto"
+        class="btn-primary px-8 py-3 text-sm font-bold tracking-wider relative overflow-hidden group/btn min-w-[200px] w-full sm:w-auto"
       >
         <span class="relative z-10">
-          {{ loading ? 'BOOKING...' : `PAY ${totalPrice} BIRR & BOOK` }}
+          PROCEED TO PAYMENT ({{ totalPrice }} BIRR)
         </span>
-        <div v-if="!loading" class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-700"></div>
+        <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-700"></div>
       </button>
+    </div>
+
+    <!-- MOCK ETHIOPIAN PAYMENT MODAL -->
+    <div v-if="showPaymentModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+      <div class="bg-slate-900 border border-slate-700 w-full max-w-lg rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl relative overflow-hidden">
+        <!-- Close button -->
+        <button @click="showPaymentModal = false" class="absolute top-5 right-5 text-slate-400 hover:text-white font-bold text-lg">✕</button>
+
+        <div class="border-b border-white/10 pb-4">
+          <h3 class="text-xl font-bold text-white font-orbitron flex items-center gap-2">
+            💳 ETHIOPIAN PAYMENT GATEWAY
+          </h3>
+          <p class="text-xs text-slate-400 font-mono mt-1">Select payment method to complete booking of {{ selectedSeatDetails.length }} tickets</p>
+        </div>
+
+        <!-- Order Summary Pill -->
+        <div class="p-4 bg-black/50 border border-emerald-500/30 rounded-2xl flex justify-between items-center">
+          <div>
+            <span class="text-xs text-slate-400 font-mono uppercase block">Total Due</span>
+            <span class="text-xs font-bold text-slate-200">Seats: {{ selectedSeats.join(', ') }}</span>
+          </div>
+          <span class="text-2xl font-bold font-mono text-emerald-400">{{ totalPrice }} Birr</span>
+        </div>
+
+        <!-- Payment Method Selection Tabs -->
+        <div class="space-y-3">
+          <label class="text-xs font-bold uppercase tracking-wider text-slate-300 font-mono">Select Payment Provider:</label>
+          
+          <div class="grid grid-cols-2 gap-3">
+            <!-- Telebirr -->
+            <button 
+              @click="selectedProvider = 'telebirr'" 
+              class="p-3.5 rounded-xl border flex flex-col items-center justify-center gap-1.5 transition-all"
+              :class="selectedProvider === 'telebirr' ? 'bg-cyan-950/60 border-cyan-400 text-cyan-300 ring-2 ring-cyan-400/30' : 'bg-slate-800/60 border-slate-700 text-slate-300 hover:border-slate-500'"
+            >
+              <span class="text-xl">📱</span>
+              <span class="text-xs font-bold font-mono">Telebirr</span>
+              <span class="text-[10px] text-cyan-400/80 font-mono">Ethio Telecom</span>
+            </button>
+
+            <!-- CBE Birr -->
+            <button 
+              @click="selectedProvider = 'cbe_birr'" 
+              class="p-3.5 rounded-xl border flex flex-col items-center justify-center gap-1.5 transition-all"
+              :class="selectedProvider === 'cbe_birr' ? 'bg-purple-950/60 border-purple-400 text-purple-300 ring-2 ring-purple-400/30' : 'bg-slate-800/60 border-slate-700 text-slate-300 hover:border-slate-500'"
+            >
+              <span class="text-xl">🏦</span>
+              <span class="text-xs font-bold font-mono">CBE Birr</span>
+              <span class="text-[10px] text-purple-400/80 font-mono">Comm. Bank of Eth.</span>
+            </button>
+
+            <!-- Chapa -->
+            <button 
+              @click="selectedProvider = 'chapa'" 
+              class="p-3.5 rounded-xl border flex flex-col items-center justify-center gap-1.5 transition-all"
+              :class="selectedProvider === 'chapa' ? 'bg-green-950/60 border-green-400 text-green-300 ring-2 ring-green-400/30' : 'bg-slate-800/60 border-slate-700 text-slate-300 hover:border-slate-500'"
+            >
+              <span class="text-xl">💳</span>
+              <span class="text-xs font-bold font-mono">Chapa</span>
+              <span class="text-[10px] text-green-400/80 font-mono">Card / Gateway</span>
+            </button>
+
+            <!-- Bank of Abyssinia -->
+            <button 
+              @click="selectedProvider = 'boa'" 
+              class="p-3.5 rounded-xl border flex flex-col items-center justify-center gap-1.5 transition-all"
+              :class="selectedProvider === 'boa' ? 'bg-amber-950/60 border-amber-400 text-amber-300 ring-2 ring-amber-400/30' : 'bg-slate-800/60 border-slate-700 text-slate-300 hover:border-slate-500'"
+            >
+              <span class="text-xl">🏛️</span>
+              <span class="text-xs font-bold font-mono">Abyssinia Pay</span>
+              <span class="text-[10px] text-amber-400/80 font-mono">Bank of Abyssinia</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Provider Specific Input Simulation -->
+        <div class="space-y-3 bg-black/40 p-4 rounded-2xl border border-white/10">
+          <div v-if="selectedProvider === 'telebirr' || selectedProvider === 'cbe_birr'" class="space-y-2">
+            <label class="text-xs font-mono text-slate-300">Registered Phone Number (09XXXXXXXX):</label>
+            <input v-model="phoneNumber" type="tel" placeholder="0911223344" class="w-full bg-slate-800 text-white border border-slate-700 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-[#ef6a26] font-mono" />
+          </div>
+
+          <div v-else-if="selectedProvider === 'chapa' || selectedProvider === 'boa'" class="space-y-2">
+            <label class="text-xs font-mono text-slate-300">Account / Card Holder Email:</label>
+            <input v-model="accountEmail" type="email" placeholder="customer@example.com" class="w-full bg-slate-800 text-white border border-slate-700 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-[#ef6a26] font-mono" />
+          </div>
+
+          <div class="space-y-1">
+            <label class="text-xs font-mono text-slate-300">PIN / OTP Verification Code (Simulated):</label>
+            <input v-model="pinCode" type="password" maxlength="6" placeholder="1234" class="w-full bg-slate-800 text-white border border-slate-700 rounded-xl px-4 py-2 text-sm focus:outline-none focus:border-[#ef6a26] font-mono tracking-widest text-center font-bold" />
+          </div>
+        </div>
+
+        <!-- Payment Processing Spinner / Button -->
+        <div class="pt-2">
+          <button 
+            @click="processMockPayment" 
+            :disabled="processingPayment"
+            class="btn-primary w-full py-3.5 text-sm font-bold tracking-wider flex items-center justify-center gap-2"
+          >
+            <span v-if="processingPayment" class="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></span>
+            <span>{{ processingPayment ? `CONNECTING TO ${selectedProvider.toUpperCase()}...` : `CONFIRM & PAY ${totalPrice} BIRR` }}</span>
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -198,7 +303,14 @@ const props = defineProps({
 })
 
 const emit = defineEmits(['book'])
+
 const selectedSeatDetails = ref([])
+const showPaymentModal = ref(false)
+const selectedProvider = ref('telebirr')
+const phoneNumber = ref('0911223344')
+const accountEmail = ref('user@telebirr.et')
+const pinCode = ref('1234')
+const processingPayment = ref(false)
 
 const isSelected = (seatId) => {
   return selectedSeatDetails.value.some(s => s.seat_id === seatId)
@@ -251,7 +363,7 @@ const seatGrid = computed(() => {
 
     for (let r = 0; r < rCount; r++) {
         const rowLabel = getRowLabel(r);
-        const isVipRow = r < vipRowsThreshold; // Top rows designated as VIP
+        const isVipRow = r < vipRowsThreshold;
         const rowSeats = [];
         for (let c = 0; c < sCount; c++) {
             const seatId = `${rowLabel}${c + 1}`;
@@ -271,11 +383,24 @@ const seatGrid = computed(() => {
     return grid;
 });
 
-const handleSubmit = () => {
+const openPaymentModal = () => {
   if (selectedSeatDetails.value.length < 1) return
-  emit('book', {
-    selectedSeats: selectedSeats.value,
-    ticketDetails: selectedSeatDetails.value
-  })
+  showPaymentModal.value = true
+}
+
+const processMockPayment = () => {
+  processingPayment.value = true
+  
+  // Simulate network latency for payment processing
+  setTimeout(() => {
+    processingPayment.value = false
+    showPaymentModal.value = false
+    
+    emit('book', {
+      selectedSeats: selectedSeats.value,
+      ticketDetails: selectedSeatDetails.value,
+      paymentMethod: selectedProvider.value
+    })
+  }, 1200)
 }
 </script>

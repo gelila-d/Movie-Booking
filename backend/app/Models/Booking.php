@@ -17,6 +17,9 @@ class Booking extends Model
         'seat_numbers',
         'ticket_details',
         'total_price',
+        'payment_status',
+        'payment_method',
+        'transaction_ref',
     ];
 
     protected $casts = [

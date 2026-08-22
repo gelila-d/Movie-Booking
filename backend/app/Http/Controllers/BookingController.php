@@ -7,11 +7,12 @@ use App\Models\Movie;
 use App\Models\Showtime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class BookingController extends Controller
 {
     /**
-     * Store a new booking while preventing overbooking and calculating Birr totals.
+     * Store a new booking with payment status and transaction reference.
      */
     public function store(Request $request)
     {
@@ -21,13 +22,25 @@ class BookingController extends Controller
             'seat_numbers' => 'required|array|min:1',
             'seat_numbers.*' => 'string',
             'ticket_details' => 'nullable|array',
+            'payment_method' => 'nullable|string|in:telebirr,cbe_birr,chapa,boa,card',
         ]);
 
         $seatsRequested = $validated['seat_numbers'];
         $seatsCount = count($seatsRequested);
         $ticketDetailsInput = $request->input('ticket_details', []);
+        $paymentMethod = $validated['payment_method'] ?? 'telebirr';
 
-        return DB::transaction(function () use ($request, $validated, $seatsRequested, $seatsCount, $ticketDetailsInput) {
+        // Generate a realistic transaction reference code based on payment method
+        $prefix = match($paymentMethod) {
+            'telebirr' => 'TB',
+            'cbe_birr' => 'CBE',
+            'chapa' => 'CHP',
+            'boa' => 'BOA',
+            default => 'TXN'
+        };
+        $transactionRef = $prefix . '-' . strtoupper(Str::random(4)) . rand(1000, 9999);
+
+        return DB::transaction(function () use ($request, $validated, $seatsRequested, $seatsCount, $ticketDetailsInput, $paymentMethod, $transactionRef) {
             if ($request->filled('showtime_id')) {
                 $showtime = Showtime::lockForUpdate()->find($validated['showtime_id']);
 
@@ -58,7 +71,7 @@ class BookingController extends Controller
                 $showtime->available_seats -= $seatsCount;
                 $showtime->save();
 
-                // Calculate total price in Birr from ticket details or default showtime base price
+                // Calculate total price in Birr
                 $totalPrice = 0;
                 $processedDetails = [];
 
@@ -93,6 +106,9 @@ class BookingController extends Controller
                     'seat_numbers' => $seatsRequested,
                     'ticket_details' => $processedDetails,
                     'total_price' => $totalPrice,
+                    'payment_status' => 'paid',
+                    'payment_method' => $paymentMethod,
+                    'transaction_ref' => $transactionRef,
                 ]);
 
                 return response()->json($booking->load(['movie', 'showtime.auditoriumDetail.cinema']), 201);
@@ -126,7 +142,7 @@ class BookingController extends Controller
                 $movie->available_seats -= $seatsCount;
                 $movie->save();
 
-                $totalPrice = $seatsCount * 100.00; // Base 100 Birr
+                $totalPrice = $seatsCount * 100.00;
 
                 $booking = Booking::create([
                     'user_id' => auth()->id(),
@@ -134,6 +150,9 @@ class BookingController extends Controller
                     'seats_booked' => $seatsCount,
                     'seat_numbers' => $seatsRequested,
                     'total_price' => $totalPrice,
+                    'payment_status' => 'paid',
+                    'payment_method' => $paymentMethod,
+                    'transaction_ref' => $transactionRef,
                 ]);
 
                 return response()->json($booking->load('movie'), 201);

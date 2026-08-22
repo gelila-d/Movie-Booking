@@ -201,12 +201,13 @@ const fetchMovieAndShowtimes = async () => {
   }
 }
 
-const handleBooking = async ({ selectedSeats, ticketDetails }) => {
+const handleBooking = async ({ selectedSeats, ticketDetails, paymentMethod }) => {
   booking.value = true
   try {
     const payload = {
       seat_numbers: selectedSeats,
-      ticket_details: ticketDetails
+      ticket_details: ticketDetails,
+      payment_method: paymentMethod || 'telebirr'
     }
 
     if (selectedShowtime.value) {
@@ -216,7 +217,7 @@ const handleBooking = async ({ selectedSeats, ticketDetails }) => {
     }
 
     await api.post('/bookings', payload)
-    alert('Tickets booked successfully!')
+    alert('Payment confirmed & tickets booked successfully!')
     router.push('/my-bookings')
   } catch (err) {
     if (err.response && err.response.data && err.response.data.errors) {
