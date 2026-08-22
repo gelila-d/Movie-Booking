@@ -3,7 +3,7 @@
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
       <div>
         <h1 class="text-3xl font-bold text-white mb-1 font-orbitron">ADMIN CONTROL CENTER</h1>
-        <p class="text-slate-300">Manage movies, publishing, showtimes, ticket pricing, cinemas, bookings & user roles</p>
+        <p class="text-slate-300">Manage movies, publishing, showtimes, pricing, cinemas, bookings, user roles & analytics</p>
       </div>
       <div class="flex gap-3 flex-wrap">
         <button 
@@ -37,26 +37,58 @@
       </div>
     </div>
 
-    <!-- Statistics Dashboard -->
-    <div v-if="stats" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-      <div class="bg-black/50 backdrop-blur-2xl p-6 rounded-2xl shadow-xl border border-white/10 flex flex-col">
-        <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1 font-mono">Total Movies</span>
-        <span class="text-3xl font-bold text-white font-orbitron">{{ stats.summary.total_movies }}</span>
+    <!-- TODAY'S STATISTICS KPI DASHBOARD -->
+    <div v-if="stats && stats.today" class="space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-[#ef6a26] text-xs font-bold uppercase tracking-widest font-mono">TODAY'S REAL-TIME PERFORMANCE KPI</h2>
+        <span class="text-xs text-slate-400 font-mono">Live Sync</span>
       </div>
-      <div class="bg-black/50 backdrop-blur-2xl p-6 rounded-2xl shadow-xl border border-white/10 flex flex-col">
-        <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1 font-mono">Total Showtimes</span>
-        <span class="text-3xl font-bold text-purple-400 font-orbitron">{{ stats.summary.total_showtimes ?? 0 }}</span>
-      </div>
-      <div class="bg-black/50 backdrop-blur-2xl p-6 rounded-2xl shadow-xl border border-white/10 flex flex-col">
-        <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1 font-mono">Total Tickets Sold</span>
-        <span class="text-3xl font-bold text-[#ef6a26] font-orbitron">{{ stats.summary.booked_seats }}</span>
-      </div>
-      <div class="bg-black/50 backdrop-blur-2xl p-6 rounded-2xl shadow-xl border border-white/10 flex flex-col">
-        <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-1 font-mono">Overall Fill Rate</span>
-        <div class="flex items-end gap-2">
-          <span class="text-3xl font-bold text-blue-400 font-orbitron">{{ stats.summary.overall_fill_rate }}%</span>
-          <div class="flex-grow h-2 bg-slate-800 rounded-full mb-2 overflow-hidden">
-            <div class="h-full bg-blue-500" :style="{ width: stats.summary.overall_fill_rate + '%' }"></div>
+
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+        <!-- Tickets Sold Today -->
+        <div class="bg-black/60 backdrop-blur-2xl p-5 rounded-2xl border border-white/10 shadow-xl flex flex-col justify-between">
+          <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 font-mono">🎟️ Tickets Sold</span>
+          <div class="mt-2">
+            <span class="text-3xl font-extrabold text-white font-orbitron">{{ stats.today.tickets_sold }}</span>
+            <span class="text-xs text-slate-400 font-mono block">Today</span>
+          </div>
+        </div>
+
+        <!-- Today's Revenue -->
+        <div class="bg-black/60 backdrop-blur-2xl p-5 rounded-2xl border border-emerald-500/40 shadow-xl flex flex-col justify-between">
+          <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-400 font-mono">💰 Revenue Today</span>
+          <div class="mt-2">
+            <span class="text-2xl lg:text-3xl font-extrabold text-emerald-300 font-orbitron">{{ Number(stats.today.revenue).toLocaleString() }}</span>
+            <span class="text-xs text-emerald-400/80 font-mono block font-bold">ETB Total</span>
+          </div>
+        </div>
+
+        <!-- Movies Showing -->
+        <div class="bg-black/60 backdrop-blur-2xl p-5 rounded-2xl border border-purple-500/40 shadow-xl flex flex-col justify-between">
+          <span class="text-[11px] font-bold uppercase tracking-wider text-purple-300 font-mono">🎬 Movies Showing</span>
+          <div class="mt-2">
+            <span class="text-3xl font-extrabold text-purple-300 font-orbitron">{{ stats.today.movies_showing }}</span>
+            <span class="text-xs text-slate-400 font-mono block">Published</span>
+          </div>
+        </div>
+
+        <!-- Registered Users -->
+        <div class="bg-black/60 backdrop-blur-2xl p-5 rounded-2xl border border-blue-500/40 shadow-xl flex flex-col justify-between">
+          <span class="text-[11px] font-bold uppercase tracking-wider text-blue-300 font-mono">👥 Registered Users</span>
+          <div class="mt-2">
+            <span class="text-3xl font-extrabold text-blue-300 font-orbitron">{{ stats.today.registered_users }}</span>
+            <span class="text-xs text-slate-400 font-mono block">Accounts</span>
+          </div>
+        </div>
+
+        <!-- Today's Occupancy -->
+        <div class="bg-black/60 backdrop-blur-2xl p-5 rounded-2xl border border-amber-500/40 shadow-xl flex flex-col justify-between">
+          <span class="text-[11px] font-bold uppercase tracking-wider text-amber-300 font-mono">🪑 Today Occupancy</span>
+          <div class="mt-2">
+            <span class="text-3xl font-extrabold text-amber-300 font-orbitron">{{ stats.today.occupancy_rate }}%</span>
+            <div class="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden mt-1">
+              <div class="h-full bg-amber-400" :style="{ width: stats.today.occupancy_rate + '%' }"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -65,6 +97,13 @@
     <!-- Tab Navigation & Search -->
     <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-white/10 gap-4">
       <div class="flex space-x-2 overflow-x-auto">
+        <button 
+          @click="activeTab = 'reports'" 
+          class="px-6 py-3 text-sm font-bold transition-colors border-b-2 whitespace-nowrap"
+          :class="activeTab === 'reports' ? 'border-[#ef6a26] text-[#ef6a26]' : 'border-transparent text-slate-400 hover:text-white'"
+        >
+          📊 Reports & Analytics
+        </button>
         <button 
           @click="activeTab = 'catalog'" 
           class="px-6 py-3 text-sm font-bold transition-colors border-b-2 whitespace-nowrap"
@@ -101,14 +140,158 @@
           Users & Roles
         </button>
       </div>
-      <div class="relative w-full md:w-64 mb-2 md:mb-0">
+      <div v-if="activeTab !== 'reports'" class="relative w-full md:w-64 mb-2 md:mb-0">
         <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">🔍</span>
         <input 
           v-model="searchQuery" 
           type="text" 
-          :placeholder="activeTab === 'catalog' ? 'Search movies...' : activeTab === 'showtimes' ? 'Search showtimes...' : activeTab === 'cinemas' ? 'Search cinemas/halls...' : activeTab === 'users' ? 'Search users...' : 'Search bookings...'" 
+          placeholder="Search..." 
           class="pl-10 pr-4 py-2 w-full border border-slate-700/80 rounded-xl focus:ring-2 focus:ring-[#ef6a26] outline-none text-sm bg-slate-900/90 text-white placeholder-slate-400"
         />
+      </div>
+    </div>
+
+    <!-- REPORTS & ANALYTICS TAB CONTENT -->
+    <div v-if="activeTab === 'reports' && stats && stats.reports" class="space-y-8">
+      <!-- Top Highlights: Most Booked Movie & Most Popular Showtime -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <!-- Most Booked Movie Card -->
+        <div class="p-6 bg-gradient-to-r from-slate-900 via-slate-950 to-black border border-amber-500/40 rounded-3xl shadow-2xl relative overflow-hidden flex gap-5 items-center">
+          <div v-if="stats.reports.most_booked_movie?.image" class="w-24 h-32 rounded-2xl overflow-hidden bg-slate-800 flex-shrink-0 border border-white/20 shadow-lg">
+            <img :src="getImageUrl(stats.reports.most_booked_movie.image)" alt="Poster" class="w-full h-full object-cover" />
+          </div>
+          <div v-else class="w-24 h-32 rounded-2xl bg-amber-950/40 border border-amber-500/30 flex items-center justify-center text-3xl flex-shrink-0">
+            🏆
+          </div>
+
+          <div class="space-y-1.5 flex-grow">
+            <span class="text-[10px] font-bold uppercase tracking-widest text-amber-400 font-mono">🏆 MOST BOOKED MOVIE</span>
+            <h3 class="text-xl font-extrabold text-white font-orbitron">{{ stats.reports.most_booked_movie?.title || 'No Bookings Yet' }}</h3>
+            <div class="flex items-center gap-3 text-xs font-mono pt-1">
+              <span class="px-2.5 py-1 bg-amber-500/20 border border-amber-500/40 text-amber-300 rounded-lg font-bold">
+                {{ stats.reports.most_booked_movie?.tickets_sold || 0 }} Tickets Sold
+              </span>
+              <span class="px-2.5 py-1 bg-emerald-500/20 border border-emerald-500/40 text-emerald-300 rounded-lg font-bold">
+                {{ Number(stats.reports.most_booked_movie?.revenue || 0).toLocaleString() }} ETB
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Most Popular Showtime Card -->
+        <div class="p-6 bg-gradient-to-r from-purple-950/60 via-slate-950 to-black border border-purple-500/40 rounded-3xl shadow-2xl relative overflow-hidden flex gap-5 items-center">
+          <div class="w-24 h-32 rounded-2xl bg-purple-950/40 border border-purple-500/30 flex flex-col items-center justify-center text-center p-2 flex-shrink-0">
+            <span class="text-2xl">🕒</span>
+            <span class="text-[10px] font-bold text-purple-300 font-mono mt-1">TOP SHOW</span>
+          </div>
+
+          <div class="space-y-1.5 flex-grow">
+            <span class="text-[10px] font-bold uppercase tracking-widest text-purple-300 font-mono">🕒 MOST POPULAR SHOWTIME</span>
+            <h3 class="text-xl font-extrabold text-white font-orbitron">{{ stats.reports.most_popular_showtime?.movie_title || 'N/A' }}</h3>
+            <p class="text-xs text-purple-300 font-mono">🏛️ {{ stats.reports.most_popular_showtime?.cinema_hall || 'Main Screen' }}</p>
+            <div class="flex items-center gap-3 text-xs font-mono pt-1">
+              <span class="px-2.5 py-1 bg-purple-500/20 border border-purple-500/40 text-purple-300 rounded-lg font-bold">
+                {{ stats.reports.most_popular_showtime?.fill_rate || 0 }}% Occupancy
+              </span>
+              <span class="text-slate-400 text-[11px]">
+                {{ stats.reports.most_popular_showtime?.start_time ? new Date(stats.reports.most_popular_showtime.start_time).toLocaleString(undefined, {dateStyle:'short', timeStyle:'short'}) : '' }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Revenue by Movie Table & Cancellation Summary -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <!-- Revenue by Movie Table (2 Cols) -->
+        <div class="lg:col-span-2 card bg-black/60 border-white/10 shadow-2xl backdrop-blur-2xl space-y-4">
+          <div class="flex justify-between items-center border-b border-white/10 pb-3">
+            <h3 class="text-lg font-bold text-white font-orbitron flex items-center gap-2">
+              <span>📈 Revenue by Movie Report</span>
+            </h3>
+            <span class="text-xs text-slate-400 font-mono">Sorted by Tickets Sold</span>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left font-mono text-xs">
+              <thead class="bg-black/80 border-b border-white/10 text-slate-400 uppercase text-[10px]">
+                <tr>
+                  <th class="py-3 px-4">Movie</th>
+                  <th class="py-3 px-4">Tickets Sold</th>
+                  <th class="py-3 px-4">Fill Rate</th>
+                  <th class="py-3 px-4 text-right">Total Revenue (ETB)</th>
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-white/5">
+                <tr v-for="m in stats.reports.revenue_by_movie" :key="m.id" class="hover:bg-white/5 transition-colors">
+                  <td class="py-3 px-4 font-sans font-bold text-white flex items-center gap-3">
+                    <img v-if="m.image" :src="getImageUrl(m.image)" class="w-8 h-10 object-cover rounded border border-white/10" />
+                    <span>{{ m.title }}</span>
+                  </td>
+                  <td class="py-3 px-4 text-slate-200 font-bold">
+                    {{ m.tickets_sold }} Tickets
+                  </td>
+                  <td class="py-3 px-4">
+                    <div class="flex items-center gap-2">
+                      <span class="text-amber-400 font-bold">{{ m.fill_rate }}%</span>
+                      <div class="w-16 h-1.5 bg-slate-800 rounded-full overflow-hidden">
+                        <div class="h-full bg-amber-400" :style="{ width: m.fill_rate + '%' }"></div>
+                      </div>
+                    </div>
+                  </td>
+                  <td class="py-3 px-4 text-right font-bold text-emerald-400">
+                    {{ Number(m.revenue || 0).toLocaleString() }} ETB
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Cancellations & Refunded ETB Metric Card (1 Col) -->
+        <div class="card bg-black/60 border-red-500/30 shadow-2xl backdrop-blur-2xl space-y-6 flex flex-col justify-between">
+          <div class="space-y-4">
+            <div class="border-b border-white/10 pb-3">
+              <h3 class="text-lg font-bold text-red-400 font-orbitron flex items-center gap-2">
+                <span>🚫 Cancellation Report</span>
+              </h3>
+              <p class="text-xs text-slate-400 font-mono mt-0.5">Automated 2-hour policy refunds</p>
+            </div>
+
+            <div class="p-4 bg-red-950/40 border border-red-500/30 rounded-2xl space-y-3 font-mono">
+              <div class="flex justify-between items-center">
+                <span class="text-slate-400 text-xs uppercase">Cancelled Tickets:</span>
+                <span class="text-xl font-bold text-red-300 font-orbitron">{{ stats.reports.cancellations?.total_cancelled || 0 }}</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-slate-400 text-xs uppercase">Total Refunded:</span>
+                <span class="text-xl font-bold text-emerald-400 font-orbitron">{{ Number(stats.reports.cancellations?.refunded_amount || 0).toLocaleString() }} ETB</span>
+              </div>
+              <div class="flex justify-between items-center border-t border-white/10 pt-2">
+                <span class="text-slate-400 text-xs uppercase">Cancellation Rate:</span>
+                <span class="text-sm font-bold text-amber-300">{{ stats.reports.cancellations?.cancellation_rate || 0 }}%</span>
+              </div>
+            </div>
+
+            <!-- Revenue Trend 7-Day Table -->
+            <div class="space-y-2">
+              <span class="text-xs font-mono font-bold text-slate-300 uppercase block">🗓️ 7-Day Revenue Trend</span>
+              <div class="space-y-1.5 max-h-48 overflow-y-auto pr-1 text-xs font-mono">
+                <div 
+                  v-for="d in stats.reports.revenue_by_date" 
+                  :key="d.raw_date"
+                  class="p-2.5 bg-slate-900/80 rounded-xl border border-white/10 flex justify-between items-center"
+                >
+                  <span class="text-slate-300 font-bold">{{ d.date }}</span>
+                  <div class="flex items-center gap-3">
+                    <span class="text-slate-400 text-[11px]">{{ d.tickets }} tix</span>
+                    <span class="text-emerald-400 font-bold">{{ Number(d.revenue).toLocaleString() }} ETB</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
@@ -798,7 +981,7 @@ const editingAuditoriumId = ref(null)
 const errorMessage = ref("")
 const showtimeError = ref("")
 const imageFile = ref(null)
-const activeTab = ref('catalog')
+const activeTab = ref('reports')
 const searchQuery = ref("")
 const selectedCinemaId = ref("")
 
@@ -870,7 +1053,7 @@ const getImageUrl = (path) => {
 const form = ref({
     title: "",
     description: "",
-    genre: "Action, Thriller",
+    genre: "Action, Sci-Fi",
     duration: 150,
     rating: "PG-13",
     trailer_url: "",
@@ -941,12 +1124,6 @@ const handleAuditoriumSelect = () => {
             }
         }
     }
-}
-
-const getFillRate = (movieId) => {
-    if (!stats.value || !stats.value.movie_stats) return null;
-    const movieStat = stats.value.movie_stats.find(s => s.id === movieId);
-    return movieStat ? movieStat.fill_rate : null;
 }
 
 const getShowtimeFillRate = (st) => {
@@ -1387,6 +1564,8 @@ watch(activeTab, (newTab) => {
         loadAllBookings()
     } else if (newTab === 'users') {
         loadUsers()
+    } else if (newTab === 'reports') {
+        loadStats()
     }
 })
 
