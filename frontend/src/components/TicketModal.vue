@@ -9,8 +9,8 @@
           <span class="font-orbitron font-extrabold tracking-wider text-sm uppercase">OFFICIAL E-TICKET PASS</span>
         </div>
         <div class="flex items-center gap-2">
-          <button @click="printTicket" class="px-3 py-1 bg-black/20 hover:bg-black/30 text-black font-bold text-xs rounded-lg transition-colors print:hidden flex items-center gap-1">
-            <span>🖨️</span> Print Pass
+          <button @click="downloadOrPrintTicket" class="px-3 py-1 bg-black/20 hover:bg-black/30 text-black font-bold text-xs rounded-lg transition-colors print:hidden flex items-center gap-1">
+            <span>📥</span> Download / Print
           </button>
           <button @click="close" class="text-black font-extrabold hover:opacity-75 text-lg print:hidden">
             ✕
@@ -36,7 +36,7 @@
               🏛️ {{ cinemaHallName }}
             </p>
             <div class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold font-mono uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 mt-1">
-              ✓ CONFIRMED & PAID
+              ✓ {{ bookingStatusText }}
             </div>
           </div>
         </div>
@@ -103,7 +103,9 @@
       <!-- Ticket Stub Footer -->
       <div class="bg-slate-900 border-t border-slate-800 p-4 text-center text-[10px] text-slate-400 font-mono flex justify-between items-center print:hidden">
         <span>movies • Ethiopian Cinema Pass</span>
-        <span>Have a great show! 🍿</span>
+        <button @click="downloadOrPrintTicket" class="text-amber-300 font-bold hover:underline flex items-center gap-1">
+          <span>📥</span> Download Ticket
+        </button>
       </div>
     </div>
   </div>
@@ -129,7 +131,7 @@ const close = () => {
   emit('close')
 }
 
-const printTicket = () => {
+const downloadOrPrintTicket = () => {
   window.print()
 }
 
@@ -142,6 +144,15 @@ const bookingId = computed(() => {
   if (!props.booking) return 'MV-82931';
   if (props.booking.transaction_ref) return props.booking.transaction_ref;
   return `MV-${String(props.booking.id).padStart(5, '0')}`;
+})
+
+const bookingStatusText = computed(() => {
+  if (!props.booking) return 'CONFIRMED & PAID';
+  const dStr = props.booking.showtime?.start_time || props.booking.movie?.show_time;
+  if (dStr && new Date(dStr) < new Date()) {
+    return 'PAID (PAST SHOW)';
+  }
+  return 'CONFIRMED & PAID';
 })
 
 const cinemaHallName = computed(() => {
