@@ -8,6 +8,7 @@ use App\Models\Showtime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Carbon\Carbon;
 
 class BookingController extends Controller
 {
@@ -52,7 +53,11 @@ class BookingController extends Controller
                     return response()->json(['message' => 'Not enough seats available for this showtime'], 400);
                 }
 
-                $existingBookings = Booking::where('showtime_id', $showtime->id)->get();
+                // Check collision only against active confirmed bookings
+                $existingBookings = Booking::where('showtime_id', $showtime->id)
+                    ->where('status', '!=', 'cancelled')
+                    ->get();
+
                 $bookedSeats = [];
                 foreach ($existingBookings as $b) {
                     if ($b->seat_numbers) {
@@ -109,6 +114,8 @@ class BookingController extends Controller
                     'payment_status' => 'paid',
                     'payment_method' => $paymentMethod,
                     'transaction_ref' => $transactionRef,
+                    'status' => 'confirmed',
+                    'refund_status' => 'none',
                 ]);
 
                 return response()->json($booking->load(['movie', 'showtime.auditoriumDetail.cinema']), 201);
@@ -123,7 +130,11 @@ class BookingController extends Controller
                     return response()->json(['message' => 'Not enough seats'], 400);
                 }
 
-                $existingBookings = Booking::where('movie_id', $movie->id)->whereNull('showtime_id')->get();
+                $existingBookings = Booking::where('movie_id', $movie->id)
+                    ->whereNull('showtime_id')
+                    ->where('status', '!=', 'cancelled')
+                    ->get();
+
                 $bookedSeats = [];
                 foreach ($existingBookings as $b) {
                     if ($b->seat_numbers) {
@@ -153,6 +164,8 @@ class BookingController extends Controller
                     'payment_status' => 'paid',
                     'payment_method' => $paymentMethod,
                     'transaction_ref' => $transactionRef,
+                    'status' => 'confirmed',
+                    'refund_status' => 'none',
                 ]);
 
                 return response()->json($booking->load('movie'), 201);
@@ -173,7 +186,7 @@ class BookingController extends Controller
     }
 
     /**
-     * Cancel a booking.
+     * Cancel a booking with 2-hour cutoff validation, seat restoration, and refund processing.
      */
     public function destroy(Booking $booking)
     {
@@ -181,7 +194,37 @@ class BookingController extends Controller
             return response()->json(['message' => 'Unauthorized'], 403);
         }
 
-        DB::transaction(function () use ($booking) {
+        if ($booking->status === 'cancelled') {
+            return response()->json(['message' => 'This ticket booking has already been cancelled.'], 400);
+        }
+
+        // Determine showtime start time for 2-hour cutoff rule
+        $startTime = null;
+        if ($booking->showtime_id && $booking->showtime) {
+            $startTime = Carbon::parse($booking->showtime->start_time);
+        } elseif ($booking->movie_id && $booking->movie && $booking->movie->show_time) {
+            $startTime = Carbon::parse($booking->movie->show_time);
+        }
+
+        if ($startTime) {
+            $now = Carbon::now();
+            if ($now->greaterThanOrEqualTo($startTime)) {
+                return response()->json([
+                    'message' => 'Cannot cancel ticket for a showtime that has already started or passed.'
+                ], 422);
+            }
+
+            $minutesUntilShow = $now->diffInMinutes($startTime, false);
+            if ($minutesUntilShow < 120) {
+                $hoursLeft = round($minutesUntilShow / 60, 1);
+                return response()->json([
+                    'message' => "Cancellations and refunds are only permitted at least 2 hours before showtime. Your showtime starts in {$minutesUntilShow} minutes ({$hoursLeft} hours left)."
+                ], 422);
+            }
+        }
+
+        return DB::transaction(function () use ($booking) {
+            // 1. Restore seat availability
             if ($booking->showtime_id) {
                 $showtime = Showtime::lockForUpdate()->find($booking->showtime_id);
                 if ($showtime) {
@@ -196,18 +239,35 @@ class BookingController extends Controller
                 }
             }
 
-            $booking->delete();
-        });
+            // 2. Issue 100% Refund Simulation & Record Audit History
+            $refundRef = 'REF-' + strtoupper(Str::random(4)) . rand(1000, 9999);
+            $refundAmount = $booking->total_price ?? 0;
 
-        return response()->json(['message' => 'Booking cancelled']);
+            $booking->update([
+                'status' => 'cancelled',
+                'payment_status' => 'refunded',
+                'refund_status' => 'full_refund',
+                'refund_amount' => $refundAmount,
+                'refund_ref' => $refundRef,
+                'cancelled_at' => Carbon::now(),
+            ]);
+
+            return response()->json([
+                'message' => "Ticket booking cancelled successfully! A full refund of {$refundAmount} ETB has been issued via {$booking->payment_method} (Ref: {$refundRef}).",
+                'booking' => $booking->fresh(['movie', 'showtime.auditoriumDetail.cinema'])
+            ]);
+        });
     }
 
     /**
-     * Get booked seats for a movie
+     * Get booked seats for a movie excluding cancelled reservations
      */
     public function getBookedSeats($movieId)
     {
-        $existingBookings = Booking::where('movie_id', $movieId)->get();
+        $existingBookings = Booking::where('movie_id', $movieId)
+            ->where('status', '!=', 'cancelled')
+            ->get();
+
         $bookedSeats = [];
         foreach ($existingBookings as $b) {
             if ($b->seat_numbers) {

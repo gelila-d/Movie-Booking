@@ -20,12 +20,19 @@ class Booking extends Model
         'payment_status',
         'payment_method',
         'transaction_ref',
+        'status',
+        'refund_status',
+        'refund_amount',
+        'refund_ref',
+        'cancelled_at',
     ];
 
     protected $casts = [
         'seat_numbers' => 'array',
         'ticket_details' => 'array',
         'total_price' => 'float',
+        'refund_amount' => 'float',
+        'cancelled_at' => 'datetime',
     ];
 
     public function user()

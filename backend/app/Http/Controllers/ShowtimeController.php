@@ -206,7 +206,9 @@ class ShowtimeController extends Controller
      */
     public function getBookedSeats(Showtime $showtime)
     {
-        $existingBookings = Booking::where('showtime_id', $showtime->id)->get();
+        $existingBookings = Booking::where('showtime_id', $showtime->id)
+            ->where('status', '!=', 'cancelled')
+            ->get();
         $bookedSeats = [];
         foreach ($existingBookings as $b) {
             if ($b->seat_numbers) {

@@ -4,7 +4,7 @@
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
       <div>
         <h1 class="text-3xl font-bold text-white mb-1 font-orbitron">MY MOVIE TICKETS</h1>
-        <p class="text-slate-300">View upcoming reservations, past movie history, and download digital QR passes</p>
+        <p class="text-slate-300">View upcoming showtimes, past movie history, refunds, and scannable QR passes</p>
       </div>
       <div class="relative w-full md:w-80" v-if="bookings.length > 0 || searchQuery">
         <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
@@ -13,13 +13,22 @@
         <input 
           v-model="searchQuery" 
           type="text" 
-          placeholder="Search by movie title..." 
+          placeholder="Search by movie title or ref..." 
           class="pl-10 pr-4 py-2.5 w-full border border-[#ef6a26]/40 rounded-xl focus:ring-2 focus:ring-[#ef6a26] outline-none shadow-sm transition-all bg-slate-900/90 text-white placeholder-slate-400 text-sm"
         />
       </div>
     </div>
 
-    <!-- Upcoming vs Past Tab Filters -->
+    <!-- Explicit Cancellation & Refund Policy Banner -->
+    <div class="p-4 bg-gradient-to-r from-slate-900 via-slate-950 to-slate-900 border border-amber-500/40 rounded-2xl flex items-start gap-3 shadow-lg">
+      <span class="text-xl">ℹ️</span>
+      <div class="space-y-0.5 text-xs text-slate-300">
+        <h4 class="font-bold text-amber-300 uppercase tracking-wider font-mono">Cancellation & Refund Policy</h4>
+        <p>100% Mobile Money refund (Telebirr / CBE Birr) is granted for ticket cancellations requested at least <strong>2 hours prior to showtime</strong>. Seats are immediately restored to the cinema hall.</p>
+      </div>
+    </div>
+
+    <!-- Upcoming vs Past vs Cancelled Tab Filters -->
     <div class="flex items-center justify-between border-b border-white/10 pb-4 gap-4 flex-wrap">
       <div class="flex space-x-3 overflow-x-auto">
         <button 
@@ -38,6 +47,15 @@
         >
           <span>⏳ Past Bookings</span>
           <span class="px-2 py-0.5 rounded-full text-[10px] bg-black/40 text-slate-300 font-bold">{{ pastBookings.length }}</span>
+        </button>
+
+        <button 
+          @click="activeTab = 'cancelled'" 
+          class="px-5 py-2.5 rounded-xl font-bold text-xs font-mono uppercase tracking-wider transition-all flex items-center gap-2"
+          :class="activeTab === 'cancelled' ? 'bg-red-900 text-red-100 shadow-lg shadow-red-900/30' : 'bg-slate-800/80 text-slate-300 hover:bg-slate-700'"
+        >
+          <span>🚫 Cancelled & Refunded</span>
+          <span class="px-2 py-0.5 rounded-full text-[10px] bg-black/40 text-red-300 font-bold">{{ cancelledBookings.length }}</span>
         </button>
 
         <button 
@@ -66,10 +84,10 @@
         🎟️
       </div>
       <h3 class="text-lg font-bold text-white mb-1">
-        {{ activeTab === 'upcoming' ? 'No Upcoming Bookings' : activeTab === 'past' ? 'No Past Movie History' : 'No Bookings Found' }}
+        {{ activeTab === 'upcoming' ? 'No Upcoming Bookings' : activeTab === 'past' ? 'No Past Movie History' : activeTab === 'cancelled' ? 'No Cancelled Tickets' : 'No Bookings Found' }}
       </h3>
       <p class="text-slate-400 text-sm mb-6 max-w-md mx-auto">
-        {{ activeTab === 'upcoming' ? 'You have no scheduled upcoming movie showtimes.' : 'You haven’t attended any past showtimes yet.' }}
+        {{ activeTab === 'upcoming' ? 'You have no scheduled upcoming movie showtimes.' : 'No reservations found in this view.' }}
       </p>
       <router-link to="/movies" class="btn-primary">Browse Showing Movies</router-link>
     </div>
@@ -80,24 +98,25 @@
         v-for="booking in displayedBookings" 
         :key="booking.id" 
         class="card flex flex-col lg:flex-row shadow-2xl border-slate-700/80 bg-black/70 backdrop-blur-2xl overflow-hidden !p-0 transition-all hover:border-[#ef6a26]/60 rounded-3xl"
+        :class="{ 'opacity-70 border-red-900/40': booking.status === 'cancelled' }"
       >
         <!-- Left Thumbnail Poster -->
         <div v-if="booking.movie?.image" class="w-full lg:w-48 h-48 lg:h-auto bg-gray-900 flex-shrink-0 relative overflow-hidden">
           <img :src="getImageUrl(booking.movie.image)" alt="Movie Poster" class="w-full h-full object-cover" />
           <div 
             class="absolute top-3 left-3 text-black text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider font-mono shadow-md"
-            :class="isUpcoming(booking) ? 'bg-emerald-400' : 'bg-slate-400'"
+            :class="booking.status === 'cancelled' ? 'bg-red-500 text-white' : (isUpcoming(booking) ? 'bg-emerald-400' : 'bg-slate-400')"
           >
-            {{ isUpcoming(booking) ? '✓ UPCOMING' : '✓ PAST SHOW' }}
+            {{ booking.status === 'cancelled' ? '🚫 CANCELLED & REFUNDED' : (isUpcoming(booking) ? '✓ UPCOMING' : '✓ PAST SHOW') }}
           </div>
         </div>
         <div v-else class="w-full lg:w-48 h-48 lg:h-auto bg-slate-800 flex items-center justify-center flex-shrink-0 relative">
           <span class="text-gray-400 text-3xl">🎬</span>
           <div 
             class="absolute top-3 left-3 text-black text-[10px] font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider font-mono shadow-md"
-            :class="isUpcoming(booking) ? 'bg-emerald-400' : 'bg-slate-400'"
+            :class="booking.status === 'cancelled' ? 'bg-red-500 text-white' : (isUpcoming(booking) ? 'bg-emerald-400' : 'bg-slate-400')"
           >
-            {{ isUpcoming(booking) ? '✓ UPCOMING' : '✓ PAST SHOW' }}
+            {{ booking.status === 'cancelled' ? '🚫 CANCELLED & REFUNDED' : (isUpcoming(booking) ? '✓ UPCOMING' : '✓ PAST SHOW') }}
           </div>
         </div>
         
@@ -119,29 +138,31 @@
                   <span>{{ getPaymentName(booking.payment_method) }}</span>
                 </span>
 
-                <!-- View E-Ticket Pass Button -->
+                <!-- View E-Ticket Pass Button (if active) -->
                 <button 
+                  v-if="booking.status !== 'cancelled'"
                   @click="openTicket(booking)" 
                   class="text-amber-300 hover:text-white text-xs font-bold bg-amber-500/20 border border-amber-500/40 px-3 py-1 rounded-xl transition-all hover:scale-105 flex items-center gap-1"
                 >
                   <span>🎟️</span> View E-Ticket Pass
                 </button>
 
-                <!-- Download / Print Ticket Button -->
+                <!-- Download / Print Ticket Button (if active) -->
                 <button 
+                  v-if="booking.status !== 'cancelled'"
                   @click="openTicket(booking)" 
                   class="text-emerald-300 hover:text-white text-xs font-bold bg-emerald-500/20 border border-emerald-500/40 px-3 py-1 rounded-xl transition-all hover:scale-105 flex items-center gap-1"
                 >
                   <span>📥</span> Download
                 </button>
 
-                <!-- Cancel Booking Option (Available for upcoming showtimes) -->
+                <!-- Cancel & Refund Request Option -->
                 <button 
-                  v-if="isUpcoming(booking)"
-                  @click="cancelBooking(booking.id)" 
-                  class="text-red-400 hover:text-red-300 text-xs font-bold bg-red-500/10 border border-red-500/20 px-3 py-1 rounded-xl transition-colors"
+                  v-if="booking.status !== 'cancelled' && isUpcoming(booking)"
+                  @click="openCancelModal(booking)" 
+                  class="text-red-400 hover:text-red-300 text-xs font-bold bg-red-500/10 border border-red-500/20 px-3 py-1 rounded-xl transition-colors flex items-center gap-1"
                 >
-                  Cancel Ticket
+                  <span>🚫</span> Cancel Ticket
                 </button>
               </div>
             </div>
@@ -161,8 +182,11 @@
                 Seat IDs: {{ booking.seat_numbers.join(', ') }}
               </span>
 
-              <span class="flex items-center font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-3 py-1.5 rounded-xl">
-                Total Paid: {{ booking.total_price ? `${Number(booking.total_price).toLocaleString()} ETB` : 'Paid' }}
+              <span 
+                class="flex items-center font-bold px-3 py-1.5 rounded-xl border"
+                :class="booking.status === 'cancelled' ? 'text-red-400 bg-red-500/10 border-red-500/20' : 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'"
+              >
+                {{ booking.status === 'cancelled' ? `REFUNDED: ${Number(booking.refund_amount || booking.total_price).toLocaleString()} ETB` : `Total Paid: ${booking.total_price ? `${Number(booking.total_price).toLocaleString()} ETB` : 'Paid'}` }}
               </span>
             </div>
 
@@ -181,12 +205,19 @@
           <!-- Transaction Footer & Digital E-Ticket Barcode -->
           <div class="text-xs text-slate-400 font-mono border-t border-white/10 pt-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
             <div>
-              <span class="block text-slate-500">Booking Ref #: <strong class="text-amber-300">{{ booking.transaction_ref || `MV-${booking.id}98` }}</strong></span>
+              <span class="block text-slate-500">
+                Booking Ref: <strong class="text-amber-300">{{ booking.transaction_ref || `MV-${booking.id}98` }}</strong>
+                <span v-if="booking.refund_ref" class="ml-2 text-red-400 font-bold">(Refund Ref: {{ booking.refund_ref }})</span>
+              </span>
               <span class="block text-[11px] text-slate-500">Booked on: {{ new Date(booking.created_at).toLocaleDateString() }}</span>
             </div>
 
             <!-- Simulated E-Ticket QR Code / Barcode Button -->
-            <button @click="openTicket(booking)" class="flex items-center gap-3 bg-black/80 hover:bg-black p-2 px-3 rounded-xl border border-amber-500/40 transition-colors group">
+            <button 
+              v-if="booking.status !== 'cancelled'"
+              @click="openTicket(booking)" 
+              class="flex items-center gap-3 bg-black/80 hover:bg-black p-2 px-3 rounded-xl border border-amber-500/40 transition-colors group"
+            >
               <div class="flex flex-col items-center">
                 <!-- Barcode visual simulation -->
                 <div class="flex items-center gap-0.5 h-6">
@@ -204,6 +235,9 @@
                 <span class="text-[9px] text-amber-300 group-hover:text-amber-200 tracking-widest mt-0.5 font-mono">SCAN / DOWNLOAD QR PASS</span>
               </div>
             </button>
+            <div v-else class="text-red-400 font-bold text-xs font-mono">
+              [ SEATS RESTORED TO CINEMA ]
+            </div>
           </div>
         </div>
       </div>
@@ -215,6 +249,64 @@
       :booking="activeBooking" 
       @close="showTicketModal = false" 
     />
+
+    <!-- CANCELLATION & REFUND CONFIRMATION MODAL -->
+    <div v-if="showCancelModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
+      <div class="bg-slate-950 border border-red-500/40 w-full max-w-md rounded-3xl p-6 space-y-6 shadow-2xl relative text-white font-sans">
+        <button @click="showCancelModal = false" class="absolute top-5 right-5 text-slate-400 hover:text-white font-bold">✕</button>
+
+        <div class="border-b border-white/10 pb-4">
+          <h3 class="text-xl font-bold text-red-400 font-orbitron flex items-center gap-2">
+            🚫 CANCEL & REFUND TICKET
+          </h3>
+          <p class="text-xs text-slate-400 font-mono mt-1">Review 2-hour policy and refund details</p>
+        </div>
+
+        <div v-if="cancellingBooking" class="space-y-4 text-xs font-mono">
+          <div class="p-4 bg-red-950/40 border border-red-500/30 rounded-2xl space-y-2">
+            <div class="flex justify-between">
+              <span class="text-slate-400">Movie:</span>
+              <span class="font-bold text-white">{{ cancellingBooking.movie?.title }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-400">Showtime:</span>
+              <span class="font-bold text-orange-400">{{ new Date(cancellingBooking.showtime?.start_time || cancellingBooking.movie?.show_time).toLocaleString(undefined, {dateStyle:'short', timeStyle:'short'}) }}</span>
+            </div>
+            <div class="flex justify-between">
+              <span class="text-slate-400">Seats to Restore:</span>
+              <span class="font-bold text-emerald-400">{{ cancellingBooking.seat_numbers?.join(', ') }}</span>
+            </div>
+          </div>
+
+          <!-- Refund Summary Pill -->
+          <div class="p-4 bg-emerald-950/40 border border-emerald-500/30 rounded-2xl flex justify-between items-center">
+            <div>
+              <span class="text-[10px] text-slate-400 uppercase block">100% Refund Destination</span>
+              <span class="text-xs font-bold text-white flex items-center gap-1 mt-0.5">
+                {{ getPaymentIcon(cancellingBooking.payment_method) }} {{ getPaymentName(cancellingBooking.payment_method) }}
+              </span>
+            </div>
+            <div class="text-right">
+              <span class="text-xl font-bold text-emerald-400">{{ Number(cancellingBooking.total_price || 0).toLocaleString() }} ETB</span>
+            </div>
+          </div>
+
+          <div class="text-[11px] text-slate-300 bg-slate-900 p-3 rounded-xl border border-white/10">
+            ℹ️ <strong>Rule Check Passed:</strong> Showtime is more than 2 hours away. Clicking confirm will issue a full refund and immediately release seats back to the hall.
+          </div>
+        </div>
+
+        <div class="flex gap-3 pt-2">
+          <button @click="showCancelModal = false" class="w-1/2 py-3 rounded-xl border border-slate-700 text-slate-300 text-xs font-bold hover:bg-slate-800">
+            Keep My Ticket
+          </button>
+          <button @click="confirmCancellation" :disabled="processingCancel" class="w-1/2 btn-primary py-3 text-xs font-bold bg-red-600 hover:bg-red-700 flex items-center justify-center gap-2">
+            <span v-if="processingCancel" class="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>
+            <span>{{ processingCancel ? 'PROCESSING...' : 'CONFIRM REFUND' }}</span>
+          </button>
+        </div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -230,23 +322,37 @@ const activeTab = ref("upcoming")
 const showTicketModal = ref(false)
 const activeBooking = ref(null)
 
+const showCancelModal = ref(false)
+const cancellingBooking = ref(null)
+const processingCancel = ref(false)
+
 const openTicket = (booking) => {
   activeBooking.value = booking
   showTicketModal.value = true
 }
 
+const openCancelModal = (booking) => {
+  cancellingBooking.value = booking
+  showCancelModal.value = true
+}
+
 const isUpcoming = (booking) => {
+  if (booking.status === 'cancelled') return false;
   const dStr = booking.showtime?.start_time || booking.movie?.show_time;
   if (!dStr) return true;
   return new Date(dStr) >= new Date();
 }
 
 const upcomingBookings = computed(() => {
-  return bookings.value.filter(b => isUpcoming(b));
+  return bookings.value.filter(b => b.status !== 'cancelled' && isUpcoming(b));
 })
 
 const pastBookings = computed(() => {
-  return bookings.value.filter(b => !isUpcoming(b));
+  return bookings.value.filter(b => b.status !== 'cancelled' && !isUpcoming(b));
+})
+
+const cancelledBookings = computed(() => {
+  return bookings.value.filter(b => b.status === 'cancelled');
 })
 
 const displayedBookings = computed(() => {
@@ -255,6 +361,8 @@ const displayedBookings = computed(() => {
       list = upcomingBookings.value;
     } else if (activeTab.value === 'past') {
       list = pastBookings.value;
+    } else if (activeTab.value === 'cancelled') {
+      list = cancelledBookings.value;
     }
 
     if (!searchQuery.value) return list;
@@ -262,7 +370,8 @@ const displayedBookings = computed(() => {
     return list.filter(booking => 
         (booking.movie?.title && booking.movie.title.toLowerCase().includes(query)) ||
         (booking.showtime?.auditorium && booking.showtime.auditorium.toLowerCase().includes(query)) ||
-        (booking.transaction_ref && booking.transaction_ref.toLowerCase().includes(query))
+        (booking.transaction_ref && booking.transaction_ref.toLowerCase().includes(query)) ||
+        (booking.refund_ref && booking.refund_ref.toLowerCase().includes(query))
     );
 })
 
@@ -308,13 +417,23 @@ const loadBookings = async () => {
     }
 }
 
-const cancelBooking = async (id) => {
-    if (!confirm("Are you sure you want to cancel this ticket booking?")) return
+const confirmCancellation = async () => {
+    if (!cancellingBooking.value) return
+    processingCancel.value = true
     try {
-        await api.delete(`/bookings/${id}`)
+        const res = await api.delete(`/bookings/${cancellingBooking.value.id}`)
+        alert(res.data.message || "Ticket cancelled and refund processed!")
+        showCancelModal.value = false
+        cancellingBooking.value = null
         loadBookings()
     } catch (err) {
-        alert("Cancellation failed")
+        if (err.response && err.response.data && err.response.data.message) {
+          alert(`Cancellation Denied: ${err.response.data.message}`)
+        } else {
+          alert("Cancellation failed. Please check policy conditions.")
+        }
+    } finally {
+        processingCancel.value = false
     }
 }
 
