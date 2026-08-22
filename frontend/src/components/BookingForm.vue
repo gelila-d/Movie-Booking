@@ -1,10 +1,14 @@
 <template>
   <div class="space-y-6">
     <!-- Header -->
-    <div class="flex justify-between items-center">
+    <div class="flex justify-between items-center flex-wrap gap-2">
       <div>
         <h3 class="text-[#ef6a26] font-bold font-mono tracking-wider">SELECT YOUR SEATS</h3>
         <p class="text-slate-400 text-sm font-mono mt-1">{{ selectedSeats.length }} seat{{ selectedSeats.length !== 1 ? 's' : '' }} selected</p>
+      </div>
+      <div v-if="price" class="text-right">
+        <span class="text-xs text-slate-400 font-mono block">TOTAL PRICE</span>
+        <span class="text-xl font-bold text-emerald-400 font-mono">${{ totalPrice }}</span>
       </div>
     </div>
     
@@ -76,12 +80,17 @@
     <!-- Submit Area with futuristic styling -->
     <div class="flex flex-col sm:flex-row justify-between items-center gap-4 border-t border-slate-700/50 pt-6">
       <!-- Selected seats display -->
-      <div class="bg-slate-800/30 border border-[#ef6a26]/30 rounded-xl px-4 py-3 backdrop-blur-sm">
-        <div class="flex items-center gap-2">
-          <div class="w-2 h-2 bg-[#ef6a26] rounded-full animate-pulse"></div>
-          <span class="text-sm text-slate-300 font-mono">
-            SEATS: <span class="font-bold text-[#ef6a26]">{{ selectedSeats.length ? selectedSeats.join(', ') : 'NONE' }}</span>
-          </span>
+      <div class="bg-slate-800/30 border border-[#ef6a26]/30 rounded-xl px-4 py-3 backdrop-blur-sm w-full sm:w-auto">
+        <div class="flex items-center justify-between sm:justify-start gap-4">
+          <div class="flex items-center gap-2">
+            <div class="w-2 h-2 bg-[#ef6a26] rounded-full animate-pulse"></div>
+            <span class="text-sm text-slate-300 font-mono">
+              SEATS: <span class="font-bold text-[#ef6a26]">{{ selectedSeats.length ? selectedSeats.join(', ') : 'NONE' }}</span>
+            </span>
+          </div>
+          <div v-if="price" class="sm:hidden font-mono font-bold text-emerald-400 text-sm">
+            Total: ${{ totalPrice }}
+          </div>
         </div>
       </div>
       
@@ -89,10 +98,10 @@
       <button 
         @click="handleSubmit" 
         :disabled="loading || selectedSeats.length === 0"
-        class="btn-primary px-8 py-3 text-sm font-bold tracking-wider relative overflow-hidden group/btn min-w-[140px]"
+        class="btn-primary px-8 py-3 text-sm font-bold tracking-wider relative overflow-hidden group/btn min-w-[140px] w-full sm:w-auto"
       >
         <span class="relative z-10">
-          {{ loading ? 'BOOKING...' : 'BOOK TICKETS' }}
+          {{ loading ? 'BOOKING...' : (price ? `PAY $${totalPrice} & BOOK` : 'BOOK TICKETS') }}
         </span>
         <div v-if="!loading" class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-700"></div>
       </button>
@@ -107,6 +116,14 @@ const props = defineProps({
   movieId: {
     type: Number,
     required: true
+  },
+  showtimeId: {
+    type: Number,
+    default: null
+  },
+  price: {
+    type: Number,
+    default: 0
   },
   availableSeats: {
     type: Number,
@@ -129,6 +146,10 @@ const props = defineProps({
 const emit = defineEmits(['book'])
 const selectedSeats = ref([])
 
+const totalPrice = computed(() => {
+  return (selectedSeats.value.length * (props.price || 0)).toFixed(2)
+})
+
 // Generate a grid. Let's make it 10 columns wide maximum.
 const seatGrid = computed(() => {
     const grid = [];
@@ -136,7 +157,6 @@ const seatGrid = computed(() => {
     const total = props.totalSeats;
     let seatCount = 0;
     
-    // Row labels A, B, C...
     const getRowLabel = (index) => String.fromCharCode(65 + index);
 
     let rIndex = 0;
