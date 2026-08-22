@@ -9,11 +9,17 @@ use Illuminate\Support\Facades\Storage;
 class MovieController extends Controller
 {
     /**
-     * Show all movies (Everyone can see)
+     * Show all movies (Admins see all draft/published movies; regular users see only published).
      */
-    public function index()
+    public function index(Request $request)
     {
-        return response()->json(Movie::all());
+        $query = Movie::query();
+
+        if (!$request->user() || !$request->user()->is_admin) {
+            $query->where('is_published', true);
+        }
+
+        return response()->json($query->orderBy('created_at', 'desc')->get());
     }
 
     /**
@@ -36,12 +42,19 @@ class MovieController extends Controller
         $validated = $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
-            'show_time' => 'required|date',
-            'total_seats' => 'required|integer|min:1',
+            'genre' => 'nullable|string|max:255',
+            'duration' => 'nullable|integer|min:1',
+            'rating' => 'nullable|string|max:50',
+            'trailer_url' => 'nullable|string|max:500',
+            'is_published' => 'nullable|boolean',
+            'show_time' => 'nullable|date',
+            'total_seats' => 'nullable|integer|min:1',
             'image' => 'nullable|image|max:2048',
         ]);
 
+        $validated['total_seats'] = $validated['total_seats'] ?? 50;
         $validated['available_seats'] = $validated['total_seats'];
+        $validated['is_published'] = filter_var($request->input('is_published', true), FILTER_VALIDATE_BOOLEAN);
 
         if ($request->hasFile('image')) {
             $path = $request->file('image')->store('movies', 'public');
@@ -65,10 +78,19 @@ class MovieController extends Controller
         $validated = $request->validate([
             'title' => 'sometimes|string|max:255',
             'description' => 'nullable|string',
-            'show_time' => 'sometimes|date',
+            'genre' => 'nullable|string|max:255',
+            'duration' => 'nullable|integer|min:1',
+            'rating' => 'nullable|string|max:50',
+            'trailer_url' => 'nullable|string|max:500',
+            'is_published' => 'nullable|boolean',
+            'show_time' => 'nullable|date',
             'total_seats' => 'sometimes|integer|min:1',
             'image' => 'nullable|image|max:2048',
         ]);
+
+        if ($request->has('is_published')) {
+            $validated['is_published'] = filter_var($request->input('is_published'), FILTER_VALIDATE_BOOLEAN);
+        }
 
         if ($request->hasFile('image')) {
             if ($movie->image) {
@@ -111,4 +133,4 @@ class MovieController extends Controller
 
         return response()->json(['message' => 'Movie deleted']);
     }
-}     
+}

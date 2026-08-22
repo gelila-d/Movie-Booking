@@ -2,8 +2,8 @@
   <div class="container space-y-10">
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
       <div>
-        <h1 class="text-3xl font-bold text-white mb-1 font-orbitron">ADMIN DASHBOARD</h1>
-        <p class="text-slate-300">Manage movies, showtimes, ticket pricing (Birr), cinemas & auditoriums</p>
+        <h1 class="text-3xl font-bold text-white mb-1 font-orbitron">ADMIN CONTROL CENTER</h1>
+        <p class="text-slate-300">Manage movies, publishing, showtimes, ticket pricing, cinemas, bookings & user roles</p>
       </div>
       <div class="flex gap-3 flex-wrap">
         <button 
@@ -70,14 +70,14 @@
           class="px-6 py-3 text-sm font-bold transition-colors border-b-2 whitespace-nowrap"
           :class="activeTab === 'catalog' ? 'border-[#ef6a26] text-[#ef6a26]' : 'border-transparent text-slate-400 hover:text-white'"
         >
-          Movie Catalog
+          Movie Catalog & Publishing
         </button>
         <button 
           @click="activeTab = 'showtimes'" 
           class="px-6 py-3 text-sm font-bold transition-colors border-b-2 whitespace-nowrap"
           :class="activeTab === 'showtimes' ? 'border-[#ef6a26] text-[#ef6a26]' : 'border-transparent text-slate-400 hover:text-white'"
         >
-          Showtimes & Ticket Pricing
+          Showtimes & Pricing
         </button>
         <button 
           @click="activeTab = 'cinemas'" 
@@ -91,7 +91,14 @@
           class="px-6 py-3 text-sm font-bold transition-colors border-b-2 whitespace-nowrap"
           :class="activeTab === 'bookings' ? 'border-[#ef6a26] text-[#ef6a26]' : 'border-transparent text-slate-400 hover:text-white'"
         >
-          Recent Bookings
+          Recent Bookings Audit
+        </button>
+        <button 
+          @click="activeTab = 'users'" 
+          class="px-6 py-3 text-sm font-bold transition-colors border-b-2 whitespace-nowrap"
+          :class="activeTab === 'users' ? 'border-[#ef6a26] text-[#ef6a26]' : 'border-transparent text-slate-400 hover:text-white'"
+        >
+          Users & Roles
         </button>
       </div>
       <div class="relative w-full md:w-64 mb-2 md:mb-0">
@@ -99,7 +106,7 @@
         <input 
           v-model="searchQuery" 
           type="text" 
-          :placeholder="activeTab === 'catalog' ? 'Search movies...' : activeTab === 'showtimes' ? 'Search showtimes...' : activeTab === 'cinemas' ? 'Search cinemas/halls...' : 'Search users or movies...'" 
+          :placeholder="activeTab === 'catalog' ? 'Search movies...' : activeTab === 'showtimes' ? 'Search showtimes...' : activeTab === 'cinemas' ? 'Search cinemas/halls...' : activeTab === 'users' ? 'Search users...' : 'Search bookings...'" 
           class="pl-10 pr-4 py-2 w-full border border-slate-700/80 rounded-xl focus:ring-2 focus:ring-[#ef6a26] outline-none text-sm bg-slate-900/90 text-white placeholder-slate-400"
         />
       </div>
@@ -108,7 +115,7 @@
     <!-- Movie Form (Create/Edit) -->
     <div v-if="showForm && activeTab === 'catalog'" class="card space-y-6 border-[#ef6a26]/40 bg-black/60 backdrop-blur-2xl shadow-2xl">
       <div class="flex justify-between items-center border-b border-white/10 pb-4">
-        <h2 class="text-xl font-bold text-white font-orbitron">{{ editingId ? 'Edit Movie' : 'Add New Movie' }}</h2>
+        <h2 class="text-xl font-bold text-white font-orbitron">{{ editingId ? 'Edit Movie Details' : 'Add New Movie to Catalog' }}</h2>
         <button @click="closeForm" class="text-slate-400 hover:text-white transition-colors text-sm font-bold">Cancel</button>
       </div>
 
@@ -116,27 +123,60 @@
         {{ errorMessage }}
       </div>
       
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-        <div class="space-y-1.5">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div class="space-y-1.5 lg:col-span-2">
           <label class="text-xs font-semibold uppercase tracking-wider text-slate-200 font-mono">Movie Title</label>
           <input v-model="form.title" placeholder="Title" class="w-full text-white bg-black/40 px-4 py-2.5 border border-white/10 rounded-xl focus:outline-none focus:border-[#ef6a26] focus:ring-2 focus:ring-[#ef6a26]/30 placeholder-slate-400" />
         </div>
+
         <div class="space-y-1.5">
-          <label class="text-xs font-semibold uppercase tracking-wider text-slate-200 font-mono">Default Release / Show Date</label>
+          <label class="text-xs font-semibold uppercase tracking-wider text-slate-200 font-mono">Age Rating</label>
+          <select v-model="form.rating" class="w-full text-white bg-slate-900 px-4 py-2.5 border border-white/10 rounded-xl focus:outline-none focus:border-[#ef6a26] focus:ring-2 focus:ring-[#ef6a26]/30">
+            <option value="PG-13">PG-13 (Parents Strongly Cautioned)</option>
+            <option value="R">R (Restricted)</option>
+            <option value="PG">PG (Parental Guidance Suggested)</option>
+            <option value="G">G (General Audiences)</option>
+          </select>
+        </div>
+
+        <div class="space-y-1.5">
+          <label class="text-xs font-semibold uppercase tracking-wider text-slate-200 font-mono">Genre</label>
+          <input v-model="form.genre" placeholder="e.g. Action, Sci-Fi" class="w-full text-white bg-black/40 px-4 py-2.5 border border-white/10 rounded-xl focus:outline-none focus:border-[#ef6a26] focus:ring-2 focus:ring-[#ef6a26]/30 placeholder-slate-400" />
+        </div>
+
+        <div class="space-y-1.5">
+          <label class="text-xs font-semibold uppercase tracking-wider text-slate-200 font-mono">Duration (Minutes)</label>
+          <input v-model="form.duration" type="number" min="1" placeholder="150" class="w-full text-white bg-black/40 px-4 py-2.5 border border-white/10 rounded-xl focus:outline-none focus:border-[#ef6a26] focus:ring-2 focus:ring-[#ef6a26]/30 placeholder-slate-400" />
+        </div>
+
+        <div class="space-y-1.5">
+          <label class="text-xs font-semibold uppercase tracking-wider text-slate-200 font-mono">Publish Status</label>
+          <select v-model="form.is_published" class="w-full text-white bg-slate-900 px-4 py-2.5 border border-white/10 rounded-xl focus:outline-none focus:border-[#ef6a26] focus:ring-2 focus:ring-[#ef6a26]/30">
+            <option :value="true">Published (Visible to Customers)</option>
+            <option :value="false">Draft (Hidden / Unpublished)</option>
+          </select>
+        </div>
+
+        <div class="lg:col-span-3 space-y-1.5">
+          <label class="text-xs font-semibold uppercase tracking-wider text-slate-200 font-mono">Description</label>
+          <input v-model="form.description" placeholder="Movie plot summary..." class="w-full text-white bg-black/40 px-4 py-2.5 border border-white/10 rounded-xl focus:outline-none focus:border-[#ef6a26] focus:ring-2 focus:ring-[#ef6a26]/30 placeholder-slate-400" />
+        </div>
+
+        <div class="lg:col-span-2 space-y-1.5">
+          <label class="text-xs font-semibold uppercase tracking-wider text-slate-200 font-mono">Trailer URL (YouTube Link)</label>
+          <input v-model="form.trailer_url" placeholder="https://www.youtube.com/watch?v=..." class="w-full text-white bg-black/40 px-4 py-2.5 border border-white/10 rounded-xl focus:outline-none focus:border-[#ef6a26] focus:ring-2 focus:ring-[#ef6a26]/30 placeholder-slate-400" />
+        </div>
+
+        <div class="space-y-1.5">
+          <label class="text-xs font-semibold uppercase tracking-wider text-slate-200 font-mono">Release / Show Date</label>
           <input v-model="form.show_time" type="datetime-local" class="w-full text-white bg-black/40 px-4 py-2.5 border border-white/10 rounded-xl focus:outline-none focus:border-[#ef6a26] focus:ring-2 focus:ring-[#ef6a26]/30" />
         </div>
-        <div class="md:col-span-2 space-y-1.5">
-          <label class="text-xs font-semibold uppercase tracking-wider text-slate-200 font-mono">Description</label>
-          <input v-model="form.description" placeholder="Movie description..." class="w-full text-white bg-black/40 px-4 py-2.5 border border-white/10 rounded-xl focus:outline-none focus:border-[#ef6a26] focus:ring-2 focus:ring-[#ef6a26]/30 placeholder-slate-400" />
-        </div>
-        <div class="md:col-span-2 space-y-1.5">
-          <label class="text-xs font-semibold uppercase tracking-wider text-slate-200 font-mono">Movie Poster Image</label>
+
+        <div class="lg:col-span-2 space-y-1.5">
+          <label class="text-xs font-semibold uppercase tracking-wider text-slate-200 font-mono">Poster Image</label>
           <input type="file" @change="handleFileUpload" accept="image/*" class="w-full text-slate-200 px-4 py-2.5 border border-white/10 rounded-xl bg-black/40 text-sm file:mr-4 file:py-1 file:px-3 file:rounded-full file:border-0 file:text-xs file:font-semibold file:bg-[#ef6a26] file:text-white hover:file:bg-orange-600" />
         </div>
-        <div class="space-y-1.5">
-          <label class="text-xs font-semibold uppercase tracking-wider text-slate-200 font-mono">Default Capacity (Seats)</label>
-          <input v-model="form.total_seats" @input="form.total_seats = Math.abs($event.target.value) || ''" type="number" min="1" placeholder="50" class="w-full text-white bg-black/40 px-4 py-2.5 border border-white/10 rounded-xl focus:outline-none focus:border-[#ef6a26] focus:ring-2 focus:ring-[#ef6a26]/30 placeholder-slate-400" />
-        </div>
+
         <div class="flex items-end">
           <button @click="saveMovie" :disabled="saving" class="btn-primary w-full py-3">
             {{ saving ? 'SAVING...' : 'SAVE MOVIE' }}
@@ -195,27 +235,27 @@
 
         <!-- Ticket Pricing Tiers in Birr -->
         <div class="space-y-1.5">
-          <label class="text-xs font-semibold uppercase tracking-wider text-emerald-400 font-mono">Regular Seat Price (Birr)</label>
-          <input v-model="showtimeForm.price" type="number" min="100" placeholder="100" class="w-full text-white bg-black/40 px-4 py-2.5 border border-emerald-500/30 rounded-xl focus:outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/30 placeholder-slate-400 font-mono font-bold" />
+          <label class="text-xs font-semibold uppercase tracking-wider text-emerald-400 font-mono">Regular Price (Birr)</label>
+          <input v-model="showtimeForm.price" type="number" min="100" placeholder="100" class="w-full text-white bg-black/40 px-4 py-2.5 border border-emerald-500/30 rounded-xl focus:outline-none focus:border-emerald-400 font-mono font-bold" />
         </div>
 
         <div class="space-y-1.5">
-          <label class="text-xs font-semibold uppercase tracking-wider text-purple-300 font-mono">VIP Seat Price (Birr)</label>
-          <input v-model="showtimeForm.vip_price" type="number" min="100" placeholder="150" class="w-full text-white bg-black/40 px-4 py-2.5 border border-purple-500/30 rounded-xl focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-400/30 placeholder-slate-400 font-mono font-bold" />
+          <label class="text-xs font-semibold uppercase tracking-wider text-purple-300 font-mono">VIP Price (Birr)</label>
+          <input v-model="showtimeForm.vip_price" type="number" min="100" placeholder="150" class="w-full text-white bg-black/40 px-4 py-2.5 border border-purple-500/30 rounded-xl focus:outline-none focus:border-purple-400 font-mono font-bold" />
         </div>
 
         <div class="space-y-1.5">
-          <label class="text-xs font-semibold uppercase tracking-wider text-blue-300 font-mono">Student Ticket Price (Birr)</label>
-          <input v-model="showtimeForm.student_price" type="number" min="50" placeholder="80" class="w-full text-white bg-black/40 px-4 py-2.5 border border-blue-500/30 rounded-xl focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/30 placeholder-slate-400 font-mono font-bold" />
+          <label class="text-xs font-semibold uppercase tracking-wider text-blue-300 font-mono">Student Price (Birr)</label>
+          <input v-model="showtimeForm.student_price" type="number" min="50" placeholder="80" class="w-full text-white bg-black/40 px-4 py-2.5 border border-blue-500/30 rounded-xl focus:outline-none focus:border-blue-400 font-mono font-bold" />
         </div>
 
         <div class="space-y-1.5">
-          <label class="text-xs font-semibold uppercase tracking-wider text-amber-300 font-mono">Child Ticket Price (Birr)</label>
-          <input v-model="showtimeForm.child_price" type="number" min="40" placeholder="60" class="w-full text-white bg-black/40 px-4 py-2.5 border border-amber-500/30 rounded-xl focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/30 placeholder-slate-400 font-mono font-bold" />
+          <label class="text-xs font-semibold uppercase tracking-wider text-amber-300 font-mono">Child Price (Birr)</label>
+          <input v-model="showtimeForm.child_price" type="number" min="40" placeholder="60" class="w-full text-white bg-black/40 px-4 py-2.5 border border-amber-500/30 rounded-xl focus:outline-none focus:border-amber-400 font-mono font-bold" />
         </div>
 
         <div class="lg:col-span-4 flex justify-end gap-3 pt-2 border-t border-white/10">
-          <button @click="closeShowtimeForm" class="px-6 py-2.5 rounded-xl border border-slate-700 text-slate-300 text-sm font-bold hover:bg-slate-800 transition-colors">
+          <button @click="closeShowtimeForm" class="px-6 py-2.5 rounded-xl border border-slate-700 text-slate-300 text-sm font-bold hover:bg-slate-800">
             Cancel
           </button>
           <button @click="saveShowtime" :disabled="savingShowtime" class="btn-primary py-2.5 px-8">
@@ -303,7 +343,7 @@
     <!-- Catalog Tab Content -->
     <div v-if="activeTab === 'catalog'" class="space-y-4">
       <div class="flex items-center justify-between">
-        <h2 class="text-xl font-bold text-white">Catalog ({{ filteredMovies.length }})</h2>
+        <h2 class="text-xl font-bold text-white">Movie Catalog & Publishing ({{ filteredMovies.length }})</h2>
         <button @click="loadMovies" class="text-xs font-bold text-[#ef6a26] hover:underline">Refresh</button>
       </div>
       
@@ -316,21 +356,42 @@
         <button v-if="searchQuery" @click="searchQuery = ''" class="mt-2 text-[#ef6a26] text-sm font-bold hover:underline">Clear Search</button>
       </div>
 
-      <div v-for="movie in filteredMovies" :key="movie.id" class="card flex flex-col md:flex-row md:items-center justify-between border-[#ef6a26]/20 bg-black/50 backdrop-blur-xl hover:border-[#ef6a26]/50 transition-all">
-        <div class="flex-grow">
-          <h3 class="text-lg font-bold text-white mb-1">{{ movie.title }}</h3>
-          <p class="text-xs text-slate-300 mb-2 truncate max-w-md">{{ movie.description }}</p>
-          <div class="flex flex-wrap items-center text-xs text-slate-300 gap-4 mb-2">
-            <span class="font-medium">🕒 Release: {{ movie.show_time ? new Date(movie.show_time).toLocaleString() : 'N/A' }}</span>
-            <span v-if="getFillRate(movie.id) !== null" class="px-2.5 py-0.5 rounded-full font-bold text-[11px]" :class="getFillRateColor(getFillRate(movie.id))">
-              {{ getFillRate(movie.id) }}% Booked
-            </span>
+      <div v-for="movie in filteredMovies" :key="movie.id" class="card flex flex-col md:flex-row md:items-center justify-between border-[#ef6a26]/20 bg-black/50 backdrop-blur-xl hover:border-[#ef6a26]/50 transition-all gap-4">
+        <div class="flex items-start gap-4 flex-grow">
+          <div v-if="movie.image" class="w-16 h-20 bg-slate-800 rounded-lg overflow-hidden flex-shrink-0 border border-white/10">
+            <img :src="getImageUrl(movie.image)" alt="Poster" class="w-full h-full object-cover" />
           </div>
-          <div v-if="movie.image" class="mt-2">
-            <img :src="getImageUrl(movie.image)" alt="Movie Image" class="h-20 w-auto rounded-lg border border-white/10 object-cover" />
+          <div v-else class="w-16 h-20 bg-slate-800 rounded-lg flex items-center justify-center text-xl flex-shrink-0 border border-white/10">
+            🎬
+          </div>
+
+          <div class="space-y-1 flex-grow">
+            <div class="flex items-center gap-2 flex-wrap">
+              <h3 class="text-lg font-bold text-white">{{ movie.title }}</h3>
+              <!-- Publish Badge -->
+              <span 
+                class="px-2.5 py-0.5 rounded-full text-[10px] font-bold font-mono uppercase"
+                :class="movie.is_published ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'"
+              >
+                {{ movie.is_published ? '✓ PUBLISHED' : '⏳ DRAFT / HIDDEN' }}
+              </span>
+              <!-- Rating Badge -->
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-purple-500/20 text-purple-300 border border-purple-500/40">
+                {{ movie.rating || 'PG-13' }}
+              </span>
+            </div>
+
+            <p class="text-xs text-slate-300 truncate max-w-xl">{{ movie.description }}</p>
+            
+            <div class="flex flex-wrap items-center text-xs text-slate-400 gap-x-4 gap-y-1 font-mono pt-1">
+              <span>🎭 Genre: {{ movie.genre || 'Action, Thriller' }}</span>
+              <span>⏱️ Duration: {{ movie.duration || 180 }} Mins</span>
+              <span>🕒 Release: {{ movie.show_time ? new Date(movie.show_time).toLocaleString(undefined, {dateStyle:'short', timeStyle:'short'}) : 'N/A' }}</span>
+            </div>
           </div>
         </div>
-        <div class="mt-4 md:mt-0 flex space-x-2">
+
+        <div class="flex space-x-2 self-end md:self-center">
           <button @click="openEdit(movie)" class="text-orange-400 hover:text-orange-300 text-xs font-bold bg-orange-500/10 border border-orange-500/20 px-3.5 py-2 rounded-lg transition-colors">
             Edit
           </button>
@@ -490,10 +551,10 @@
       </div>
     </div>
 
-    <!-- Bookings Tab Content -->
+    <!-- Bookings Audit Tab Content -->
     <div v-if="activeTab === 'bookings'" class="space-y-4">
       <div class="flex items-center justify-between">
-        <h2 class="text-xl font-bold text-white">All Bookings ({{ filteredBookings.length }})</h2>
+        <h2 class="text-xl font-bold text-white">All Bookings Audit & Controls ({{ filteredBookings.length }})</h2>
         <button @click="loadAllBookings" class="text-xs font-bold text-[#ef6a26] hover:underline">Refresh</button>
       </div>
 
@@ -514,8 +575,8 @@
               <th class="px-6 py-4 text-xs font-bold text-slate-300 uppercase tracking-wider">Movie / Showtime</th>
               <th class="px-6 py-4 text-xs font-bold text-slate-300 uppercase tracking-wider">Cinema / Hall</th>
               <th class="px-6 py-4 text-xs font-bold text-slate-300 uppercase tracking-wider">Seats</th>
-              <th class="px-6 py-4 text-xs font-bold text-slate-300 uppercase tracking-wider">Total Amount</th>
-              <th class="px-6 py-4 text-xs font-bold text-slate-300 uppercase tracking-wider">Date</th>
+              <th class="px-6 py-4 text-xs font-bold text-slate-300 uppercase tracking-wider">Payment & Status</th>
+              <th class="px-6 py-4 text-xs font-bold text-slate-300 uppercase tracking-wider">Actions</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-white/5">
@@ -540,13 +601,166 @@
                   {{ booking.seats_booked }} Seats ({{ booking.seat_numbers?.join(', ') || 'N/A' }})
                 </span>
               </td>
-              <td class="px-6 py-4 text-xs font-bold text-emerald-400 font-mono">
-                {{ booking.total_price ? `${Number(booking.total_price).toFixed(0)} Birr` : 'N/A' }}
+              <td class="px-6 py-4 font-mono text-xs space-y-1">
+                <div class="font-bold text-emerald-400">
+                  {{ booking.total_price ? `${Number(booking.total_price).toFixed(0)} ETB` : 'N/A' }}
+                </div>
+                <div class="text-[11px] text-slate-400">
+                  Ref: <strong class="text-white">{{ booking.transaction_ref || 'N/A' }}</strong>
+                </div>
+                <div>
+                  <span 
+                    class="px-2 py-0.5 rounded text-[10px] font-bold uppercase"
+                    :class="booking.status === 'cancelled' ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'"
+                  >
+                    {{ booking.status === 'cancelled' ? 'CANCELLED / REFUNDED' : 'PAID / CONFIRMED' }}
+                  </span>
+                </div>
               </td>
-              <td class="px-6 py-4 text-xs text-slate-400 font-mono">{{ new Date(booking.created_at).toLocaleDateString() }}</td>
+              <td class="px-6 py-4">
+                <button 
+                  v-if="booking.status !== 'cancelled'"
+                  @click="adminCancelBooking(booking.id)" 
+                  class="text-xs text-red-400 hover:text-red-300 font-bold bg-red-500/10 border border-red-500/20 px-2.5 py-1.5 rounded-lg"
+                >
+                  Admin Cancel
+                </button>
+                <span v-else class="text-xs text-slate-500 font-mono">Restored</span>
+              </td>
             </tr>
           </tbody>
         </table>
+      </div>
+    </div>
+
+    <!-- Users & Role Management Tab Content -->
+    <div v-if="activeTab === 'users'" class="space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-xl font-bold text-white font-orbitron">User Accounts & Role Permissions ({{ filteredUsers.length }})</h2>
+        <button @click="loadUsers" class="text-xs font-bold text-blue-400 hover:underline">Refresh Users</button>
+      </div>
+
+      <div v-if="loadingUsers" class="flex justify-center p-10">
+        <div class="animate-spin h-6 w-6 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+      </div>
+
+      <div v-else-if="filteredUsers.length === 0" class="text-center py-20 bg-black/40 border border-dashed border-white/10 rounded-xl">
+        <p class="text-slate-300">No user accounts found matching your search.</p>
+        <button v-if="searchQuery" @click="searchQuery = ''" class="mt-2 text-blue-400 text-sm font-bold hover:underline">Clear Search</button>
+      </div>
+
+      <div v-else class="overflow-x-auto rounded-2xl border border-white/10 shadow-2xl backdrop-blur-xl">
+        <table class="w-full text-left bg-black/60">
+          <thead class="bg-black/80 border-b border-white/10">
+            <tr>
+              <th class="px-6 py-4 text-xs font-bold text-slate-300 uppercase tracking-wider">User Profile</th>
+              <th class="px-6 py-4 text-xs font-bold text-slate-300 uppercase tracking-wider">Admin Privilege</th>
+              <th class="px-6 py-4 text-xs font-bold text-slate-300 uppercase tracking-wider">Account Status</th>
+              <th class="px-6 py-4 text-xs font-bold text-slate-300 uppercase tracking-wider">Total Bookings</th>
+              <th class="px-6 py-4 text-xs font-bold text-slate-300 uppercase tracking-wider">Joined Date</th>
+              <th class="px-6 py-4 text-xs font-bold text-slate-300 uppercase tracking-wider">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y divide-white/5 font-mono text-xs">
+            <tr v-for="user in filteredUsers" :key="user.id" class="hover:bg-white/5 transition-colors">
+              <td class="px-6 py-4">
+                <div class="flex flex-col">
+                  <span class="text-sm font-bold text-white font-sans">{{ user.name }}</span>
+                  <span class="text-xs text-slate-400">{{ user.email }}</span>
+                </div>
+              </td>
+              <td class="px-6 py-4">
+                <span 
+                  class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase"
+                  :class="user.is_admin ? 'bg-orange-500/20 text-orange-400 border border-orange-500/40' : 'bg-slate-800 text-slate-400'"
+                >
+                  {{ user.is_admin ? '⭐ ADMIN ROLE' : 'CUSTOMER' }}
+                </span>
+              </td>
+              <td class="px-6 py-4">
+                <span 
+                  class="px-2.5 py-1 rounded-full text-[10px] font-bold uppercase"
+                  :class="user.is_active ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40' : 'bg-red-500/20 text-red-400 border border-red-500/40'"
+                >
+                  {{ user.is_active ? '✓ ACTIVE' : '🚫 DISABLED' }}
+                </span>
+              </td>
+              <td class="px-6 py-4 text-white font-bold">
+                {{ user.bookings_count ?? 0 }} Tickets
+              </td>
+              <td class="px-6 py-4 text-slate-400">
+                {{ new Date(user.created_at).toLocaleDateString() }}
+              </td>
+              <td class="px-6 py-4 space-x-2">
+                <button 
+                  @click="toggleUserActive(user)" 
+                  class="px-2.5 py-1.5 rounded-lg font-bold text-xs"
+                  :class="user.is_active ? 'bg-red-500/10 text-red-400 border border-red-500/20 hover:bg-red-500/20' : 'bg-emerald-500/10 text-emerald-300 border border-emerald-500/20 hover:bg-emerald-500/20'"
+                >
+                  {{ user.is_active ? 'Disable' : 'Enable' }}
+                </button>
+
+                <button 
+                  @click="toggleUserAdmin(user)" 
+                  class="px-2.5 py-1.5 rounded-lg font-bold text-xs bg-purple-500/10 text-purple-300 border border-purple-500/20 hover:bg-purple-500/20"
+                >
+                  {{ user.is_admin ? 'Revoke Admin' : 'Make Admin' }}
+                </button>
+
+                <button 
+                  @click="viewUserBookings(user)" 
+                  class="px-2.5 py-1.5 rounded-lg font-bold text-xs bg-blue-500/10 text-blue-300 border border-blue-500/20 hover:bg-blue-500/20"
+                >
+                  History
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- USER BOOKING HISTORY MODAL -->
+    <div v-if="showUserHistoryModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
+      <div class="bg-slate-950 border border-blue-500/40 w-full max-w-2xl rounded-3xl p-6 space-y-6 shadow-2xl relative text-white font-sans">
+        <button @click="showUserHistoryModal = false" class="absolute top-5 right-5 text-slate-400 hover:text-white font-bold">✕</button>
+
+        <div class="border-b border-white/10 pb-3">
+          <h3 class="text-xl font-bold text-blue-400 font-orbitron">
+            User Booking History: {{ selectedUser?.name }}
+          </h3>
+          <p class="text-xs text-slate-400 font-mono">{{ selectedUser?.email }}</p>
+        </div>
+
+        <div v-if="loadingUserHistory" class="flex justify-center p-6">
+          <div class="animate-spin h-6 w-6 border-2 border-blue-500 border-t-transparent rounded-full"></div>
+        </div>
+
+        <div v-else-if="userHistoryBookings.length === 0" class="p-8 text-center text-slate-400 font-mono text-xs">
+          This user has not made any movie reservations yet.
+        </div>
+
+        <div v-else class="space-y-3 max-h-96 overflow-y-auto pr-1">
+          <div 
+            v-for="b in userHistoryBookings" 
+            :key="b.id"
+            class="p-4 bg-slate-900 rounded-2xl border border-white/10 flex justify-between items-center text-xs font-mono"
+          >
+            <div>
+              <div class="font-bold text-white text-sm font-sans">{{ b.movie?.title }}</div>
+              <div class="text-purple-300">🏛️ {{ b.showtime?.auditoriumDetail?.cinema?.name ? `${b.showtime.auditoriumDetail.cinema.name} - ${b.showtime.auditoriumDetail.name}` : (b.showtime?.auditorium || 'Main Cinema') }}</div>
+              <div class="text-slate-400 text-[11px] mt-1">
+                Seats: <strong class="text-orange-400">{{ b.seat_numbers?.join(', ') }}</strong> | Ref: {{ b.transaction_ref || 'N/A' }}
+              </div>
+            </div>
+            <div class="text-right space-y-1">
+              <div class="font-bold text-emerald-400 text-sm">{{ Number(b.total_price || 0).toFixed(0) }} ETB</div>
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold block" :class="b.status === 'cancelled' ? 'bg-red-500/20 text-red-400' : 'bg-emerald-500/20 text-emerald-300'">
+                {{ b.status === 'cancelled' ? 'CANCELLED' : 'CONFIRMED' }}
+              </span>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -561,10 +775,13 @@ const showtimes = ref([])
 const cinemas = ref([])
 const stats = ref(null)
 const allBookings = ref([])
+const users = ref([])
+
 const loading = ref(true)
 const loadingShowtimes = ref(false)
 const loadingCinemas = ref(false)
 const loadingBookings = ref(false)
+const loadingUsers = ref(false)
 const saving = ref(false)
 const savingShowtime = ref(false)
 
@@ -585,12 +802,18 @@ const activeTab = ref('catalog')
 const searchQuery = ref("")
 const selectedCinemaId = ref("")
 
+const showUserHistoryModal = ref(false)
+const selectedUser = ref(null)
+const userHistoryBookings = ref([])
+const loadingUserHistory = ref(false)
+
 const filteredMovies = computed(() => {
     if (!searchQuery.value) return movies.value
     const query = searchQuery.value.toLowerCase()
     return movies.value.filter(movie => 
         movie.title.toLowerCase().includes(query) || 
-        (movie.description && movie.description.toLowerCase().includes(query))
+        (movie.description && movie.description.toLowerCase().includes(query)) ||
+        (movie.genre && movie.genre.toLowerCase().includes(query))
     )
 })
 
@@ -619,7 +842,17 @@ const filteredBookings = computed(() => {
         (booking.user?.name && booking.user.name.toLowerCase().includes(query)) ||
         (booking.user?.email && booking.user.email.toLowerCase().includes(query)) ||
         (booking.movie?.title && booking.movie.title.toLowerCase().includes(query)) ||
+        (booking.transaction_ref && booking.transaction_ref.toLowerCase().includes(query)) ||
         (booking.showtime?.auditorium && booking.showtime.auditorium.toLowerCase().includes(query))
+    )
+})
+
+const filteredUsers = computed(() => {
+    if (!searchQuery.value) return users.value
+    const query = searchQuery.value.toLowerCase()
+    return users.value.filter(user => 
+        user.name.toLowerCase().includes(query) ||
+        user.email.toLowerCase().includes(query)
     )
 })
 
@@ -637,6 +870,11 @@ const getImageUrl = (path) => {
 const form = ref({
     title: "",
     description: "",
+    genre: "Action, Thriller",
+    duration: 150,
+    rating: "PG-13",
+    trailer_url: "",
+    is_published: true,
     show_time: "",
     total_seats: "50"
 })
@@ -784,9 +1022,77 @@ const loadAllBookings = async () => {
     }
 }
 
+const loadUsers = async () => {
+    loadingUsers.value = true
+    try {
+        const res = await api.get("/admin/users")
+        users.value = res.data
+    } catch (err) {
+        console.error("Failed to load users:", err)
+    } finally {
+        loadingUsers.value = false
+    }
+}
+
+const toggleUserActive = async (user) => {
+    try {
+        const res = await api.put(`/admin/users/${user.id}/toggle-active`)
+        alert(res.data.message)
+        loadUsers()
+    } catch (err) {
+        alert(err.response?.data?.message || "Failed to update user active status.")
+    }
+}
+
+const toggleUserAdmin = async (user) => {
+    try {
+        const res = await api.put(`/admin/users/${user.id}/toggle-admin`)
+        alert(res.data.message)
+        loadUsers()
+    } catch (err) {
+        alert(err.response?.data?.message || "Failed to update user admin privileges.")
+    }
+}
+
+const viewUserBookings = async (user) => {
+    selectedUser.value = user
+    showUserHistoryModal.value = true
+    loadingUserHistory.value = true
+    try {
+        const res = await api.get(`/admin/users/${user.id}/bookings`)
+        userHistoryBookings.value = res.data.bookings || []
+    } catch (err) {
+        console.error(err)
+    } finally {
+        loadingUserHistory.value = false
+    }
+}
+
+const adminCancelBooking = async (bookingId) => {
+    if (!confirm("Are you sure you want to cancel this ticket booking as Admin? Seats will be restored.")) return
+    try {
+        const res = await api.delete(`/bookings/${bookingId}`)
+        alert(res.data.message || "Booking cancelled and seats restored.")
+        loadAllBookings()
+        loadStats()
+    } catch (err) {
+        alert(err.response?.data?.message || "Failed to cancel booking.")
+    }
+}
+
 const openCreate = () => {
     editingId.value = null
-    form.value = { title: "", description: "", show_time: "", total_seats: "50" }
+    form.value = {
+        title: "",
+        description: "",
+        genre: "Action, Sci-Fi",
+        duration: 150,
+        rating: "PG-13",
+        trailer_url: "",
+        is_published: true,
+        show_time: "",
+        total_seats: "50"
+    }
     imageFile.value = null
     errorMessage.value = ""
     showForm.value = true
@@ -795,7 +1101,11 @@ const openCreate = () => {
 const openEdit = (movie) => {
     editingId.value = movie.id
     const dateStr = formatForDateTimeInput(movie.show_time)
-    form.value = { ...movie, show_time: dateStr }
+    form.value = {
+        ...movie,
+        show_time: dateStr,
+        is_published: movie.is_published ?? true
+    }
     imageFile.value = null
     errorMessage.value = ""
     showForm.value = true
@@ -924,6 +1234,12 @@ const saveMovie = async () => {
         const formData = new FormData();
         formData.append('title', form.value.title);
         formData.append('description', form.value.description);
+        if (form.value.genre) formData.append('genre', form.value.genre);
+        if (form.value.duration) formData.append('duration', form.value.duration);
+        if (form.value.rating) formData.append('rating', form.value.rating);
+        if (form.value.trailer_url) formData.append('trailer_url', form.value.trailer_url);
+        formData.append('is_published', form.value.is_published ? '1' : '0');
+
         if (form.value.show_time) formData.append('show_time', form.value.show_time);
         if (form.value.total_seats) formData.append('total_seats', form.value.total_seats);
         if (imageFile.value) {
@@ -1069,6 +1385,8 @@ watch(activeTab, (newTab) => {
         loadCinemas()
     } else if (newTab === 'bookings') {
         loadAllBookings()
+    } else if (newTab === 'users') {
+        loadUsers()
     }
 })
 
@@ -1077,5 +1395,6 @@ onMounted(() => {
     loadShowtimes()
     loadCinemas()
     loadStats()
+    loadUsers()
 })
 </script>

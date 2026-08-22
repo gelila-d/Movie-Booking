@@ -2,18 +2,33 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Booking;
 
 class Movie extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'title',
         'description',
+        'genre',
+        'duration',
+        'rating',
+        'trailer_url',
+        'is_published',
         'show_time',
-        'total_seats',
-        'available_seats',
         'image',
+        'available_seats',
+        'total_seats',
+    ];
+
+    protected $casts = [
+        'show_time' => 'datetime',
+        'is_published' => 'boolean',
+        'duration' => 'integer',
+        'available_seats' => 'integer',
+        'total_seats' => 'integer',
     ];
 
     public function bookings()

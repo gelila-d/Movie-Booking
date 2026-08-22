@@ -6,6 +6,7 @@ use App\Http\Controllers\ShowtimeController;
 use App\Http\Controllers\CinemaController;
 use App\Http\Controllers\AdminStatsController;
 use App\Http\Controllers\WatchlistController;
+use App\Http\Controllers\UserController;
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -52,7 +53,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/watchlist/toggle', [WatchlistController::class, 'toggle']);
     Route::delete('/watchlist/{movieId}', [WatchlistController::class, 'destroy']);
 
-    // Admin Stats & Bookings Audit
+    // Admin Stats, Users & Bookings Audit
     Route::get('/admin/stats', [AdminStatsController::class, 'index']);
     Route::get('/admin/bookings', [BookingController::class, 'allBookings']);
+    Route::get('/admin/users', [UserController::class, 'index']);
+    Route::put('/admin/users/{user}/toggle-active', [UserController::class, 'toggleActive']);
+    Route::put('/admin/users/{user}/toggle-admin', [UserController::class, 'toggleAdmin']);
+    Route::get('/admin/users/{user}/bookings', [UserController::class, 'userBookings']);
 });

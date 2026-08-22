@@ -50,6 +50,10 @@ class AuthController extends Controller
             return response()->json(['message' => 'Invalid credentials'], 401);
         }
 
+        if (isset($user->is_active) && !$user->is_active) {
+            return response()->json(['message' => 'Your account has been disabled by an administrator.'], 403);
+        }
+
         $token = $user->createToken('auth_token')->plainTextToken;
 
         return response()->json([
