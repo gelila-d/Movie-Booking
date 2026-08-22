@@ -3,7 +3,7 @@
     <div class="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-4">
       <div>
         <h1 class="text-3xl font-bold text-white mb-1 font-orbitron">My Bookings</h1>
-        <p class="text-slate-300">Your reservations, auditoriums, and ticket history</p>
+        <p class="text-slate-300">Your reservations, ticket receipts (Birr), and auditorium history</p>
       </div>
       <div class="relative w-full md:w-80" v-if="bookings.length > 0 || searchQuery">
         <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
@@ -59,7 +59,7 @@
               
               <div class="flex items-center gap-3">
                 <span class="text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded font-bold uppercase text-xs font-mono">
-                  {{ booking.total_price ? `$${Number(booking.total_price).toFixed(2)}` : 'Confirmed' }}
+                  {{ booking.total_price ? `${Number(booking.total_price).toFixed(0)} Birr` : 'Confirmed' }}
                 </span>
                 <button 
                   @click="cancelBooking(booking.id)" 
@@ -82,6 +82,17 @@
 
               <span class="flex items-center font-bold text-orange-400 bg-orange-500/10 border border-orange-500/20 px-2.5 py-1 rounded-md" v-if="booking.seat_numbers && booking.seat_numbers.length">
                 Seat IDs: {{ booking.seat_numbers.join(', ') }}
+              </span>
+            </div>
+
+            <!-- Itemized Ticket Details if available -->
+            <div v-if="booking.ticket_details && booking.ticket_details.length" class="mt-3 flex gap-2 flex-wrap">
+              <span 
+                v-for="td in booking.ticket_details" 
+                :key="td.seat_id"
+                class="px-2 py-0.5 rounded bg-slate-900 border border-slate-700 text-[11px] font-mono text-slate-300"
+              >
+                {{ td.seat_id }} ({{ td.type }}: {{ td.price }} Birr)
               </span>
             </div>
           </div>

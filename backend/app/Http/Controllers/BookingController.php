@@ -11,7 +11,7 @@ use Illuminate\Support\Facades\DB;
 class BookingController extends Controller
 {
     /**
-     * Store a new booking while preventing overbooking.
+     * Store a new booking while preventing overbooking and calculating Birr totals.
      */
     public function store(Request $request)
     {
@@ -20,14 +20,20 @@ class BookingController extends Controller
             'movie_id' => 'required_without:showtime_id|exists:movies,id',
             'seat_numbers' => 'required|array|min:1',
             'seat_numbers.*' => 'string',
+            'ticket_details' => 'nullable|array',
         ]);
 
         $seatsRequested = $validated['seat_numbers'];
         $seatsCount = count($seatsRequested);
+        $ticketDetailsInput = $request->input('ticket_details', []);
 
-        return DB::transaction(function () use ($request, $validated, $seatsRequested, $seatsCount) {
+        return DB::transaction(function () use ($request, $validated, $seatsRequested, $seatsCount, $ticketDetailsInput) {
             if ($request->filled('showtime_id')) {
                 $showtime = Showtime::lockForUpdate()->find($validated['showtime_id']);
+
+                if (!$showtime) {
+                    return response()->json(['message' => 'Showtime not found'], 404);
+                }
 
                 if ($showtime->available_seats < $seatsCount) {
                     return response()->json(['message' => 'Not enough seats available for this showtime'], 400);
@@ -52,7 +58,32 @@ class BookingController extends Controller
                 $showtime->available_seats -= $seatsCount;
                 $showtime->save();
 
-                $totalPrice = $seatsCount * $showtime->price;
+                // Calculate total price in Birr from ticket details or default showtime base price
+                $totalPrice = 0;
+                $processedDetails = [];
+
+                if (!empty($ticketDetailsInput) && is_array($ticketDetailsInput)) {
+                    foreach ($ticketDetailsInput as $detail) {
+                        $seatId = $detail['seat_id'] ?? null;
+                        $price = floatval($detail['price'] ?? $showtime->price);
+                        $type = $detail['type'] ?? 'Regular';
+                        $totalPrice += $price;
+                        $processedDetails[] = [
+                            'seat_id' => $seatId,
+                            'type' => $type,
+                            'price' => $price,
+                        ];
+                    }
+                } else {
+                    $totalPrice = $seatsCount * ($showtime->price ?? 100);
+                    foreach ($seatsRequested as $sId) {
+                        $processedDetails[] = [
+                            'seat_id' => $sId,
+                            'type' => 'Regular',
+                            'price' => floatval($showtime->price ?? 100),
+                        ];
+                    }
+                }
 
                 $booking = Booking::create([
                     'user_id' => auth()->id(),
@@ -60,12 +91,17 @@ class BookingController extends Controller
                     'showtime_id' => $showtime->id,
                     'seats_booked' => $seatsCount,
                     'seat_numbers' => $seatsRequested,
+                    'ticket_details' => $processedDetails,
                     'total_price' => $totalPrice,
                 ]);
 
-                return response()->json($booking->load(['movie', 'showtime']), 201);
+                return response()->json($booking->load(['movie', 'showtime.auditoriumDetail.cinema']), 201);
             } else {
                 $movie = Movie::lockForUpdate()->find($validated['movie_id']);
+
+                if (!$movie) {
+                    return response()->json(['message' => 'Movie not found'], 404);
+                }
 
                 if ($movie->available_seats < $seatsCount) {
                     return response()->json(['message' => 'Not enough seats'], 400);
@@ -90,11 +126,14 @@ class BookingController extends Controller
                 $movie->available_seats -= $seatsCount;
                 $movie->save();
 
+                $totalPrice = $seatsCount * 100.00; // Base 100 Birr
+
                 $booking = Booking::create([
                     'user_id' => auth()->id(),
                     'movie_id' => $movie->id,
                     'seats_booked' => $seatsCount,
                     'seat_numbers' => $seatsRequested,
+                    'total_price' => $totalPrice,
                 ]);
 
                 return response()->json($booking->load('movie'), 201);
@@ -108,7 +147,7 @@ class BookingController extends Controller
     public function index()
     {
         $bookings = Booking::where('user_id', auth()->id())
-            ->with(['movie', 'showtime'])
+            ->with(['movie', 'showtime.auditoriumDetail.cinema'])
             ->latest()
             ->get();
         return response()->json($bookings);
@@ -145,7 +184,7 @@ class BookingController extends Controller
     }
 
     /**
-     * Get booked seats for a movie (or showtime)
+     * Get booked seats for a movie
      */
     public function getBookedSeats($movieId)
     {
@@ -168,7 +207,7 @@ class BookingController extends Controller
             return response()->json(['message' => 'Forbidden'], 403);
         }
 
-        $bookings = Booking::with(['user', 'movie', 'showtime'])->latest()->get();
+        $bookings = Booking::with(['user', 'movie', 'showtime.auditoriumDetail.cinema'])->latest()->get();
         return response()->json($bookings);
     }
 }

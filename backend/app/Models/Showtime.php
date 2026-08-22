@@ -16,6 +16,9 @@ class Showtime extends Model
         'start_time',
         'end_time',
         'price',
+        'vip_price',
+        'student_price',
+        'child_price',
         'total_seats',
         'available_seats',
     ];
@@ -24,6 +27,9 @@ class Showtime extends Model
         'start_time' => 'datetime',
         'end_time' => 'datetime',
         'price' => 'float',
+        'vip_price' => 'float',
+        'student_price' => 'float',
+        'child_price' => 'float',
         'total_seats' => 'integer',
         'available_seats' => 'integer',
     ];

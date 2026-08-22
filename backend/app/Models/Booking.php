@@ -15,11 +15,13 @@ class Booking extends Model
         'showtime_id',
         'seats_booked',
         'seat_numbers',
+        'ticket_details',
         'total_price',
     ];
 
     protected $casts = [
         'seat_numbers' => 'array',
+        'ticket_details' => 'array',
         'total_price' => 'float',
     ];
 

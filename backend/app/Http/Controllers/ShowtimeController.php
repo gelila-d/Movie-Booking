@@ -53,6 +53,9 @@ class ShowtimeController extends Controller
             'start_time' => 'required|date',
             'end_time' => 'required|date|after:start_time',
             'price' => 'required|numeric|min:0',
+            'vip_price' => 'nullable|numeric|min:0',
+            'student_price' => 'nullable|numeric|min:0',
+            'child_price' => 'nullable|numeric|min:0',
             'total_seats' => 'nullable|integer|min:1',
         ]);
 
@@ -96,6 +99,16 @@ class ShowtimeController extends Controller
         $validated['total_seats'] = $totalSeats;
         $validated['available_seats'] = $totalSeats;
 
+        if (empty($validated['vip_price'])) {
+            $validated['vip_price'] = $validated['price'] * 1.5;
+        }
+        if (empty($validated['student_price'])) {
+            $validated['student_price'] = max(10, $validated['price'] * 0.8);
+        }
+        if (empty($validated['child_price'])) {
+            $validated['child_price'] = max(10, $validated['price'] * 0.6);
+        }
+
         $showtime = Showtime::create($validated);
 
         return response()->json($showtime->load(['movie', 'auditoriumDetail.cinema']), 201);
@@ -117,6 +130,9 @@ class ShowtimeController extends Controller
             'start_time' => 'sometimes|date',
             'end_time' => 'sometimes|date|after:start_time',
             'price' => 'sometimes|numeric|min:0',
+            'vip_price' => 'sometimes|numeric|min:0',
+            'student_price' => 'sometimes|numeric|min:0',
+            'child_price' => 'sometimes|numeric|min:0',
             'total_seats' => 'sometimes|integer|min:1',
         ]);
 

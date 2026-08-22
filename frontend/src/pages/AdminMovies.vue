@@ -3,7 +3,7 @@
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
       <div>
         <h1 class="text-3xl font-bold text-white mb-1 font-orbitron">ADMIN DASHBOARD</h1>
-        <p class="text-slate-300">Manage movies, showtimes, cinemas, auditoriums, and ticket reservations</p>
+        <p class="text-slate-300">Manage movies, showtimes, ticket pricing (Birr), cinemas & auditoriums</p>
       </div>
       <div class="flex gap-3 flex-wrap">
         <button 
@@ -77,7 +77,7 @@
           class="px-6 py-3 text-sm font-bold transition-colors border-b-2 whitespace-nowrap"
           :class="activeTab === 'showtimes' ? 'border-[#ef6a26] text-[#ef6a26]' : 'border-transparent text-slate-400 hover:text-white'"
         >
-          Showtimes Management
+          Showtimes & Ticket Pricing
         </button>
         <button 
           @click="activeTab = 'cinemas'" 
@@ -148,7 +148,7 @@
     <!-- Showtime Form (Create/Edit) -->
     <div v-if="showShowtimeForm && activeTab === 'showtimes'" class="card space-y-6 border-purple-500/40 bg-black/60 backdrop-blur-2xl shadow-2xl">
       <div class="flex justify-between items-center border-b border-white/10 pb-4">
-        <h2 class="text-xl font-bold text-white font-orbitron">{{ editingShowtimeId ? 'Edit Showtime' : 'Schedule New Showtime' }}</h2>
+        <h2 class="text-xl font-bold text-white font-orbitron">{{ editingShowtimeId ? 'Edit Showtime & Pricing' : 'Schedule New Showtime & Pricing' }}</h2>
         <button @click="closeShowtimeForm" class="text-slate-400 hover:text-white transition-colors text-sm font-bold">Cancel</button>
       </div>
 
@@ -156,8 +156,8 @@
         ⚠️ {{ showtimeError }}
       </div>
       
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
-        <div class="space-y-1.5">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div class="space-y-1.5 lg:col-span-2">
           <label class="text-xs font-semibold uppercase tracking-wider text-purple-300 font-mono">Select Movie</label>
           <select v-model="showtimeForm.movie_id" class="w-full text-white bg-slate-900 px-4 py-2.5 border border-white/10 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30">
             <option value="" disabled>Choose a movie...</option>
@@ -178,32 +178,43 @@
           <select v-model="showtimeForm.auditorium_id" @change="handleAuditoriumSelect" class="w-full text-white bg-slate-900 px-4 py-2.5 border border-white/10 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30">
             <option value="">Choose Hall...</option>
             <option v-for="a in availableAuditoriums" :key="a.id" :value="a.id">
-              {{ a.name }} — {{ a.total_seats }} seats ({{ a.rows_count }} Rows x {{ a.seats_per_row }} Seats)
+              {{ a.name }} — {{ a.total_seats }} seats ({{ a.rows_count }} R x {{ a.seats_per_row }} S)
             </option>
           </select>
         </div>
 
-        <div class="space-y-1.5">
+        <div class="space-y-1.5 lg:col-span-2">
           <label class="text-xs font-semibold uppercase tracking-wider text-purple-300 font-mono">Start Time</label>
           <input v-model="showtimeForm.start_time" type="datetime-local" @change="autoSetEndTime" class="w-full text-white bg-black/40 px-4 py-2.5 border border-white/10 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30" />
         </div>
 
-        <div class="space-y-1.5">
+        <div class="space-y-1.5 lg:col-span-2">
           <label class="text-xs font-semibold uppercase tracking-wider text-purple-300 font-mono">End Time</label>
           <input v-model="showtimeForm.end_time" type="datetime-local" class="w-full text-white bg-black/40 px-4 py-2.5 border border-white/10 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30" />
         </div>
 
+        <!-- Ticket Pricing Tiers in Birr -->
         <div class="space-y-1.5">
-          <label class="text-xs font-semibold uppercase tracking-wider text-purple-300 font-mono">Ticket Price ($)</label>
-          <input v-model="showtimeForm.price" type="number" step="0.50" min="0" placeholder="12.50" class="w-full text-white bg-black/40 px-4 py-2.5 border border-white/10 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30 placeholder-slate-400" />
+          <label class="text-xs font-semibold uppercase tracking-wider text-emerald-400 font-mono">Regular Seat Price (Birr)</label>
+          <input v-model="showtimeForm.price" type="number" min="100" placeholder="100" class="w-full text-white bg-black/40 px-4 py-2.5 border border-emerald-500/30 rounded-xl focus:outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-400/30 placeholder-slate-400 font-mono font-bold" />
         </div>
 
         <div class="space-y-1.5">
-          <label class="text-xs font-semibold uppercase tracking-wider text-purple-300 font-mono">Total Capacity (Auto-filled)</label>
-          <input v-model="showtimeForm.total_seats" type="number" readonly class="w-full text-slate-300 bg-slate-800/80 px-4 py-2.5 border border-white/10 rounded-xl cursor-not-allowed font-mono" />
+          <label class="text-xs font-semibold uppercase tracking-wider text-purple-300 font-mono">VIP Seat Price (Birr)</label>
+          <input v-model="showtimeForm.vip_price" type="number" min="100" placeholder="150" class="w-full text-white bg-black/40 px-4 py-2.5 border border-purple-500/30 rounded-xl focus:outline-none focus:border-purple-400 focus:ring-2 focus:ring-purple-400/30 placeholder-slate-400 font-mono font-bold" />
         </div>
 
-        <div class="md:col-span-2 flex justify-end gap-3 pt-2">
+        <div class="space-y-1.5">
+          <label class="text-xs font-semibold uppercase tracking-wider text-blue-300 font-mono">Student Ticket Price (Birr)</label>
+          <input v-model="showtimeForm.student_price" type="number" min="50" placeholder="80" class="w-full text-white bg-black/40 px-4 py-2.5 border border-blue-500/30 rounded-xl focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-400/30 placeholder-slate-400 font-mono font-bold" />
+        </div>
+
+        <div class="space-y-1.5">
+          <label class="text-xs font-semibold uppercase tracking-wider text-amber-300 font-mono">Child Ticket Price (Birr)</label>
+          <input v-model="showtimeForm.child_price" type="number" min="40" placeholder="60" class="w-full text-white bg-black/40 px-4 py-2.5 border border-amber-500/30 rounded-xl focus:outline-none focus:border-amber-400 focus:ring-2 focus:ring-amber-400/30 placeholder-slate-400 font-mono font-bold" />
+        </div>
+
+        <div class="lg:col-span-4 flex justify-end gap-3 pt-2 border-t border-white/10">
           <button @click="closeShowtimeForm" class="px-6 py-2.5 rounded-xl border border-slate-700 text-slate-300 text-sm font-bold hover:bg-slate-800 transition-colors">
             Cancel
           </button>
@@ -266,6 +277,16 @@
           <input v-model="auditoriumForm.seats_per_row" type="number" min="1" max="30" placeholder="12" class="w-full text-white bg-black/40 px-4 py-2.5 border border-white/10 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30" />
         </div>
 
+        <div class="space-y-1.5">
+          <label class="text-xs font-semibold uppercase tracking-wider text-purple-300 font-mono">VIP Rows Count (Top Rows)</label>
+          <input v-model="auditoriumForm.vip_rows_count" type="number" min="0" max="10" placeholder="2" class="w-full text-white bg-black/40 px-4 py-2.5 border border-white/10 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30" />
+        </div>
+
+        <div class="space-y-1.5">
+          <label class="text-xs font-semibold uppercase tracking-wider text-emerald-300 font-mono">Base Hall Ticket Price (Birr)</label>
+          <input v-model="auditoriumForm.base_price" type="number" min="100" placeholder="100" class="w-full text-white bg-black/40 px-4 py-2.5 border border-white/10 rounded-xl focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/30 font-mono font-bold" />
+        </div>
+
         <div class="md:col-span-2 bg-emerald-950/30 border border-emerald-500/30 p-4 rounded-xl flex justify-between items-center">
           <span class="text-xs font-mono text-emerald-300 font-bold uppercase">Computed Total Capacity:</span>
           <span class="text-2xl font-bold font-mono text-emerald-400">{{ (auditoriumForm.rows_count || 0) * (auditoriumForm.seats_per_row || 0) }} Seats</span>
@@ -323,7 +344,7 @@
     <!-- Showtimes Management Tab Content -->
     <div v-if="activeTab === 'showtimes'" class="space-y-4">
       <div class="flex items-center justify-between">
-        <h2 class="text-xl font-bold text-white">Scheduled Showtimes ({{ filteredShowtimes.length }})</h2>
+        <h2 class="text-xl font-bold text-white">Scheduled Showtimes & Pricing ({{ filteredShowtimes.length }})</h2>
         <button @click="loadShowtimes" class="text-xs font-bold text-purple-400 hover:underline">Refresh</button>
       </div>
 
@@ -350,14 +371,27 @@
               🎬
             </div>
 
-            <div class="space-y-1">
-              <div class="flex items-center gap-3 flex-wrap">
+            <div class="space-y-1.5">
+              <div class="flex items-center gap-2 flex-wrap">
                 <h3 class="text-lg font-bold text-white">{{ st.movie?.title || 'Unknown Movie' }}</h3>
                 <span class="px-3 py-0.5 rounded-full text-xs font-bold font-mono bg-purple-500/20 border border-purple-500/40 text-purple-300">
                   🏛️ {{ st.auditoriumDetail?.cinema?.name ? `${st.auditoriumDetail.cinema.name} - ${st.auditoriumDetail.name}` : st.auditorium }}
                 </span>
-                <span class="px-2.5 py-0.5 rounded-full text-xs font-bold font-mono bg-emerald-500/20 border border-emerald-500/40 text-emerald-300">
-                  ${{ Number(st.price).toFixed(2) }} / ticket
+              </div>
+
+              <!-- Price Tiers Badges in Birr -->
+              <div class="flex items-center gap-2 flex-wrap text-xs font-mono font-bold">
+                <span class="px-2.5 py-0.5 rounded bg-emerald-500/15 border border-emerald-500/30 text-emerald-300">
+                  Regular: {{ Number(st.price).toFixed(0) }} Birr
+                </span>
+                <span class="px-2.5 py-0.5 rounded bg-purple-500/15 border border-purple-500/30 text-purple-300">
+                  VIP: {{ Number(st.vip_price || st.price * 1.5).toFixed(0) }} Birr
+                </span>
+                <span class="px-2.5 py-0.5 rounded bg-blue-500/15 border border-blue-500/30 text-blue-300">
+                  Student: {{ Number(st.student_price || st.price * 0.8).toFixed(0) }} Birr
+                </span>
+                <span class="px-2.5 py-0.5 rounded bg-amber-500/15 border border-amber-500/30 text-amber-300">
+                  Child: {{ Number(st.child_price || st.price * 0.6).toFixed(0) }} Birr
                 </span>
               </div>
 
@@ -440,8 +474,9 @@
               >
                 <div>
                   <div class="text-sm font-bold text-emerald-300 font-mono">🏛️ {{ aud.name }}</div>
-                  <div class="text-xs text-slate-400 font-mono mt-0.5">
-                    🪑 {{ aud.total_seats }} Seats ({{ aud.rows_count }} Rows x {{ aud.seats_per_row }} Seats)
+                  <div class="text-xs text-slate-400 font-mono mt-0.5 flex gap-3">
+                    <span>🪑 {{ aud.total_seats }} Seats ({{ aud.rows_count }} R x {{ aud.seats_per_row }} S)</span>
+                    <span class="text-emerald-400 font-bold">Base: {{ Number(aud.base_price || 100).toFixed(0) }} Birr</span>
                   </div>
                 </div>
                 <div class="flex space-x-2">
@@ -479,7 +514,7 @@
               <th class="px-6 py-4 text-xs font-bold text-slate-300 uppercase tracking-wider">Movie / Showtime</th>
               <th class="px-6 py-4 text-xs font-bold text-slate-300 uppercase tracking-wider">Cinema / Hall</th>
               <th class="px-6 py-4 text-xs font-bold text-slate-300 uppercase tracking-wider">Seats</th>
-              <th class="px-6 py-4 text-xs font-bold text-slate-300 uppercase tracking-wider">Total Price</th>
+              <th class="px-6 py-4 text-xs font-bold text-slate-300 uppercase tracking-wider">Total Amount</th>
               <th class="px-6 py-4 text-xs font-bold text-slate-300 uppercase tracking-wider">Date</th>
             </tr>
           </thead>
@@ -506,7 +541,7 @@
                 </span>
               </td>
               <td class="px-6 py-4 text-xs font-bold text-emerald-400 font-mono">
-                ${{ booking.total_price ? Number(booking.total_price).toFixed(2) : 'N/A' }}
+                {{ booking.total_price ? `${Number(booking.total_price).toFixed(0)} Birr` : 'N/A' }}
               </td>
               <td class="px-6 py-4 text-xs text-slate-400 font-mono">{{ new Date(booking.created_at).toLocaleDateString() }}</td>
             </tr>
@@ -612,7 +647,10 @@ const showtimeForm = ref({
     auditorium: "",
     start_time: "",
     end_time: "",
-    price: "12.50",
+    price: 100,
+    vip_price: 150,
+    student_price: 80,
+    child_price: 60,
     total_seats: 50
 })
 
@@ -625,7 +663,9 @@ const auditoriumForm = ref({
     cinema_id: "",
     name: "",
     rows_count: 10,
-    seats_per_row: 12
+    seats_per_row: 12,
+    vip_rows_count: 2,
+    base_price: 100
 })
 
 const formatForDateTimeInput = (dateStr) => {
@@ -655,6 +695,12 @@ const handleAuditoriumSelect = () => {
         if (aud) {
             showtimeForm.value.total_seats = aud.total_seats
             showtimeForm.value.auditorium = aud.name
+            if (aud.base_price) {
+                showtimeForm.value.price = aud.base_price
+                showtimeForm.value.vip_price = Math.round(aud.base_price * 1.5)
+                showtimeForm.value.student_price = Math.round(aud.base_price * 0.8)
+                showtimeForm.value.child_price = Math.round(aud.base_price * 0.6)
+            }
         }
     }
 }
@@ -770,7 +816,10 @@ const openCreateShowtime = () => {
         auditorium: availableAuditoriums.value.length ? availableAuditoriums.value[0].name : "",
         start_time: "",
         end_time: "",
-        price: "12.50",
+        price: 100,
+        vip_price: 150,
+        student_price: 80,
+        child_price: 60,
         total_seats: availableAuditoriums.value.length ? availableAuditoriums.value[0].total_seats : 50
     }
     showtimeError.value = ""
@@ -786,7 +835,10 @@ const openEditShowtime = (st) => {
         auditorium: st.auditorium,
         start_time: formatForDateTimeInput(st.start_time),
         end_time: formatForDateTimeInput(st.end_time),
-        price: st.price,
+        price: st.price || 100,
+        vip_price: st.vip_price || 150,
+        student_price: st.student_price || 80,
+        child_price: st.child_price || 60,
         total_seats: st.total_seats
     }
     showtimeError.value = ""
@@ -822,7 +874,9 @@ const openCreateAuditorium = () => {
         cinema_id: cinemas.value.length ? cinemas.value[0].id : "",
         name: "",
         rows_count: 10,
-        seats_per_row: 12
+        seats_per_row: 12,
+        vip_rows_count: 2,
+        base_price: 100
     }
     showAuditoriumForm.value = true
 }
@@ -833,7 +887,9 @@ const openCreateAuditoriumForCinema = (cinemaId) => {
         cinema_id: cinemaId,
         name: "",
         rows_count: 10,
-        seats_per_row: 12
+        seats_per_row: 12,
+        vip_rows_count: 2,
+        base_price: 100
     }
     showAuditoriumForm.value = true
 }
@@ -844,7 +900,9 @@ const openEditAuditorium = (aud) => {
         cinema_id: aud.cinema_id,
         name: aud.name,
         rows_count: aud.rows_count,
-        seats_per_row: aud.seats_per_row
+        seats_per_row: aud.seats_per_row,
+        vip_rows_count: aud.vip_rows_count || 2,
+        base_price: aud.base_price || 100
     }
     showAuditoriumForm.value = true
 }
@@ -901,7 +959,7 @@ const saveMovie = async () => {
 
 const saveShowtime = async () => {
     if (!showtimeForm.value.movie_id || (!showtimeForm.value.auditorium_id && !showtimeForm.value.auditorium) || !showtimeForm.value.start_time || !showtimeForm.value.end_time || !showtimeForm.value.price) {
-        showtimeError.value = "Movie, auditorium, start/end times, and price are required."
+        showtimeError.value = "Movie, auditorium, start/end times, and base price are required."
         return
     }
 

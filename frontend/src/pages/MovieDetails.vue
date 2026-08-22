@@ -94,7 +94,7 @@
                         🏛️ {{ st.auditoriumDetail?.cinema?.name ? `${st.auditoriumDetail.cinema.name} - ${st.auditoriumDetail.name}` : st.auditorium }}
                       </span>
                       <span class="text-sm font-bold text-emerald-400 font-mono">
-                        ${{ Number(st.price).toFixed(2) }}
+                        {{ Number(st.price || 100).toFixed(0) }} Birr
                       </span>
                     </div>
                     
@@ -128,7 +128,11 @@
             <BookingForm 
               :movieId="movie.id" 
               :showtimeId="selectedShowtime?.id || null"
-              :price="selectedShowtime ? Number(selectedShowtime.price) : 0"
+              :price="selectedShowtime ? Number(selectedShowtime.price || 100) : 100"
+              :vipPrice="selectedShowtime ? Number(selectedShowtime.vip_price || 150) : 150"
+              :studentPrice="selectedShowtime ? Number(selectedShowtime.student_price || 80) : 80"
+              :childPrice="selectedShowtime ? Number(selectedShowtime.child_price || 60) : 60"
+              :vipRowsCount="selectedShowtime?.auditoriumDetail?.vip_rows_count || 2"
               :availableSeats="selectedShowtime ? selectedShowtime.available_seats : movie.available_seats" 
               :totalSeats="selectedShowtime ? selectedShowtime.total_seats : movie.total_seats"
               :rowsCount="selectedShowtime?.auditoriumDetail?.rows_count || null"
@@ -197,11 +201,12 @@ const fetchMovieAndShowtimes = async () => {
   }
 }
 
-const handleBooking = async (selectedSeats) => {
+const handleBooking = async ({ selectedSeats, ticketDetails }) => {
   booking.value = true
   try {
     const payload = {
-      seat_numbers: selectedSeats
+      seat_numbers: selectedSeats,
+      ticket_details: ticketDetails
     }
 
     if (selectedShowtime.value) {
