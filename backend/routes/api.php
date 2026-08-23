@@ -8,22 +8,40 @@ use App\Http\Controllers\AdminStatsController;
 use App\Http\Controllers\WatchlistController;
 use App\Http\Controllers\UserController;
 
-Route::post('/register', [AuthController::class, 'register']);
-Route::post('/login', [AuthController::class, 'login']);
+// Rate-limited Authentication Routes (6 attempts per min)
+Route::middleware('throttle:6,1')->group(function () {
+    Route::post('/register', [AuthController::class, 'register']);
+    Route::post('/login', [AuthController::class, 'login']);
+});
 
+// Public Showtime, Movie & Cinema Routes
 Route::get('/movies', [MovieController::class, 'index']);
 Route::get('/movies/{movie}', [MovieController::class, 'show']);
 Route::get('/movies/{movie}/booked-seats', [BookingController::class, 'getBookedSeats']);
 
-// Public Showtime & Cinema Routes
 Route::get('/cinemas', [CinemaController::class, 'index']);
 Route::get('/showtimes', [ShowtimeController::class, 'index']);
 Route::get('/showtimes/{showtime}', [ShowtimeController::class, 'show']);
 Route::get('/showtimes/{showtime}/booked-seats', [ShowtimeController::class, 'getBookedSeats']);
 
+// Customer Authenticated Routes
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
 
+    // Rate-limited Booking Creation (15 reservations per min)
+    Route::post('/bookings', [BookingController::class, 'store'])->middleware('throttle:15,1');
+    Route::delete('/bookings/{booking}', [BookingController::class, 'destroy']);
+    Route::get('/my-bookings', [BookingController::class, 'index']);
+
+    // Watchlist Routes
+    Route::get('/watchlist', [WatchlistController::class, 'index']);
+    Route::get('/watchlist/ids', [WatchlistController::class, 'ids']);
+    Route::post('/watchlist/toggle', [WatchlistController::class, 'toggle']);
+    Route::delete('/watchlist/{movieId}', [WatchlistController::class, 'destroy']);
+});
+
+// Strict Server-Side Admin Middleware Protected Routes (RBAC)
+Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     // Admin Movie Management
     Route::post('/movies', [MovieController::class, 'store']);
     Route::put('/movies/{movie}', [MovieController::class, 'update']);
@@ -42,18 +60,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/showtimes/{showtime}', [ShowtimeController::class, 'update']);
     Route::delete('/showtimes/{showtime}', [ShowtimeController::class, 'destroy']);
 
-    // Booking Routes
-    Route::post('/bookings', [BookingController::class, 'store']);
-    Route::delete('/bookings/{booking}', [BookingController::class, 'destroy']);
-    Route::get('/my-bookings', [BookingController::class, 'index']);
-
-    // Watchlist Routes
-    Route::get('/watchlist', [WatchlistController::class, 'index']);
-    Route::get('/watchlist/ids', [WatchlistController::class, 'ids']);
-    Route::post('/watchlist/toggle', [WatchlistController::class, 'toggle']);
-    Route::delete('/watchlist/{movieId}', [WatchlistController::class, 'destroy']);
-
-    // Admin Stats, Users & Bookings Audit
+    // Admin Analytics, Users & Bookings Audit
     Route::get('/admin/stats', [AdminStatsController::class, 'index']);
     Route::get('/admin/bookings', [BookingController::class, 'allBookings']);
     Route::get('/admin/users', [UserController::class, 'index']);

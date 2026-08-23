@@ -49,6 +49,13 @@ class BookingController extends Controller
                     return response()->json(['message' => 'Showtime not found'], 404);
                 }
 
+                // Security Rule: Prevent booking expired or started showtimes
+                if ($showtime->start_time && Carbon::parse($showtime->start_time)->lessThanOrEqualTo(Carbon::now())) {
+                    return response()->json([
+                        'message' => 'Booking is closed for this showtime because it has already started or ended.'
+                    ], 422);
+                }
+
                 if ($showtime->available_seats < $seatsCount) {
                     return response()->json(['message' => 'Not enough seats available for this showtime'], 400);
                 }
