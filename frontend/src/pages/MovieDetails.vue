@@ -1,25 +1,27 @@
 <template>
-  <div class="container mx-auto px-4 py-8 max-w-4xl">
-    <div v-if="loading" class="flex justify-center py-20">
+  <div class="container mx-auto px-2 sm:px-4 pt-1 pb-6 max-w-4xl font-sans">
+    <div v-if="loading" class="flex justify-center py-10">
       <div class="relative">
-        <div class="w-16 h-16 border-4 border-slate-700 border-t-[#ef6a26] rounded-full animate-spin"></div>
-        <div class="absolute inset-0 w-16 h-16 border-4 border-transparent border-r-orange-500 rounded-full animate-spin" style="animation-direction: reverse; animation-duration: 1.5s;"></div>
+        <div class="w-12 h-12 border-4 border-slate-700 border-t-orange-500 rounded-full animate-spin"></div>
       </div>
     </div>
 
-    <div v-else-if="movie" class="space-y-8">
-      <!-- Back button -->
-      <router-link 
-        to="/movies" 
-        class="inline-flex items-center gap-2 text-[#ef6a26] hover:text-orange-400 transition-colors text-sm font-medium group"
-      >
-        <svg class="w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
-        </svg>
-        BACK TO MOVIES
-      </router-link>
+    <div v-else-if="movie" class="space-y-2">
+      <!-- Back button (Compact Top Ribbon) -->
+      <div class="flex items-center justify-between px-1">
+        <router-link 
+          to="/movies" 
+          class="inline-flex items-center gap-1.5 text-orange-400 hover:text-orange-300 transition-colors text-xs font-bold font-sans group py-1"
+        >
+          <svg class="w-3.5 h-3.5 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path>
+          </svg>
+          <span>BACK TO MOVIES</span>
+        </router-link>
+        <span class="text-[10px] text-slate-400 font-sans uppercase">NOW SHOWING IN CINEMAS</span>
+      </div>
       
-      <!-- Movie details card (Black Glassy) -->
+      <!-- Movie details card (Black Glassy at Very Top) -->
       <div class="relative">
         <!-- Holographic border effect -->
         <div class="absolute inset-0 rounded-3xl bg-gradient-to-r from-orange-500/30 via-orange-400/30 to-orange-500/30 p-[2px]">
@@ -27,9 +29,9 @@
         </div>
         
         <div class="relative card border-white/15 bg-black/80 backdrop-blur-2xl rounded-3xl overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.9),inset_0_1px_1px_rgba(255,255,255,0.1)]">
-          <div class="grid lg:grid-cols-[260px_1fr] gap-6 p-6">
+          <div class="grid lg:grid-cols-[260px_1fr] gap-4 p-3 sm:p-4">
             <!-- Left Column: Movie poster & metadata -->
-            <div class="space-y-4">
+            <div class="space-y-3">
               <div class="relative flex justify-center">
                 <div v-if="movie.image" class="relative w-full max-w-[260px] h-[320px] rounded-2xl overflow-hidden group border border-white/15 shadow-lg">
                   <img 
@@ -58,7 +60,7 @@
               </div>
 
               <!-- Plot synopsis card under poster (Black Glassy) -->
-              <div class="bg-black/60 backdrop-blur-2xl border border-white/15 rounded-xl p-4 space-y-2 shadow-md">
+              <div class="bg-black/60 backdrop-blur-2xl border border-white/15 rounded-xl p-3 space-y-1.5 shadow-md">
                 <span class="text-[10px] uppercase font-bold tracking-wider text-orange-400 font-sans block">PLOT SYNOPSIS</span>
                 <p class="text-slate-200 leading-relaxed text-xs font-light">
                   {{ movie.description }}
@@ -67,7 +69,7 @@
 
               <button 
                 @click="toggleWatchlist"
-                class="w-full py-2.5 rounded-xl text-xs font-bold font-sans transition-all flex items-center justify-center gap-1.5 border"
+                class="w-full py-2 rounded-xl text-xs font-bold font-sans transition-all flex items-center justify-center gap-1.5 border"
                 :class="inWatchlist ? 'bg-red-950/70 border-red-500/50 text-red-300 shadow-md shadow-red-900/30' : 'bg-black/60 backdrop-blur-xl border-white/15 text-slate-300 hover:border-orange-500/50 hover:bg-black/80'"
               >
                 <span>{{ inWatchlist ? '💖 Saved in Watchlist' : '❤️ Add to Watchlist' }}</span>
@@ -75,32 +77,32 @@
             </div>
 
             <!-- Right Column: Title, Showtimes & Interactive Seat Map (Beside Poster Image) -->
-            <div class="space-y-5">
-              <div class="flex justify-between items-center gap-4 border-b border-white/10 pb-3">
-                <h1 class="font-cinematic text-xl sm:text-3xl font-bold tracking-wide text-orange-500">
+            <div class="space-y-2">
+              <div class="flex justify-between items-center gap-4 border-b border-white/10 pb-2">
+                <h1 class="font-cinematic text-xl sm:text-2xl font-bold tracking-wide text-orange-500">
                   {{ movie.title }}
                 </h1>
-                <div v-if="selectedShowtime" class="text-xs font-sans text-slate-300 bg-black/60 backdrop-blur-xl px-3 py-1 rounded-lg border border-white/15 hidden sm:block">
+                <div v-if="selectedShowtime" class="text-xs font-sans text-slate-300 bg-black/60 backdrop-blur-xl px-2.5 py-0.5 rounded-lg border border-white/15 hidden sm:block">
                   <span class="text-orange-400 font-bold">{{ selectedShowtime.auditoriumDetail?.cinema?.name ? `${selectedShowtime.auditoriumDetail.cinema.name} (${selectedShowtime.auditoriumDetail.name})` : selectedShowtime.auditorium }}</span>
                 </div>
               </div>
 
               <!-- Showtime Selector -->
-              <div class="space-y-2">
-                <h3 class="text-xs uppercase font-bold tracking-wider text-orange-400 font-sans flex items-center gap-2">
+              <div class="space-y-1">
+                <h3 class="text-[11px] uppercase font-bold tracking-wider text-orange-400 font-sans flex items-center gap-2">
                   <span>📅 1. SELECT CINEMA & SHOWTIME</span>
                 </h3>
 
-                <div v-if="showtimes.length === 0" class="p-3 bg-black/60 backdrop-blur-xl border border-orange-500/30 rounded-xl text-slate-300 text-xs">
+                <div v-if="showtimes.length === 0" class="p-2.5 bg-black/60 backdrop-blur-xl border border-orange-500/30 rounded-xl text-slate-300 text-xs">
                   No showtimes currently scheduled for this movie. Check back soon!
                 </div>
 
-                <div v-else class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-36 overflow-y-auto pr-1">
+                <div v-else class="grid grid-cols-1 sm:grid-cols-2 gap-1.5 max-h-32 overflow-y-auto pr-1">
                   <button
                     v-for="st in showtimes"
                     :key="st.id"
                     @click="selectShowtime(st)"
-                    class="text-left p-2.5 rounded-xl border transition-all duration-200 flex flex-col justify-between"
+                    class="text-left p-2 rounded-xl border transition-all duration-200 flex flex-col justify-between"
                     :class="selectedShowtime?.id === st.id 
                       ? 'bg-orange-500/20 border-orange-500 shadow-md shadow-orange-950/30' 
                       : 'bg-black/60 backdrop-blur-xl border-white/15 text-slate-300 hover:border-orange-400/50 hover:bg-black/80'"
@@ -125,11 +127,7 @@
               </div>
 
               <!-- Interactive Seat Mapping Section (Directly Beside Poster Image) -->
-              <div v-if="selectedShowtime || showtimes.length === 0" class="border-t border-white/10 pt-4 space-y-3">
-                <h2 class="text-sm font-bold text-orange-500 font-sans tracking-wider flex items-center gap-2">
-                  <span>🪑 2. SELECT SEATS & CONFIRM TICKETS</span>
-                </h2>
-
+              <div v-if="selectedShowtime || showtimes.length === 0">
                 <BookingForm 
                   :movieId="movie.id" 
                   :showtimeId="selectedShowtime?.id || null"

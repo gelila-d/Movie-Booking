@@ -1,6 +1,6 @@
 <template>
-  <div v-if="show" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md overflow-y-auto print:bg-white print:p-0">
-    <div class="relative w-full max-w-lg my-auto max-h-[90vh] overflow-y-auto bg-slate-950 border border-orange-500/40 rounded-3xl shadow-[0_25px_60px_-15px_rgba(239,106,38,0.3)] print:max-h-none print:overflow-visible print:shadow-none print:border-none print:w-full print:max-w-none print:rounded-none text-white font-sans scrollbar-thin scrollbar-thumb-orange-500/40">
+  <div v-if="show" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md overflow-y-auto print:bg-white print:p-0">
+    <div class="relative w-full max-w-lg my-auto bg-slate-950 border border-orange-500/40 rounded-3xl shadow-[0_25px_60px_-15px_rgba(239,106,38,0.3)] print:max-h-none print:overflow-visible print:shadow-none print:border-none print:w-full print:max-w-none print:rounded-none text-white font-sans">
       
       <!-- Top Ticket Header / Film Strip Pattern -->
       <div class="bg-gradient-to-r from-orange-600 via-orange-500 to-orange-600 p-4 text-black flex justify-between items-center print:bg-slate-900 print:text-white">
@@ -96,7 +96,7 @@
 
           <!-- Dynamic Real QR Code -->
           <div class="bg-white p-2 rounded-xl shadow-lg flex-shrink-0">
-            <img :src="qrCodeUrl" alt="Ticket QR Code" class="w-32 h-32 object-contain" />
+            <img :src="localQrCodeUrl" alt="Ticket QR Code" class="w-32 h-32 object-contain" />
           </div>
         </div>
       </div>
@@ -113,8 +113,9 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, computed, watchEffect } from 'vue'
 import html2canvas from 'html2canvas'
+import QRCode from 'qrcode'
 
 const props = defineProps({
   show: {
@@ -131,36 +132,10 @@ const emit = defineEmits(['close'])
 
 const ticketPassRef = ref(null)
 const downloading = ref(false)
+const localQrCodeUrl = ref('')
 
 const close = () => {
   emit('close')
-}
-
-const downloadTicketImage = async () => {
-  if (!ticketPassRef.value || downloading.value) return;
-  downloading.value = true;
-  try {
-    const canvas = await html2canvas(ticketPassRef.value, {
-      scale: 2,
-      useCORS: true,
-      backgroundColor: '#020617',
-    });
-    const image = canvas.toDataURL('image/png');
-    const link = document.createElement('a');
-    link.href = image;
-    link.download = `Ticket-Pass-${bookingId.value}.png`;
-    link.click();
-  } catch (err) {
-    console.error('Failed to generate ticket image:', err);
-    alert('Could not download ticket image. Please try again.');
-  } finally {
-    downloading.value = false;
-  }
-}
-
-const getImageUrl = (path) => {
-  if (!path) return '';
-  return `http://localhost:8000/storage/${path}`;
 }
 
 const bookingId = computed(() => {
@@ -218,10 +193,45 @@ const formattedAmount = computed(() => {
   return Number(props.booking.total_price).toLocaleString();
 })
 
-const qrCodeUrl = computed(() => {
-  const dataString = encodeURIComponent(
-    `TICKET:${bookingId.value}|MOVIE:${props.booking?.movie?.title || 'Movie'}|HALL:${cinemaHallName.value}|SEATS:${seatList.value}|TOTAL:${formattedAmount.value}ETB`
-  );
-  return `https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${dataString}&color=000000&bgcolor=ffffff`;
+const getImageUrl = (path) => {
+  if (!path) return '';
+  return `http://localhost:8000/storage/${path}`;
+}
+
+// Generate pure local base64 QR Data URL so html2canvas never makes cross-origin requests
+watchEffect(async () => {
+  const payload = `TICKET:${bookingId.value}|MOVIE:${props.booking?.movie?.title || 'Movie'}|HALL:${cinemaHallName.value}|SEATS:${seatList.value}|TOTAL:${formattedAmount.value}ETB`;
+  try {
+    localQrCodeUrl.value = await QRCode.toDataURL(payload, { width: 180, margin: 1, color: { dark: '#000000', light: '#ffffff' } });
+  } catch (err) {
+    console.error('Failed to generate local QR code base64:', err);
+  }
 })
+
+const downloadTicketImage = async () => {
+  if (!ticketPassRef.value || downloading.value) return;
+  downloading.value = true;
+  try {
+    const canvas = await html2canvas(ticketPassRef.value, {
+      scale: 2,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: '#09090b',
+      logging: false,
+    });
+    
+    const dataUrl = canvas.toDataURL('image/png');
+    const link = document.createElement('a');
+    link.href = dataUrl;
+    link.download = `Ticket-Pass-${bookingId.value}.png`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  } catch (err) {
+    console.error('Failed to generate ticket PNG:', err);
+    alert('Could not download ticket image. Please try again.');
+  } finally {
+    downloading.value = false;
+  }
+}
 </script>

@@ -1,7 +1,7 @@
 <template>
   <div class="min-h-screen font-sans flex flex-col justify-between bg-black">
-    <Navbar v-if="!isAuthPage" />
-    <main :class="['relative z-10 flex-1', { 'pt-24': route.path !== '/' }]">
+    <Navbar v-if="!isAuthPage && !route.meta.hideNavbar" />
+    <main :class="['relative z-10 flex-1', { 'pt-16': route.path !== '/' && !route.meta.hideNavbar }]">
       <router-view />
     </main>
     <Footer v-if="!isAuthPage && !route.meta.hideFooter" />

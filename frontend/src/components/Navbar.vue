@@ -1,7 +1,7 @@
 <template>
   <header 
     :class="[
-      'fixed top-0 left-0 right-0 w-full flex items-center justify-between z-50 transition-all duration-300',
+      'fixed top-0 left-0 right-0 w-full flex items-center justify-between z-40 transition-all duration-300',
       isScrolled 
         ? 'bg-[#0f1014]/95 backdrop-blur-md py-4 px-6 md:px-10 shadow-xl border-b border-gray-800/50' 
         : 'bg-gradient-to-b from-black/80 via-black/40 to-transparent py-6 px-6 md:px-10'
@@ -52,7 +52,7 @@
         class="flex items-center transition" 
         :class="[route.path === '/watchlist' ? 'text-[#ef6a26]' : 'text-white hover:text-[#ef6a26]']"
       >
-        Watchlist <span class="ml-1 text-xs">❤️</span>
+        Watchlist
       </router-link>
       <router-link to="/movies" class="text-white hover:text-[#ef6a26] flex items-center transition">
         News <svg class="w-3 h-3 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
@@ -127,7 +127,9 @@
                 @click="dropdownOpen = false"
                 class="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium text-slate-200 hover:bg-[#ef6a26]/15 hover:text-[#ef6a26] transition-colors group"
               >
-                <span class="text-xs">❤️</span>
+                <svg class="w-4 h-4 text-[#ef6a26] group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M5 5a2 2 0 012-2h10a2 2 0 012 2v16l-7-3.5L5 21V5z"/>
+                </svg>
                 <span>My Watchlist</span>
               </router-link>
 
