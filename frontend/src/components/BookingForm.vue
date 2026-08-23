@@ -1,7 +1,7 @@
 <template>
   <div class="space-y-6">
-    <!-- Header & Price Breakdown -->
-    <div class="flex justify-between items-start flex-wrap gap-4 bg-slate-900/60 p-4 rounded-2xl border border-white/10">
+    <!-- Header & Price Breakdown (Black Glassy) -->
+    <div class="flex justify-between items-start flex-wrap gap-4 bg-black/60 backdrop-blur-2xl p-5 rounded-2xl border border-white/15 shadow-[0_12px_40px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.12)]">
       <div>
         <h3 class="text-[#ef6a26] font-bold font-mono tracking-wider">SELECT YOUR SEATS & TICKET TYPES</h3>
         <p class="text-slate-400 text-sm font-mono mt-1">{{ selectedSeats.length }} seat{{ selectedSeats.length !== 1 ? 's' : '' }} selected</p>
@@ -80,8 +80,8 @@
       </div>
     </div>
 
-    <!-- Ticket Category Selection for Selected Seats -->
-    <div v-if="selectedSeatDetails.length > 0" class="bg-slate-900/80 border border-white/10 p-5 rounded-2xl space-y-3">
+    <!-- Ticket Category Selection for Selected Seats (Black Glassy) -->
+    <div v-if="selectedSeatDetails.length > 0" class="bg-black/60 backdrop-blur-2xl border border-white/15 p-5 rounded-2xl space-y-3 shadow-[0_12px_40px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.12)]">
       <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider font-mono">Customize Ticket Types Per Seat:</h4>
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-48 overflow-y-auto pr-1">
         <div 
@@ -138,8 +138,8 @@
     </div>
 
     <!-- MOCK ETHIOPIAN PAYMENT MODAL -->
-    <div v-if="showPaymentModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
-      <div class="bg-slate-900 border border-slate-700 w-full max-w-lg rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl relative overflow-hidden">
+    <div v-if="showPaymentModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md overflow-y-auto">
+      <div class="bg-slate-900 border border-slate-700 w-full max-w-lg my-auto max-h-[90vh] overflow-y-auto rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl relative">
         <!-- Close button -->
         <button @click="showPaymentModal = false" class="absolute top-5 right-5 text-slate-400 hover:text-white font-bold text-lg">✕</button>
 
@@ -385,6 +385,11 @@ const seatGrid = computed(() => {
 
 const openPaymentModal = () => {
   if (selectedSeatDetails.value.length < 1) return
+  if (!localStorage.getItem('token')) {
+    alert('Please sign in or create an account to proceed to ticket payment.')
+    window.location.href = '#/login'
+    return
+  }
   showPaymentModal.value = true
 }
 

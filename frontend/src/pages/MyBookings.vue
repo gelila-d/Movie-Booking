@@ -167,35 +167,35 @@
               </div>
             </div>
 
-            <!-- Datetime & Seat info -->
-            <div class="flex flex-wrap items-center text-xs text-gray-300 gap-y-2 gap-x-4 mt-3 font-mono">
-              <span class="flex items-center bg-slate-800/80 px-3 py-1.5 rounded-xl border border-slate-700 font-bold text-white">
+            <!-- Datetime & Seat info (Black Glassy) -->
+            <div class="flex flex-wrap items-center text-xs text-gray-200 gap-y-2 gap-x-4 mt-3 font-mono">
+              <span class="flex items-center bg-black/60 backdrop-blur-2xl px-3.5 py-1.5 rounded-xl border border-white/15 font-bold text-white shadow-md">
                 <span class="mr-1.5 text-orange-400">🕒</span> 
                 {{ booking.showtime?.start_time ? new Date(booking.showtime.start_time).toLocaleString(undefined, {dateStyle: 'medium', timeStyle: 'short'}) : (booking.movie?.show_time ? new Date(booking.movie.show_time).toLocaleString(undefined, {dateStyle: 'medium', timeStyle: 'short'}) : 'TBD') }}
               </span>
 
-              <span class="flex items-center bg-slate-800/80 px-3 py-1.5 rounded-xl border border-slate-700">
+              <span class="flex items-center bg-black/60 backdrop-blur-2xl px-3.5 py-1.5 rounded-xl border border-white/15 font-bold text-white shadow-md">
                 <span class="mr-1.5">🪑</span> {{ booking.seats_booked }} Seats
               </span>
 
-              <span class="flex items-center font-bold text-orange-400 bg-orange-500/10 border border-orange-500/20 px-3 py-1.5 rounded-xl" v-if="booking.seat_numbers && booking.seat_numbers.length">
+              <span class="flex items-center font-bold text-orange-300 bg-orange-950/50 backdrop-blur-2xl border border-orange-500/40 px-3.5 py-1.5 rounded-xl shadow-md" v-if="booking.seat_numbers && booking.seat_numbers.length">
                 Seat IDs: {{ booking.seat_numbers.join(', ') }}
               </span>
 
               <span 
-                class="flex items-center font-bold px-3 py-1.5 rounded-xl border"
-                :class="booking.status === 'cancelled' ? 'text-red-400 bg-red-500/10 border-red-500/20' : 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20'"
+                class="flex items-center font-bold px-3.5 py-1.5 rounded-xl border backdrop-blur-2xl shadow-md"
+                :class="booking.status === 'cancelled' ? 'text-red-300 bg-red-950/50 border-red-500/40' : 'text-emerald-300 bg-emerald-950/50 border-emerald-500/40'"
               >
                 {{ booking.status === 'cancelled' ? `REFUNDED: ${Number(booking.refund_amount || booking.total_price).toLocaleString()} ETB` : `Total Paid: ${booking.total_price ? `${Number(booking.total_price).toLocaleString()} ETB` : 'Paid'}` }}
               </span>
             </div>
 
-            <!-- Itemized Ticket Breakdown -->
-            <div v-if="booking.ticket_details && booking.ticket_details.length" class="mt-3 flex gap-2 flex-wrap">
+            <!-- Itemized Ticket Breakdown (Black Glassy Pill) -->
+            <div v-if="booking.ticket_details && booking.ticket_details.length" class="mt-3.5 flex gap-2 flex-wrap">
               <span 
                 v-for="td in booking.ticket_details" 
                 :key="td.seat_id"
-                class="px-2.5 py-1 rounded-lg bg-slate-900 border border-slate-700 text-xs font-mono text-slate-300"
+                class="px-3 py-1 rounded-xl bg-black/60 backdrop-blur-2xl border border-white/15 text-xs font-mono text-slate-200 shadow-md"
               >
                 Seat {{ td.seat_id }} ({{ td.type }}: {{ td.price }} ETB)
               </span>

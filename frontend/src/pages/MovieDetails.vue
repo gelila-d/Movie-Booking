@@ -253,6 +253,12 @@ const fetchMovieAndShowtimes = async () => {
 }
 
 const handleBooking = async ({ selectedSeats, ticketDetails, paymentMethod }) => {
+  if (!localStorage.getItem('token')) {
+    alert('Please sign in or register to complete your ticket booking.');
+    router.push({ path: '/login', query: { redirect: route.fullPath } });
+    return;
+  }
+
   booking.value = true
   try {
     const payload = {
@@ -271,7 +277,12 @@ const handleBooking = async ({ selectedSeats, ticketDetails, paymentMethod }) =>
     createdBooking.value = res.data
     showTicketModal.value = true
   } catch (err) {
-    if (err.response && err.response.data && err.response.data.errors) {
+    if (err.response?.status === 401 || err.response?.data?.message === 'Unauthenticated.') {
+        alert('Your session has expired. Please sign in to complete your reservation.');
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        router.push({ path: '/login', query: { redirect: route.fullPath } });
+    } else if (err.response && err.response.data && err.response.data.errors) {
         const errors = err.response.data.errors;
         const firstKey = Object.keys(errors)[0];
         alert(errors[firstKey][0]);

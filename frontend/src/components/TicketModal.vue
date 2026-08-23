@@ -1,6 +1,6 @@
 <template>
-  <div v-if="show" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md print:bg-white print:p-0">
-    <div class="relative w-full max-w-lg bg-slate-950 border border-amber-500/40 rounded-3xl overflow-hidden shadow-[0_25px_60px_-15px_rgba(239,106,38,0.3)] print:shadow-none print:border-none print:w-full print:max-w-none print:rounded-none text-white font-sans">
+  <div v-if="show" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md overflow-y-auto print:bg-white print:p-0">
+    <div class="relative w-full max-w-lg my-auto max-h-[90vh] overflow-y-auto bg-slate-950 border border-amber-500/40 rounded-3xl shadow-[0_25px_60px_-15px_rgba(239,106,38,0.3)] print:max-h-none print:overflow-visible print:shadow-none print:border-none print:w-full print:max-w-none print:rounded-none text-white font-sans scrollbar-thin scrollbar-thumb-amber-500/40">
       
       <!-- Top Ticket Header / Film Strip Pattern -->
       <div class="bg-gradient-to-r from-orange-600 via-amber-500 to-orange-600 p-4 text-black flex justify-between items-center print:bg-slate-900 print:text-white">
@@ -9,8 +9,9 @@
           <span class="font-orbitron font-extrabold tracking-wider text-sm uppercase">OFFICIAL E-TICKET PASS</span>
         </div>
         <div class="flex items-center gap-2">
-          <button @click="downloadOrPrintTicket" class="px-3 py-1 bg-black/20 hover:bg-black/30 text-black font-bold text-xs rounded-lg transition-colors print:hidden flex items-center gap-1">
-            <span>📥</span> Download / Print
+          <button @click="downloadTicketImage" :disabled="downloading" class="px-3 py-1 bg-black/20 hover:bg-black/30 text-black font-bold text-xs rounded-lg transition-colors print:hidden flex items-center gap-1">
+            <span v-if="downloading" class="animate-spin h-3.5 w-3.5 border-2 border-black border-t-transparent rounded-full"></span>
+            <span>📥</span> {{ downloading ? 'Generating PNG...' : 'Download Ticket' }}
           </button>
           <button @click="close" class="text-black font-extrabold hover:opacity-75 text-lg print:hidden">
             ✕
@@ -18,8 +19,8 @@
         </div>
       </div>
 
-      <!-- Main Ticket Body -->
-      <div class="p-6 sm:p-8 space-y-6 relative bg-gradient-to-b from-slate-900 via-slate-950 to-black">
+      <!-- Main Ticket Body (Captured for Download) -->
+      <div ref="ticketPassRef" class="p-6 sm:p-8 space-y-6 relative bg-gradient-to-b from-slate-900 via-slate-950 to-black">
         <!-- Watermark / Background Glow -->
         <div class="absolute -top-10 -right-10 w-40 h-40 bg-orange-500/10 rounded-full blur-3xl pointer-events-none"></div>
 
@@ -48,8 +49,8 @@
           <div class="w-5 h-5 bg-black rounded-full -mr-8 border-l border-amber-500/30"></div>
         </div>
 
-        <!-- Ticket Details Grid -->
-        <div class="grid grid-cols-2 gap-4 text-xs font-mono bg-slate-900/80 p-4 rounded-2xl border border-white/10">
+        <!-- Ticket Details Grid (Black Glassy) -->
+        <div class="grid grid-cols-2 gap-4 text-xs font-mono bg-black/60 backdrop-blur-2xl p-5 rounded-2xl border border-white/15 shadow-[0_12px_40px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.12)]">
           <div>
             <span class="text-slate-400 block text-[10px] uppercase font-bold">DATE & TIME</span>
             <span class="text-white font-bold text-sm block mt-0.5">
@@ -103,8 +104,8 @@
       <!-- Ticket Stub Footer -->
       <div class="bg-slate-900 border-t border-slate-800 p-4 text-center text-[10px] text-slate-400 font-mono flex justify-between items-center print:hidden">
         <span>movies • Ethiopian Cinema Pass</span>
-        <button @click="downloadOrPrintTicket" class="text-amber-300 font-bold hover:underline flex items-center gap-1">
-          <span>📥</span> Download Ticket
+        <button @click="downloadTicketImage" :disabled="downloading" class="text-amber-300 font-bold hover:underline flex items-center gap-1">
+          <span>📥</span> {{ downloading ? 'Saving Image...' : 'Download Ticket PNG' }}
         </button>
       </div>
     </div>
@@ -112,7 +113,8 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { ref, computed } from 'vue'
+import html2canvas from 'html2canvas'
 
 const props = defineProps({
   show: {
@@ -127,12 +129,33 @@ const props = defineProps({
 
 const emit = defineEmits(['close'])
 
+const ticketPassRef = ref(null)
+const downloading = ref(false)
+
 const close = () => {
   emit('close')
 }
 
-const downloadOrPrintTicket = () => {
-  window.print()
+const downloadTicketImage = async () => {
+  if (!ticketPassRef.value || downloading.value) return;
+  downloading.value = true;
+  try {
+    const canvas = await html2canvas(ticketPassRef.value, {
+      scale: 2,
+      useCORS: true,
+      backgroundColor: '#020617',
+    });
+    const image = canvas.toDataURL('image/png');
+    const link = document.createElement('a');
+    link.href = image;
+    link.download = `Ticket-Pass-${bookingId.value}.png`;
+    link.click();
+  } catch (err) {
+    console.error('Failed to generate ticket image:', err);
+    alert('Could not download ticket image. Please try again.');
+  } finally {
+    downloading.value = false;
+  }
 }
 
 const getImageUrl = (path) => {
