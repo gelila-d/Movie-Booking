@@ -20,10 +20,10 @@
     </div>
 
     <!-- Explicit Cancellation & Refund Policy Banner -->
-    <div class="p-4 bg-gradient-to-r from-slate-900 via-slate-950 to-slate-900 border border-amber-500/40 rounded-2xl flex items-start gap-3 shadow-lg">
+    <div class="p-4 bg-gradient-to-r from-slate-900 via-slate-950 to-slate-900 border border-orange-500/40 rounded-2xl flex items-start gap-3 shadow-lg">
       <span class="text-xl">ℹ️</span>
       <div class="space-y-0.5 text-xs text-slate-300">
-        <h4 class="font-bold text-amber-300 uppercase tracking-wider font-mono">Cancellation & Refund Policy</h4>
+        <h4 class="font-bold text-orange-400 uppercase tracking-wider font-sans">Cancellation & Refund Policy</h4>
         <p>100% Mobile Money refund (Telebirr / CBE Birr) is granted for ticket cancellations requested at least <strong>2 hours prior to showtime</strong>. Seats are immediately restored to the cinema hall.</p>
       </div>
     </div>
@@ -203,10 +203,10 @@
           </div>
 
           <!-- Transaction Footer & Digital E-Ticket Barcode -->
-          <div class="text-xs text-slate-400 font-mono border-t border-white/10 pt-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+          <div class="text-xs text-slate-400 font-sans border-t border-white/10 pt-3 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
             <div>
               <span class="block text-slate-500">
-                Booking Ref: <strong class="text-amber-300">{{ booking.transaction_ref || `MV-${booking.id}98` }}</strong>
+                Booking Ref: <strong class="text-orange-400">{{ booking.transaction_ref || `MV-${booking.id}98` }}</strong>
                 <span v-if="booking.refund_ref" class="ml-2 text-red-400 font-bold">(Refund Ref: {{ booking.refund_ref }})</span>
               </span>
               <span class="block text-[11px] text-slate-500">Booked on: {{ new Date(booking.created_at).toLocaleDateString() }}</span>
@@ -216,7 +216,7 @@
             <button 
               v-if="booking.status !== 'cancelled'"
               @click="openTicket(booking)" 
-              class="flex items-center gap-3 bg-black/80 hover:bg-black p-2 px-3 rounded-xl border border-amber-500/40 transition-colors group"
+              class="flex items-center gap-3 bg-black/80 hover:bg-black p-2 px-3 rounded-xl border border-orange-500/40 transition-colors group"
             >
               <div class="flex flex-col items-center">
                 <!-- Barcode visual simulation -->
@@ -232,10 +232,10 @@
                   <div class="w-1.5 h-full bg-white"></div>
                   <div class="w-0.5 h-full bg-white"></div>
                 </div>
-                <span class="text-[9px] text-amber-300 group-hover:text-amber-200 tracking-widest mt-0.5 font-mono">SCAN / DOWNLOAD QR PASS</span>
+                <span class="text-[9px] text-orange-400 group-hover:text-orange-300 tracking-widest mt-0.5 font-sans">SCAN / DOWNLOAD QR PASS</span>
               </div>
             </button>
-            <div v-else class="text-red-400 font-bold text-xs font-mono">
+            <div v-else class="text-red-400 font-bold text-xs font-sans">
               [ SEATS RESTORED TO CINEMA ]
             </div>
           </div>

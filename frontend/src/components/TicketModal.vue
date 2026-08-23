@@ -1,12 +1,12 @@
 <template>
   <div v-if="show" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md overflow-y-auto print:bg-white print:p-0">
-    <div class="relative w-full max-w-lg my-auto max-h-[90vh] overflow-y-auto bg-slate-950 border border-amber-500/40 rounded-3xl shadow-[0_25px_60px_-15px_rgba(239,106,38,0.3)] print:max-h-none print:overflow-visible print:shadow-none print:border-none print:w-full print:max-w-none print:rounded-none text-white font-sans scrollbar-thin scrollbar-thumb-amber-500/40">
+    <div class="relative w-full max-w-lg my-auto max-h-[90vh] overflow-y-auto bg-slate-950 border border-orange-500/40 rounded-3xl shadow-[0_25px_60px_-15px_rgba(239,106,38,0.3)] print:max-h-none print:overflow-visible print:shadow-none print:border-none print:w-full print:max-w-none print:rounded-none text-white font-sans scrollbar-thin scrollbar-thumb-orange-500/40">
       
       <!-- Top Ticket Header / Film Strip Pattern -->
-      <div class="bg-gradient-to-r from-orange-600 via-amber-500 to-orange-600 p-4 text-black flex justify-between items-center print:bg-slate-900 print:text-white">
+      <div class="bg-gradient-to-r from-orange-600 via-orange-500 to-orange-600 p-4 text-black flex justify-between items-center print:bg-slate-900 print:text-white">
         <div class="flex items-center gap-2">
           <span class="text-xl">🎟️</span>
-          <span class="font-orbitron font-extrabold tracking-wider text-sm uppercase">OFFICIAL E-TICKET PASS</span>
+          <span class="font-cinematic font-extrabold tracking-wider text-sm uppercase">OFFICIAL E-TICKET PASS</span>
         </div>
         <div class="flex items-center gap-2">
           <button @click="downloadTicketImage" :disabled="downloading" class="px-3 py-1 bg-black/20 hover:bg-black/30 text-black font-bold text-xs rounded-lg transition-colors print:hidden flex items-center gap-1">
@@ -30,13 +30,13 @@
             <img :src="getImageUrl(booking.movie.image)" alt="Poster" class="w-full h-full object-cover" />
           </div>
           <div class="space-y-1">
-            <h2 class="text-2xl font-bold font-orbitron text-white leading-tight">
+            <h2 class="text-2xl font-bold font-cinematic text-white leading-tight">
               {{ booking?.movie?.title || 'Movie Title' }}
             </h2>
-            <p class="text-xs text-amber-400 font-mono font-semibold">
+            <p class="text-xs text-orange-400 font-sans font-semibold">
               🏛️ {{ cinemaHallName }}
             </p>
-            <div class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold font-mono uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 mt-1">
+            <div class="inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold font-sans uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 mt-1">
               ✓ {{ bookingStatusText }}
             </div>
           </div>
@@ -44,13 +44,13 @@
 
         <!-- Perforated Ticket Divider -->
         <div class="relative my-4 flex items-center justify-between">
-          <div class="w-5 h-5 bg-black rounded-full -ml-8 border-r border-amber-500/30"></div>
+          <div class="w-5 h-5 bg-black rounded-full -ml-8 border-r border-orange-500/30"></div>
           <div class="flex-grow border-t-2 border-dashed border-slate-700 mx-2"></div>
-          <div class="w-5 h-5 bg-black rounded-full -mr-8 border-l border-amber-500/30"></div>
+          <div class="w-5 h-5 bg-black rounded-full -mr-8 border-l border-orange-500/30"></div>
         </div>
 
         <!-- Ticket Details Grid (Black Glassy) -->
-        <div class="grid grid-cols-2 gap-4 text-xs font-mono bg-black/60 backdrop-blur-2xl p-5 rounded-2xl border border-white/15 shadow-[0_12px_40px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.12)]">
+        <div class="grid grid-cols-2 gap-4 text-xs font-sans bg-black/60 backdrop-blur-2xl p-5 rounded-2xl border border-white/15 shadow-[0_12px_40px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.12)]">
           <div>
             <span class="text-slate-400 block text-[10px] uppercase font-bold">DATE & TIME</span>
             <span class="text-white font-bold text-sm block mt-0.5">
@@ -73,7 +73,7 @@
 
           <div>
             <span class="text-slate-400 block text-[10px] uppercase font-bold">BOOKING ID</span>
-            <span class="text-amber-300 font-extrabold text-sm block mt-0.5">
+            <span class="text-orange-300 font-extrabold text-sm block mt-0.5">
               {{ bookingId }}
             </span>
           </div>
@@ -87,11 +87,11 @@
         </div>
 
         <!-- QR Code & Scanner Instructions Section -->
-        <div class="bg-black p-4 rounded-2xl border border-amber-500/30 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="bg-black p-4 rounded-2xl border border-orange-500/30 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div class="space-y-1 text-center sm:text-left">
-            <span class="text-[10px] font-bold uppercase tracking-wider text-amber-400 font-mono block">ENTRANCE SCANNABLE PASS</span>
-            <p class="text-xs text-slate-300 font-mono">Present this QR code to cinema usher at entry.</p>
-            <span class="text-[10px] text-slate-500 font-mono block">Ref: {{ booking?.transaction_ref || bookingId }}</span>
+            <span class="text-[10px] font-bold uppercase tracking-wider text-orange-400 font-sans block">ENTRANCE SCANNABLE PASS</span>
+            <p class="text-xs text-slate-300 font-sans">Present this QR code to cinema usher at entry.</p>
+            <span class="text-[10px] text-slate-500 font-sans block">Ref: {{ booking?.transaction_ref || bookingId }}</span>
           </div>
 
           <!-- Dynamic Real QR Code -->
@@ -102,9 +102,9 @@
       </div>
 
       <!-- Ticket Stub Footer -->
-      <div class="bg-slate-900 border-t border-slate-800 p-4 text-center text-[10px] text-slate-400 font-mono flex justify-between items-center print:hidden">
+      <div class="bg-slate-900 border-t border-slate-800 p-4 text-center text-[10px] text-slate-400 font-sans flex justify-between items-center print:hidden">
         <span>movies • Ethiopian Cinema Pass</span>
-        <button @click="downloadTicketImage" :disabled="downloading" class="text-amber-300 font-bold hover:underline flex items-center gap-1">
+        <button @click="downloadTicketImage" :disabled="downloading" class="text-orange-300 font-bold hover:underline flex items-center gap-1">
           <span>📥</span> {{ downloading ? 'Saving Image...' : 'Download Ticket PNG' }}
         </button>
       </div>

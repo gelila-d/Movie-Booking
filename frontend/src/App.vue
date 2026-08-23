@@ -4,7 +4,7 @@
     <main :class="['relative z-10 flex-1', { 'pt-24': route.path !== '/' }]">
       <router-view />
     </main>
-    <Footer v-if="!isAuthPage" />
+    <Footer v-if="!isAuthPage && !route.meta.hideFooter" />
   </div>
 </template>
 

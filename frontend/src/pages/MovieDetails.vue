@@ -19,137 +19,135 @@
         BACK TO MOVIES
       </router-link>
       
-      <!-- Movie details card -->
+      <!-- Movie details card (Black Glassy) -->
       <div class="relative">
         <!-- Holographic border effect -->
-        <div class="absolute inset-0 rounded-3xl bg-gradient-to-r from-orange-500/30 via-amber-500/30 to-orange-500/30 p-[2px]">
-          <div class="h-full w-full rounded-3xl bg-slate-900/90 backdrop-blur-xl"></div>
+        <div class="absolute inset-0 rounded-3xl bg-gradient-to-r from-orange-500/30 via-orange-400/30 to-orange-500/30 p-[2px]">
+          <div class="h-full w-full rounded-3xl bg-black/80 backdrop-blur-2xl"></div>
         </div>
         
-        <div class="relative card border-slate-700/50 rounded-3xl overflow-hidden">
-          <div class="grid lg:grid-cols-2 gap-8 p-8">
-            <!-- Movie poster -->
-            <div class="relative">
-              <div v-if="movie.image" class="relative w-full h-[480px] rounded-2xl overflow-hidden group">
-                <img 
-                  :src="getImageUrl(movie.image)" 
-                  alt="Movie Poster" 
-                  class="w-full h-full object-cover opacity-95 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" 
-                />
-                <div class="absolute inset-0 bg-gradient-to-t from-slate-900/20 via-transparent to-transparent"></div>
+        <div class="relative card border-white/15 bg-black/80 backdrop-blur-2xl rounded-3xl overflow-hidden shadow-[0_20px_60px_rgba(0,0,0,0.9),inset_0_1px_1px_rgba(255,255,255,0.1)]">
+          <div class="grid lg:grid-cols-[260px_1fr] gap-6 p-6">
+            <!-- Left Column: Movie poster & metadata -->
+            <div class="space-y-4">
+              <div class="relative flex justify-center">
+                <div v-if="movie.image" class="relative w-full max-w-[260px] h-[320px] rounded-2xl overflow-hidden group border border-white/15 shadow-lg">
+                  <img 
+                    :src="getImageUrl(movie.image)" 
+                    alt="Movie Poster" 
+                    class="w-full h-full object-cover opacity-95 group-hover:opacity-100 group-hover:scale-105 transition-all duration-700" 
+                  />
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent"></div>
+                  
+                  <!-- Rating badge -->
+                  <div class="absolute top-3 right-3">
+                    <div class="bg-gradient-to-r from-orange-500 to-orange-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow-md">
+                      ★ 9.4
+                    </div>
+                  </div>
+                </div>
                 
-                <!-- Rating badge -->
-                <div class="absolute top-4 right-4">
-                  <div class="bg-gradient-to-r from-yellow-400 to-orange-500 text-black px-4 py-2 rounded-full text-sm font-bold">
-                    ★ 9.4
+                <div v-else class="w-full max-w-[260px] h-[320px] bg-black/60 backdrop-blur-xl rounded-2xl flex items-center justify-center border border-white/15">
+                  <div class="text-center">
+                    <div class="w-16 h-16 mx-auto mb-3 bg-white/5 rounded-full flex items-center justify-center border border-white/10">
+                      <span class="text-3xl">🎬</span>
+                    </div>
+                    <span class="text-slate-400 text-sm font-medium">No Poster Available</span>
                   </div>
                 </div>
               </div>
-              
-              <div v-else class="w-full h-[480px] bg-slate-800/50 rounded-2xl flex items-center justify-center border border-slate-600/50">
-                <div class="text-center">
-                  <div class="w-20 h-20 mx-auto mb-4 bg-slate-700/50 rounded-full flex items-center justify-center">
-                    <span class="text-4xl">🎬</span>
-                  </div>
-                  <span class="text-slate-400 font-medium">No Poster Available</span>
-                </div>
+
+              <!-- Plot synopsis card under poster (Black Glassy) -->
+              <div class="bg-black/60 backdrop-blur-2xl border border-white/15 rounded-xl p-4 space-y-2 shadow-md">
+                <span class="text-[10px] uppercase font-bold tracking-wider text-orange-400 font-sans block">PLOT SYNOPSIS</span>
+                <p class="text-slate-200 leading-relaxed text-xs font-light">
+                  {{ movie.description }}
+                </p>
               </div>
+
+              <button 
+                @click="toggleWatchlist"
+                class="w-full py-2.5 rounded-xl text-xs font-bold font-sans transition-all flex items-center justify-center gap-1.5 border"
+                :class="inWatchlist ? 'bg-red-950/70 border-red-500/50 text-red-300 shadow-md shadow-red-900/30' : 'bg-black/60 backdrop-blur-xl border-white/15 text-slate-300 hover:border-orange-500/50 hover:bg-black/80'"
+              >
+                <span>{{ inWatchlist ? '💖 Saved in Watchlist' : '❤️ Add to Watchlist' }}</span>
+              </button>
             </div>
 
-            <!-- Movie info -->
-            <div class="space-y-6">
-              <div>
-                <div class="flex justify-between items-start gap-4 mb-4">
-                  <h1 class="neon-text text-2xl sm:text-3xl font-semibold font-orbitron tracking-wider">
-                    {{ movie.title.toUpperCase() }}
-                  </h1>
-                  <button 
-                    @click="toggleWatchlist"
-                    class="px-3.5 py-2 rounded-xl text-xs font-bold font-mono transition-all flex items-center gap-1.5 flex-shrink-0 border"
-                    :class="inWatchlist ? 'bg-red-950/60 border-red-500/50 text-red-300 shadow-md shadow-red-900/30' : 'bg-slate-800/80 border-slate-700 text-slate-300 hover:border-amber-500/50 hover:text-white'"
-                  >
-                    <span>{{ inWatchlist ? '💖 Saved in Watchlist' : '❤️ Add to Watchlist' }}</span>
-                  </button>
-                </div>
-                <div class="bg-slate-800/30 border border-slate-600/30 rounded-xl p-6 backdrop-blur-sm">
-                  <p class="text-slate-200 leading-relaxed text-lg font-light">
-                    {{ movie.description }}
-                  </p>
+            <!-- Right Column: Title, Showtimes & Interactive Seat Map (Beside Poster Image) -->
+            <div class="space-y-5">
+              <div class="flex justify-between items-center gap-4 border-b border-white/10 pb-3">
+                <h1 class="font-cinematic text-xl sm:text-3xl font-bold tracking-wide text-orange-500">
+                  {{ movie.title }}
+                </h1>
+                <div v-if="selectedShowtime" class="text-xs font-sans text-slate-300 bg-black/60 backdrop-blur-xl px-3 py-1 rounded-lg border border-white/15 hidden sm:block">
+                  <span class="text-orange-400 font-bold">{{ selectedShowtime.auditoriumDetail?.cinema?.name ? `${selectedShowtime.auditoriumDetail.cinema.name} (${selectedShowtime.auditoriumDetail.name})` : selectedShowtime.auditorium }}</span>
                 </div>
               </div>
 
-              <!-- Available Showtimes Selector -->
-              <div class="space-y-3">
-                <h3 class="text-xs uppercase font-bold tracking-wider text-[#ef6a26] font-mono flex items-center gap-2">
-                  <span>📅 SELECT CINEMA, HALL & SHOWTIME</span>
+              <!-- Showtime Selector -->
+              <div class="space-y-2">
+                <h3 class="text-xs uppercase font-bold tracking-wider text-orange-400 font-sans flex items-center gap-2">
+                  <span>📅 1. SELECT CINEMA & SHOWTIME</span>
                 </h3>
 
-                <div v-if="showtimes.length === 0" class="p-4 bg-slate-800/30 border border-amber-500/30 rounded-xl text-slate-300 text-sm">
+                <div v-if="showtimes.length === 0" class="p-3 bg-black/60 backdrop-blur-xl border border-orange-500/30 rounded-xl text-slate-300 text-xs">
                   No showtimes currently scheduled for this movie. Check back soon!
                 </div>
 
-                <div v-else class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-64 overflow-y-auto pr-1">
+                <div v-else class="grid grid-cols-1 sm:grid-cols-2 gap-2 max-h-36 overflow-y-auto pr-1">
                   <button
                     v-for="st in showtimes"
                     :key="st.id"
                     @click="selectShowtime(st)"
-                    class="text-left p-3.5 rounded-xl border transition-all duration-200 flex flex-col justify-between"
+                    class="text-left p-2.5 rounded-xl border transition-all duration-200 flex flex-col justify-between"
                     :class="selectedShowtime?.id === st.id 
-                      ? 'bg-gradient-to-r from-orange-500/20 to-amber-500/20 border-[#ef6a26] shadow-lg shadow-[#ef6a26]/20' 
-                      : 'bg-slate-800/40 border-slate-700/60 hover:border-slate-500 hover:bg-slate-800/80'"
+                      ? 'bg-orange-500/20 border-orange-500 shadow-md shadow-orange-950/30' 
+                      : 'bg-black/60 backdrop-blur-xl border-white/15 text-slate-300 hover:border-orange-400/50 hover:bg-black/80'"
                   >
-                    <div class="flex items-center justify-between mb-1">
-                      <span class="text-xs font-mono font-bold text-purple-300 bg-purple-950/60 border border-purple-500/30 px-2 py-0.5 rounded truncate max-w-[150px]">
+                    <div class="flex items-center justify-between mb-0.5">
+                      <span class="text-[11px] font-sans font-bold text-orange-300 bg-orange-950/60 border border-orange-500/30 px-2 py-0.5 rounded truncate max-w-[130px]">
                         🏛️ {{ st.auditoriumDetail?.cinema?.name ? `${st.auditoriumDetail.cinema.name} - ${st.auditoriumDetail.name}` : st.auditorium }}
                       </span>
-                      <span class="text-sm font-bold text-emerald-400 font-mono">
+                      <span class="text-xs font-bold text-emerald-400 font-sans">
                         {{ Number(st.price || 100).toFixed(0) }} Birr
                       </span>
                     </div>
                     
-                    <div class="text-sm font-bold text-white font-mono mt-1">
-                      🕒 {{ new Date(st.start_time).toLocaleString(undefined, {dateStyle: 'short', timeStyle: 'short'}) }}
-                    </div>
-
-                    <div class="flex items-center justify-between mt-2 text-xs text-slate-400 font-mono">
-                      <span>Ends: {{ new Date(st.end_time).toLocaleTimeString(undefined, {timeStyle: 'short'}) }}</span>
-                      <span :class="st.available_seats > 0 ? 'text-green-400' : 'text-red-400'">
+                    <div class="text-xs font-bold text-white font-sans mt-0.5 flex justify-between items-center">
+                      <span>🕒 {{ new Date(st.start_time).toLocaleString(undefined, {dateStyle: 'short', timeStyle: 'short'}) }}</span>
+                      <span :class="st.available_seats > 0 ? 'text-green-400 text-[10px]' : 'text-red-400 text-[10px]'">
                         {{ st.available_seats }} left
                       </span>
                     </div>
                   </button>
                 </div>
               </div>
-            </div>
-          </div>
 
-          <!-- Booking section -->
-          <div v-if="selectedShowtime || showtimes.length === 0" class="border-t border-slate-700/50 p-8 bg-slate-800/10">
-            <div class="flex items-center justify-between mb-6 flex-wrap gap-2">
-              <h2 class="text-2xl font-bold text-[#ef6a26] font-orbitron tracking-wide">
-                BOOK YOUR TICKETS
-              </h2>
-              <div v-if="selectedShowtime" class="text-xs font-mono text-slate-300 bg-black/40 px-3 py-1.5 rounded-lg border border-white/10">
-                Selected: <span class="text-purple-300 font-bold">{{ selectedShowtime.auditoriumDetail?.cinema?.name ? `${selectedShowtime.auditoriumDetail.cinema.name} (${selectedShowtime.auditoriumDetail.name})` : selectedShowtime.auditorium }}</span> @ <span class="text-white font-bold">{{ new Date(selectedShowtime.start_time).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) }}</span>
+              <!-- Interactive Seat Mapping Section (Directly Beside Poster Image) -->
+              <div v-if="selectedShowtime || showtimes.length === 0" class="border-t border-white/10 pt-4 space-y-3">
+                <h2 class="text-sm font-bold text-orange-500 font-sans tracking-wider flex items-center gap-2">
+                  <span>🪑 2. SELECT SEATS & CONFIRM TICKETS</span>
+                </h2>
+
+                <BookingForm 
+                  :movieId="movie.id" 
+                  :showtimeId="selectedShowtime?.id || null"
+                  :price="selectedShowtime ? Number(selectedShowtime.price || 100) : 100"
+                  :vipPrice="selectedShowtime ? Number(selectedShowtime.vip_price || 150) : 150"
+                  :studentPrice="selectedShowtime ? Number(selectedShowtime.student_price || 80) : 80"
+                  :childPrice="selectedShowtime ? Number(selectedShowtime.child_price || 60) : 60"
+                  :vipRowsCount="selectedShowtime?.auditoriumDetail?.vip_rows_count || 2"
+                  :availableSeats="selectedShowtime ? selectedShowtime.available_seats : movie.available_seats" 
+                  :totalSeats="selectedShowtime ? selectedShowtime.total_seats : movie.total_seats"
+                  :rowsCount="selectedShowtime?.auditoriumDetail?.rows_count || null"
+                  :seatsPerRow="selectedShowtime?.auditoriumDetail?.seats_per_row || null"
+                  :bookedSeats="bookedSeats"
+                  :loading="booking"
+                  @book="handleBooking"
+                />
               </div>
             </div>
-
-            <BookingForm 
-              :movieId="movie.id" 
-              :showtimeId="selectedShowtime?.id || null"
-              :price="selectedShowtime ? Number(selectedShowtime.price || 100) : 100"
-              :vipPrice="selectedShowtime ? Number(selectedShowtime.vip_price || 150) : 150"
-              :studentPrice="selectedShowtime ? Number(selectedShowtime.student_price || 80) : 80"
-              :childPrice="selectedShowtime ? Number(selectedShowtime.child_price || 60) : 60"
-              :vipRowsCount="selectedShowtime?.auditoriumDetail?.vip_rows_count || 2"
-              :availableSeats="selectedShowtime ? selectedShowtime.available_seats : movie.available_seats" 
-              :totalSeats="selectedShowtime ? selectedShowtime.total_seats : movie.total_seats"
-              :rowsCount="selectedShowtime?.auditoriumDetail?.rows_count || null"
-              :seatsPerRow="selectedShowtime?.auditoriumDetail?.seats_per_row || null"
-              :bookedSeats="bookedSeats"
-              :loading="booking"
-              @book="handleBooking"
-            />
           </div>
         </div>
       </div>

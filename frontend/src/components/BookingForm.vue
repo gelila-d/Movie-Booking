@@ -1,40 +1,40 @@
 <template>
-  <div class="space-y-6">
+  <div class="space-y-6 font-sans">
     <!-- Header & Price Breakdown (Black Glassy) -->
     <div class="flex justify-between items-start flex-wrap gap-4 bg-black/60 backdrop-blur-2xl p-5 rounded-2xl border border-white/15 shadow-[0_12px_40px_rgba(0,0,0,0.8),inset_0_1px_1px_rgba(255,255,255,0.12)]">
       <div>
-        <h3 class="text-[#ef6a26] font-bold font-mono tracking-wider">SELECT YOUR SEATS & TICKET TYPES</h3>
-        <p class="text-slate-400 text-sm font-mono mt-1">{{ selectedSeats.length }} seat{{ selectedSeats.length !== 1 ? 's' : '' }} selected</p>
+        <h3 class="text-orange-500 font-bold font-sans tracking-wider text-sm">SELECT YOUR SEATS & TICKET TYPES</h3>
+        <p class="text-slate-400 text-xs font-sans mt-1">{{ selectedSeats.length }} seat{{ selectedSeats.length !== 1 ? 's' : '' }} selected</p>
       </div>
       <div class="text-right">
-        <span class="text-xs text-slate-400 font-mono block uppercase">Total Amount</span>
-        <span class="text-2xl font-bold text-emerald-400 font-mono">{{ totalPrice }} Birr</span>
+        <span class="text-xs text-slate-400 font-sans block uppercase">Total Amount</span>
+        <span class="text-xl font-bold text-emerald-400 font-sans">{{ totalPrice }} Birr</span>
       </div>
     </div>
     
-    <!-- Futuristic Seat Map -->
+    <!-- Casual Cinematic Seat Map -->
     <div class="relative">
-      <!-- Holographic container -->
-      <div class="absolute inset-0 rounded-2xl bg-gradient-to-r from-orange-500/20 via-amber-500/20 to-orange-500/20 p-[1px]">
-        <div class="h-full w-full rounded-2xl bg-slate-800/40 backdrop-blur-xl"></div>
+      <!-- Outer container -->
+      <div class="absolute inset-0 rounded-2xl bg-gradient-to-r from-red-900/20 via-orange-900/20 to-red-900/20 p-[1px]">
+        <div class="h-full w-full rounded-2xl bg-black/60 backdrop-blur-xl"></div>
       </div>
       
-      <div class="relative bg-slate-800/20 py-8 px-6 rounded-2xl border border-slate-600/30 backdrop-blur-sm overflow-x-auto">
-        <!-- Futuristic Screen -->
-        <div class="w-full max-w-md mx-auto mb-12 relative">
-          <div class="h-10 bg-gradient-to-r from-orange-500/30 via-amber-400/50 to-orange-500/30 rounded-t-3xl border-t border-l border-r border-[#ef6a26]/40 flex justify-center items-center backdrop-blur-sm">
-            <span class="text-xs font-bold text-orange-300 uppercase tracking-widest font-mono">◢ AUDITORIUM SCREEN ◣</span>
+      <div class="relative bg-black/60 py-8 px-6 rounded-2xl border border-white/15 backdrop-blur-xl overflow-x-auto">
+        <!-- Cinema Screen -->
+        <div class="w-full max-w-md mx-auto mb-10 relative">
+          <div class="h-9 bg-gradient-to-r from-red-900/30 via-orange-500/30 to-red-900/30 rounded-t-3xl border-t border-l border-r border-orange-500/30 flex justify-center items-center backdrop-blur-sm">
+            <span class="text-xs font-bold text-orange-300 uppercase tracking-widest font-cinematic">── MOVIE SCREEN ──</span>
           </div>
-          <div class="absolute inset-0 bg-gradient-to-r from-transparent via-[#ef6a26]/30 to-transparent blur-sm rounded-t-3xl"></div>
+          <div class="absolute inset-0 bg-gradient-to-r from-transparent via-orange-500/20 to-transparent blur-sm rounded-t-3xl"></div>
         </div>
         
         <!-- Seat Grid -->
         <div class="flex flex-col gap-3 min-w-max pb-4 justify-center items-center">
           <div v-for="(row, rIndex) in seatGrid" :key="row.label" class="flex items-center gap-4">
             <!-- Row label & VIP indicator -->
-            <div class="w-12 text-center flex items-center justify-center gap-1 font-mono">
-              <span class="text-xs font-bold text-[#ef6a26]">{{ row.label }}</span>
-              <span v-if="row.isVip" class="text-[10px] text-purple-400 font-bold bg-purple-950/80 px-1 rounded border border-purple-500/30">VIP</span>
+            <div class="w-12 text-center flex items-center justify-center gap-1 font-sans">
+              <span class="text-xs font-bold text-orange-400">{{ row.label }}</span>
+              <span v-if="row.isVip" class="text-[10px] text-orange-300 font-bold bg-orange-950/80 px-1 rounded border border-orange-500/30">VIP</span>
             </div>
             
             <!-- Seats in row -->
@@ -44,12 +44,12 @@
                 :key="seat.id"
                 @click="toggleSeat(seat)"
                 :disabled="seat.unavailable"
-                class="seat-button w-10 h-10 rounded-lg flex items-center justify-center text-xs font-bold transition-all duration-300 relative group flex-shrink-0 border-2"
+                class="seat-button w-10 h-10 rounded-lg flex items-center justify-center text-xs font-bold transition-all duration-300 relative group flex-shrink-0 border"
                 :class="{
-                  'bg-red-950/30 border-red-800/40 text-red-400/50 cursor-not-allowed opacity-60 line-through': seat.unavailable,
-                  'bg-gradient-to-br from-[#ef6a26] to-orange-600 border-orange-400 text-white shadow-lg shadow-[#ef6a26]/30 scale-110 animate-pulse': !seat.unavailable && isSelected(seat.id),
-                  'bg-purple-950/60 border-purple-500/60 text-purple-300 hover:border-purple-400 hover:bg-purple-900/60 cursor-pointer hover:scale-105': !seat.unavailable && !isSelected(seat.id) && seat.isVip,
-                  'bg-emerald-950/40 border-emerald-500/40 text-emerald-300 hover:border-[#ef6a26]/70 hover:bg-[#ef6a26]/20 hover:text-orange-200 cursor-pointer hover:scale-105': !seat.unavailable && !isSelected(seat.id) && !seat.isVip
+                  'bg-red-950/40 border-red-900/40 text-red-500/50 cursor-not-allowed opacity-50 line-through': seat.unavailable,
+                  'bg-gradient-to-br from-orange-500 to-orange-600 border-orange-400 text-white shadow-lg shadow-orange-950/40 scale-105': !seat.unavailable && isSelected(seat.id),
+                  'bg-orange-950/50 border-orange-500/50 text-orange-200 hover:border-orange-400 hover:bg-orange-900/50 cursor-pointer hover:scale-105': !seat.unavailable && !isSelected(seat.id) && seat.isVip,
+                  'bg-slate-900/70 border-slate-700 text-slate-300 hover:border-orange-500/60 hover:bg-orange-950/40 hover:text-white cursor-pointer hover:scale-105': !seat.unavailable && !isSelected(seat.id) && !seat.isVip
                 }"
               >
                 {{ cIndex + 1 }}
@@ -61,21 +61,21 @@
     </div>
     
     <!-- Legend with Birr pricing -->
-    <div class="flex items-center justify-center gap-6 py-4 flex-wrap text-xs font-mono">
+    <div class="flex items-center justify-center gap-6 py-3 flex-wrap text-xs font-sans">
       <div class="flex items-center gap-2">
-        <div class="w-4 h-4 bg-emerald-950/40 border-2 border-emerald-500/50 rounded"></div>
-        <span class="text-emerald-400 font-medium">REGULAR SEAT ({{ price }} Birr)</span>
+        <div class="w-4 h-4 bg-slate-900/70 border border-slate-700 rounded"></div>
+        <span class="text-slate-300 font-medium">REGULAR ({{ price }} Birr)</span>
       </div>
       <div class="flex items-center gap-2">
-        <div class="w-4 h-4 bg-purple-950/60 border-2 border-purple-500/60 rounded"></div>
-        <span class="text-purple-300 font-medium">VIP SEAT ({{ vipPrice }} Birr)</span>
+        <div class="w-4 h-4 bg-orange-950/50 border border-orange-500/50 rounded"></div>
+        <span class="text-orange-300 font-medium">VIP ({{ vipPrice }} Birr)</span>
       </div>
       <div class="flex items-center gap-2">
-        <div class="w-4 h-4 bg-gradient-to-br from-[#ef6a26] to-orange-600 border-2 border-orange-400 rounded"></div>
+        <div class="w-4 h-4 bg-gradient-to-br from-orange-500 to-orange-600 border border-orange-400 rounded"></div>
         <span class="text-orange-400 font-medium">SELECTED</span>
       </div>
       <div class="flex items-center gap-2">
-        <div class="w-4 h-4 bg-red-950/30 border-2 border-red-800/40 rounded opacity-60"></div>
+        <div class="w-4 h-4 bg-red-950/40 border border-red-900/40 rounded opacity-50"></div>
         <span class="text-red-400/70 font-medium">BOOKED</span>
       </div>
     </div>

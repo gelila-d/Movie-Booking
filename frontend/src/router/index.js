@@ -13,8 +13,8 @@ const routes = [
   { path: "/login", component: Login, meta: { guest: true } },
   { path: "/register", component: Register, meta: { guest: true } },
   { path: "/movies", component: Movies },
-  { path: "/movies/:id", component: MovieDetails, meta: { requiresAuth: true } },
-  { path: "/my-bookings", component: MyBookings, meta: { requiresAuth: true } },
+  { path: "/movies/:id", component: MovieDetails, meta: { requiresAuth: true, hideFooter: true } },
+  { path: "/my-bookings", component: MyBookings, meta: { requiresAuth: true, hideFooter: true } },
   { path: "/watchlist", component: Watchlist, meta: { requiresAuth: true } },
   { path: "/admin/movies", component: AdminMovies, meta: { requiresAuth: true, requiresAdmin: true } },
 ];
