@@ -40,4 +40,9 @@ class Auditorium extends Model
     {
         return $this->hasMany(Showtime::class);
     }
+
+    public function seats()
+    {
+        return $this->hasMany(Seat::class);
+    }
 }

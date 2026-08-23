@@ -125,6 +125,24 @@ class BookingController extends Controller
                     'refund_status' => 'none',
                 ]);
 
+                // Create database-backed BookingSeat records with unique constraint enforcement
+                foreach ($processedDetails as $pd) {
+                    $seatLabel = $pd['seat_id'];
+                    $seatObj = \App\Models\Seat::where('auditorium_id', $showtime->auditorium_id)
+                        ->where('seat_label', $seatLabel)
+                        ->first();
+
+                    if ($seatObj) {
+                        \App\Models\BookingSeat::create([
+                            'booking_id' => $booking->id,
+                            'showtime_id' => $showtime->id,
+                            'seat_id' => $seatObj->id,
+                            'ticket_type' => strtolower($pd['type']),
+                            'price' => $pd['price'],
+                        ]);
+                    }
+                }
+
                 return response()->json($booking->load(['movie', 'showtime.auditoriumDetail.cinema']), 201);
             } else {
                 $movie = Movie::lockForUpdate()->find($validated['movie_id']);

@@ -20,6 +20,7 @@ Route::get('/movies/{movie}', [MovieController::class, 'show']);
 Route::get('/movies/{movie}/booked-seats', [BookingController::class, 'getBookedSeats']);
 
 Route::get('/cinemas', [CinemaController::class, 'index']);
+Route::get('/auditoriums/{auditorium}/seats', [CinemaController::class, 'getAuditoriumSeats']);
 Route::get('/showtimes', [ShowtimeController::class, 'index']);
 Route::get('/showtimes/{showtime}', [ShowtimeController::class, 'show']);
 Route::get('/showtimes/{showtime}/booked-seats', [ShowtimeController::class, 'getBookedSeats']);
@@ -54,6 +55,7 @@ Route::middleware(['auth:sanctum', 'admin'])->group(function () {
     Route::post('/auditoriums', [CinemaController::class, 'storeAuditorium']);
     Route::put('/auditoriums/{auditorium}', [CinemaController::class, 'updateAuditorium']);
     Route::delete('/auditoriums/{auditorium}', [CinemaController::class, 'deleteAuditorium']);
+    Route::put('/seats/{seat}/toggle-maintenance', [CinemaController::class, 'toggleSeatMaintenance']);
 
     // Admin Showtime Management
     Route::post('/showtimes', [ShowtimeController::class, 'store']);
