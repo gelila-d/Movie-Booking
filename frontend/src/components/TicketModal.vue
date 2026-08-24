@@ -87,9 +87,9 @@
         </div>
 
         <!-- QR Code & Scanner Instructions Section -->
-        <div class="bg-black p-4 rounded-2xl border border-orange-500/30 flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="bg-black p-4 rounded-2xl border border-white/20 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div class="space-y-1 text-center sm:text-left">
-            <span class="text-[10px] font-bold uppercase tracking-wider text-orange-400 font-sans block">ENTRANCE SCANNABLE PASS</span>
+            <span class="text-[10px] font-bold uppercase tracking-wider text-white font-sans block">ENTRANCE SCANNABLE PASS</span>
             <p class="text-xs text-slate-300 font-sans">Present this QR code to cinema usher at entry.</p>
             <span class="text-[10px] text-slate-500 font-sans block">Ref: {{ booking?.transaction_ref || bookingId }}</span>
           </div>
