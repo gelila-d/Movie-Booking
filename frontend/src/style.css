@@ -184,3 +184,20 @@ html, body {
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
+
+/* Cinema Film Strip / Reel Patterns */
+.film-strip-dark {
+  background-image: url('/cinema-film-reel.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  mix-blend-mode: screen;
+}
+
+.film-strip-background {
+  background-image: url('/cinema-film-reel.jpg');
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  mix-blend-mode: screen;
+}
