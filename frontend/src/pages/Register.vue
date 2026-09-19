@@ -1,19 +1,19 @@
 <template>
   <div class="min-h-screen flex items-center justify-center bg-[#050505] p-4 relative select-none overflow-hidden">
-    <!-- 3D Cinema Film Reel & Strip Full PC Screen Background -->
-    <div class="fixed inset-0 w-full h-full pointer-events-none overflow-hidden flex items-center justify-center z-0">
+    <!-- 3D Cinema Film Reel & Strip Background Backdrop (Full Width) -->
+    <div class="fixed inset-0 w-full h-full pointer-events-none overflow-hidden flex items-center z-0">
       <img 
-        src="/cinema-film-reel.jpg" 
+        src="/cinema-film-reel.jpg?v=5" 
         alt="Cinema Film Reel" 
-        class="w-full h-full object-cover opacity-45 mix-blend-screen pointer-events-none select-none"
+        class="w-full h-auto opacity-45 mix-blend-screen pointer-events-none select-none"
       />
     </div>
 
     <!-- Ambient Glowing Backdrop Effect -->
     <div class="fixed w-[600px] h-[400px] bg-[#ef6a26]/15 rounded-full blur-[140px] pointer-events-none top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0"></div>
 
-    <!-- Transparent Form Card Container -->
-    <div class="relative z-10 bg-transparent border border-white/10 hover:border-[#ef6a26]/40 transition-colors duration-500 p-6 sm:p-7 rounded-3xl w-full max-w-md shadow-none backdrop-blur-none">
+    <!-- Glassy Form Card Container -->
+    <div class="relative z-10 bg-black/10 backdrop-blur-sm border border-white/8 hover:border-[#ef6a26]/30 transition-all duration-500 p-6 sm:p-7 rounded-3xl w-full max-w-md">
       
       <!-- Brand Logo Header -->
       <div class="flex flex-col items-center mb-5">
