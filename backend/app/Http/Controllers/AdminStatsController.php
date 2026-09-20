@@ -77,6 +77,7 @@ class AdminStatsController extends Controller
             return [
                 'id' => $st->id,
                 'movie_title' => $st->movie ? $st->movie->title : 'Unknown',
+                'movie_image' => $st->movie ? $st->movie->image : null,
                 'cinema_hall' => $st->auditoriumDetail?->cinema?->name ? "{$st->auditoriumDetail->cinema->name} - {$st->auditoriumDetail->name}" : $st->auditorium,
                 'start_time' => $st->start_time,
                 'total_seats' => $st->total_seats,

@@ -136,7 +136,10 @@
 
         <!-- Most Popular Showtime Card -->
         <div class="p-6 bg-gradient-to-r from-orange-950/40 via-slate-950 to-black border border-orange-500/40 rounded-3xl shadow-2xl relative overflow-hidden flex gap-5 items-center">
-          <div class="w-24 h-32 rounded-2xl bg-orange-950/40 border border-orange-500/30 flex flex-col items-center justify-center text-center p-2 flex-shrink-0">
+          <div v-if="stats.reports.most_popular_showtime?.movie_image" class="w-24 h-32 rounded-2xl overflow-hidden bg-slate-800 flex-shrink-0 border border-orange-500/40 shadow-lg">
+            <img :src="getImageUrl(stats.reports.most_popular_showtime.movie_image)" alt="Poster" class="w-full h-full object-cover" />
+          </div>
+          <div v-else class="w-24 h-32 rounded-2xl bg-orange-950/40 border border-orange-500/30 flex flex-col items-center justify-center text-center p-2 flex-shrink-0">
             <span class="text-2xl">🕒</span>
             <span class="text-[10px] font-bold text-orange-300 font-mono mt-1">TOP SHOW</span>
           </div>
