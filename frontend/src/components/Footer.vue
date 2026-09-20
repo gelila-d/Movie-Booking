@@ -152,14 +152,14 @@
             </div>
 
             <!-- Agreement Checkbox -->
-            <label class="flex items-center space-x-2.5 cursor-pointer text-xs sm:text-sm text-gray-200 hover:text-white transition-colors pt-1 select-none group">
+            <label class="w-full flex items-start gap-2.5 cursor-pointer text-xs sm:text-sm text-gray-200 hover:text-white transition-colors pt-1 select-none group">
               <input 
                 v-model="agree" 
                 type="checkbox" 
                 required
-                class="w-4 h-4 rounded-full accent-[#ef6a26] cursor-pointer shrink-0 border border-gray-400 focus:ring-1 focus:ring-[#ef6a26]"
+                class="footer-checkbox accent-[#ef6a26] cursor-pointer"
               />
-              <span class="text-gray-200 font-medium group-hover:text-white">I agree to all terms and policies of the company</span>
+              <span class="flex-1 min-w-0 break-words text-gray-200 font-medium group-hover:text-white leading-snug">I agree to all terms and policies of the company</span>
             </label>
 
             <!-- Success Message Toast -->
@@ -199,5 +199,16 @@ const handleSubscribe = () => {
 </script>
 
 <style scoped>
-/* Optional specific overrides */
+/* Override global input width:100% which breaks the checkbox flex layout */
+.footer-checkbox {
+  width: 1rem !important;
+  height: 1rem !important;
+  min-width: 1rem !important;
+  max-width: 1rem !important;
+  padding: 0 !important;
+  margin-top: 2px;
+  background: transparent !important;
+  border-radius: 3px !important;
+  flex-shrink: 0;
+}
 </style>
