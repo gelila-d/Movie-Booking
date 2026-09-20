@@ -1,7 +1,19 @@
 <template>
   <section class="relative w-full bg-white pt-10 sm:pt-14 pb-0 sm:pb-0 select-none overflow-hidden">
-    <!-- Light film strip background behind MoviesNowPlaying cards -->
-    <div class="absolute inset-0 pointer-events-none opacity-15 film-strip-background"></div>
+    <!-- Film strip image – right side, behind headline -->
+    <img
+      src="/film-strip-now-playing.png"
+      alt=""
+      aria-hidden="true"
+      class="film-strip-bg-img film-strip-right"
+    />
+    <!-- Film strip image – left side, mirrored -->
+    <img
+      src="/film-strip-now-playing.png"
+      alt=""
+      aria-hidden="true"
+      class="film-strip-bg-img film-strip-left"
+    />
 
     <div class="max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
       
@@ -194,5 +206,29 @@ onMounted(fetchMovies)
 /* Smooth scale effect */
 .group:hover img {
   transform: scale(1.08);
+}
+
+/* Film strip decorative background image */
+.film-strip-bg-img {
+  position: absolute;
+  top: -30px;
+  width: 700px;
+  max-width: 65%;
+  opacity: 0.22;
+  pointer-events: none;
+  user-select: none;
+  z-index: 0;
+  filter: grayscale(100%);
+  mix-blend-mode: multiply;
+}
+
+.film-strip-right {
+  right: -120px;
+  transform: rotate(-12deg);
+}
+
+.film-strip-left {
+  left: -120px;
+  transform: rotate(12deg) scaleX(-1);
 }
 </style>
