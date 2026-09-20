@@ -1,10 +1,10 @@
 <template>
-  <div class="w-full max-w-7xl mx-auto px-6 py-10">
+  <div class="w-full max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-10">
     <!-- Header & Filter Bar -->
-    <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 pb-6 border-b border-slate-800">
+    <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6 mb-8 sm:mb-10 pb-4 sm:pb-6 border-b border-slate-800">
       <div>
         <div class="text-[#ef6a26] text-xs font-bold uppercase tracking-widest mb-1">Explore Cinema</div>
-        <h1 class="text-3xl lg:text-4xl font-extrabold text-white tracking-tight">
+        <h1 class="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white tracking-tight">
           Now Showing & Featured Movies
         </h1>
       </div>

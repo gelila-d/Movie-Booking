@@ -1,36 +1,36 @@
 <template>
-  <div class="container space-y-10">
+  <div class="container mx-auto px-4 py-6 sm:py-10 space-y-6 sm:space-y-10">
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
       <div>
-        <h1 class="text-3xl font-bold text-white mb-1 font-orbitron">ADMIN CONTROL CENTER</h1>
-        <p class="text-slate-300">Manage movies, publishing, showtimes, pricing, cinemas, bookings, user roles & analytics</p>
+        <h1 class="text-2xl sm:text-3xl font-bold text-white mb-1 font-orbitron">ADMIN CONTROL CENTER</h1>
+        <p class="text-slate-300 text-xs sm:text-sm">Manage movies, publishing, showtimes, pricing, cinemas, bookings, user roles & analytics</p>
       </div>
-      <div class="flex gap-3 flex-wrap">
+      <div class="flex gap-2 sm:gap-3 flex-wrap">
         <button 
           v-if="!showForm && activeTab === 'catalog'" 
           @click="openCreate" 
-          class="btn-primary"
+          class="btn-primary text-xs sm:text-sm py-2 sm:py-2.5 px-4 sm:px-6"
         >
           + Add New Movie
         </button>
         <button 
           v-if="!showShowtimeForm && activeTab === 'showtimes'" 
           @click="openCreateShowtime" 
-          class="btn-primary"
+          class="btn-primary text-xs sm:text-sm py-2 sm:py-2.5 px-4 sm:px-6"
         >
           + Schedule Showtime
         </button>
         <button 
           v-if="activeTab === 'cinemas' && !showCinemaForm && !showAuditoriumForm" 
           @click="openCreateCinema" 
-          class="btn-primary"
+          class="btn-primary text-xs sm:text-sm py-2 sm:py-2.5 px-4 sm:px-6"
         >
           + Add Cinema
         </button>
         <button 
           v-if="activeTab === 'cinemas' && !showCinemaForm && !showAuditoriumForm" 
           @click="openCreateAuditorium" 
-          class="px-5 py-2.5 rounded-xl border border-emerald-500/40 text-emerald-300 bg-emerald-950/40 hover:bg-emerald-900/60 font-bold text-sm transition-all"
+          class="px-4 sm:px-5 py-2 sm:py-2.5 rounded-xl border border-emerald-500/40 text-emerald-300 bg-emerald-950/40 hover:bg-emerald-900/60 font-bold text-xs sm:text-sm transition-all"
         >
           + Add Auditorium / Hall
         </button>
@@ -38,54 +38,54 @@
     </div>
 
     <!-- TODAY'S STATISTICS KPI DASHBOARD -->
-    <div v-if="stats && stats.today" class="space-y-4">
+    <div v-if="stats && stats.today" class="space-y-3 sm:space-y-4">
       <div class="flex items-center justify-between">
         <h2 class="text-[#ef6a26] text-xs font-bold uppercase tracking-widest font-mono">TODAY'S REAL-TIME PERFORMANCE KPI</h2>
         <span class="text-xs text-slate-400 font-mono">Live Sync</span>
       </div>
 
-      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+      <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4">
         <!-- Tickets Sold Today -->
-        <div class="bg-black/60 backdrop-blur-2xl p-5 rounded-2xl border border-white/10 shadow-xl flex flex-col justify-between">
-          <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400 font-mono">🎟️ Tickets Sold</span>
+        <div class="bg-black/60 backdrop-blur-2xl p-4 sm:p-5 rounded-2xl border border-white/10 shadow-xl flex flex-col justify-between">
+          <span class="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400 font-mono">🎟️ Tickets Sold</span>
           <div class="mt-2">
-            <span class="text-3xl font-extrabold text-white font-orbitron">{{ stats.today.tickets_sold }}</span>
+            <span class="text-2xl sm:text-3xl font-extrabold text-white font-orbitron">{{ stats.today.tickets_sold }}</span>
             <span class="text-xs text-slate-400 font-mono block">Today</span>
           </div>
         </div>
 
         <!-- Today's Revenue -->
-        <div class="bg-black/60 backdrop-blur-2xl p-5 rounded-2xl border border-emerald-500/40 shadow-xl flex flex-col justify-between">
-          <span class="text-[11px] font-bold uppercase tracking-wider text-emerald-400 font-mono">💰 Revenue Today</span>
+        <div class="bg-black/60 backdrop-blur-2xl p-4 sm:p-5 rounded-2xl border border-emerald-500/40 shadow-xl flex flex-col justify-between col-span-2 sm:col-span-1">
+          <span class="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-emerald-400 font-mono">💰 Revenue Today</span>
           <div class="mt-2">
-            <span class="text-2xl lg:text-3xl font-extrabold text-emerald-300 font-orbitron">{{ Number(stats.today.revenue).toLocaleString() }}</span>
+            <span class="text-xl sm:text-2xl lg:text-3xl font-extrabold text-emerald-300 font-orbitron">{{ Number(stats.today.revenue).toLocaleString() }}</span>
             <span class="text-xs text-emerald-400/80 font-mono block font-bold">ETB Total</span>
           </div>
         </div>
 
         <!-- Movies Showing -->
-        <div class="bg-black/60 backdrop-blur-2xl p-5 rounded-2xl border border-purple-500/40 shadow-xl flex flex-col justify-between">
-          <span class="text-[11px] font-bold uppercase tracking-wider text-purple-300 font-mono">🎬 Movies Showing</span>
+        <div class="bg-black/60 backdrop-blur-2xl p-4 sm:p-5 rounded-2xl border border-purple-500/40 shadow-xl flex flex-col justify-between">
+          <span class="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-purple-300 font-mono">🎬 Movies Showing</span>
           <div class="mt-2">
-            <span class="text-3xl font-extrabold text-purple-300 font-orbitron">{{ stats.today.movies_showing }}</span>
+            <span class="text-2xl sm:text-3xl font-extrabold text-purple-300 font-orbitron">{{ stats.today.movies_showing }}</span>
             <span class="text-xs text-slate-400 font-mono block">Published</span>
           </div>
         </div>
 
         <!-- Registered Users -->
-        <div class="bg-black/60 backdrop-blur-2xl p-5 rounded-2xl border border-blue-500/40 shadow-xl flex flex-col justify-between">
-          <span class="text-[11px] font-bold uppercase tracking-wider text-blue-300 font-mono">👥 Registered Users</span>
+        <div class="bg-black/60 backdrop-blur-2xl p-4 sm:p-5 rounded-2xl border border-blue-500/40 shadow-xl flex flex-col justify-between">
+          <span class="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-blue-300 font-mono">👥 Users</span>
           <div class="mt-2">
-            <span class="text-3xl font-extrabold text-blue-300 font-orbitron">{{ stats.today.registered_users }}</span>
+            <span class="text-2xl sm:text-3xl font-extrabold text-blue-300 font-orbitron">{{ stats.today.registered_users }}</span>
             <span class="text-xs text-slate-400 font-mono block">Accounts</span>
           </div>
         </div>
 
         <!-- Today's Occupancy -->
-        <div class="bg-black/60 backdrop-blur-2xl p-5 rounded-2xl border border-amber-500/40 shadow-xl flex flex-col justify-between">
-          <span class="text-[11px] font-bold uppercase tracking-wider text-amber-300 font-mono">🪑 Today Occupancy</span>
+        <div class="bg-black/60 backdrop-blur-2xl p-4 sm:p-5 rounded-2xl border border-amber-500/40 shadow-xl flex flex-col justify-between col-span-2 sm:col-span-1">
+          <span class="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-amber-300 font-mono">🪑 Today Occupancy</span>
           <div class="mt-2">
-            <span class="text-3xl font-extrabold text-amber-300 font-orbitron">{{ stats.today.occupancy_rate }}%</span>
+            <span class="text-2xl sm:text-3xl font-extrabold text-amber-300 font-orbitron">{{ stats.today.occupancy_rate }}%</span>
             <div class="h-1.5 w-full bg-slate-800 rounded-full overflow-hidden mt-1">
               <div class="h-full bg-amber-400" :style="{ width: stats.today.occupancy_rate + '%' }"></div>
             </div>
@@ -95,46 +95,46 @@
     </div>
 
     <!-- Tab Navigation & Search -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-white/10 gap-4">
-      <div class="flex space-x-2 overflow-x-auto">
+    <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-white/10 gap-3">
+      <div class="flex space-x-1 sm:space-x-2 overflow-x-auto pb-1 max-w-full scrollbar-none [webkit-overflow-scrolling:touch]">
         <button 
           @click="activeTab = 'reports'" 
-          class="px-6 py-3 text-sm font-bold transition-colors border-b-2 whitespace-nowrap"
+          class="px-3.5 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm font-bold transition-colors border-b-2 whitespace-nowrap"
           :class="activeTab === 'reports' ? 'border-[#ef6a26] text-[#ef6a26]' : 'border-transparent text-slate-400 hover:text-white'"
         >
-          📊 Reports & Analytics
+          📊 Reports
         </button>
         <button 
           @click="activeTab = 'catalog'" 
-          class="px-6 py-3 text-sm font-bold transition-colors border-b-2 whitespace-nowrap"
+          class="px-3.5 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm font-bold transition-colors border-b-2 whitespace-nowrap"
           :class="activeTab === 'catalog' ? 'border-[#ef6a26] text-[#ef6a26]' : 'border-transparent text-slate-400 hover:text-white'"
         >
-          Movie Catalog & Publishing
+          Catalog
         </button>
         <button 
           @click="activeTab = 'showtimes'" 
-          class="px-6 py-3 text-sm font-bold transition-colors border-b-2 whitespace-nowrap"
+          class="px-3.5 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm font-bold transition-colors border-b-2 whitespace-nowrap"
           :class="activeTab === 'showtimes' ? 'border-[#ef6a26] text-[#ef6a26]' : 'border-transparent text-slate-400 hover:text-white'"
         >
-          Showtimes & Pricing
+          Showtimes
         </button>
         <button 
           @click="activeTab = 'cinemas'" 
-          class="px-6 py-3 text-sm font-bold transition-colors border-b-2 whitespace-nowrap"
+          class="px-3.5 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm font-bold transition-colors border-b-2 whitespace-nowrap"
           :class="activeTab === 'cinemas' ? 'border-[#ef6a26] text-[#ef6a26]' : 'border-transparent text-slate-400 hover:text-white'"
         >
-          Cinemas & Auditoriums
+          Cinemas
         </button>
         <button 
           @click="activeTab = 'bookings'" 
-          class="px-6 py-3 text-sm font-bold transition-colors border-b-2 whitespace-nowrap"
+          class="px-3.5 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm font-bold transition-colors border-b-2 whitespace-nowrap"
           :class="activeTab === 'bookings' ? 'border-[#ef6a26] text-[#ef6a26]' : 'border-transparent text-slate-400 hover:text-white'"
         >
-          Recent Bookings Audit
+          Bookings Audit
         </button>
         <button 
           @click="activeTab = 'users'" 
-          class="px-6 py-3 text-sm font-bold transition-colors border-b-2 whitespace-nowrap"
+          class="px-3.5 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm font-bold transition-colors border-b-2 whitespace-nowrap"
           :class="activeTab === 'users' ? 'border-[#ef6a26] text-[#ef6a26]' : 'border-transparent text-slate-400 hover:text-white'"
         >
           Users & Roles
@@ -146,7 +146,7 @@
           v-model="searchQuery" 
           type="text" 
           placeholder="Search..." 
-          class="pl-10 pr-4 py-2 w-full border border-slate-700/80 rounded-xl focus:ring-2 focus:ring-[#ef6a26] outline-none text-sm bg-slate-900/90 text-white placeholder-slate-400"
+          class="pl-10 pr-4 py-2 w-full border border-slate-700/80 rounded-xl focus:ring-2 focus:ring-[#ef6a26] outline-none text-xs sm:text-sm bg-slate-900/90 text-white placeholder-slate-400"
         />
       </div>
     </div>

@@ -1,10 +1,10 @@
 <template>
-  <section class="relative w-full bg-white select-none overflow-hidden pt-16 sm:pt-20 lg:pt-24 pb-12 sm:pb-16">
+  <section class="relative w-full bg-white select-none overflow-hidden pt-10 sm:pt-16 lg:pt-24 pb-8 sm:pb-16">
     <div class="w-full">
       <div class="grid grid-cols-1 lg:grid-cols-12 w-full">
         
         <!-- Left Side: Event Announcement & Info -->
-        <div class="lg:col-span-6 xl:col-span-6 bg-white p-8 sm:p-12 lg:p-16 xl:p-20 flex flex-col justify-center relative overflow-hidden">
+        <div class="lg:col-span-6 xl:col-span-6 bg-white p-5 sm:p-10 lg:p-16 xl:p-20 flex flex-col justify-center relative overflow-hidden">
           <!-- Light Smoke / Popcorn Background Pattern Watermark -->
           <div 
             class="absolute inset-0 pointer-events-none opacity-[0.06] bg-repeat" 
@@ -13,9 +13,9 @@
 
           <div class="relative z-10 max-w-xl text-left">
             <!-- Top Icon & Subheading -->
-            <div class="flex items-center gap-2.5 mb-3">
-              <div class="w-7 h-7 rounded-full bg-[#ea580c]/10 text-[#ea580c] flex items-center justify-center shrink-0">
-                <svg class="w-4 h-4 fill-[#ea580c]" viewBox="0 0 24 24">
+            <div class="flex items-center gap-2.5 mb-2.5 sm:mb-3">
+              <div class="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-[#ea580c]/10 text-[#ea580c] flex items-center justify-center shrink-0">
+                <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-[#ea580c]" viewBox="0 0 24 24">
                   <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-2-8c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm6 0c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm-3-5c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2zm0 10c0 1.1-.9 2-2 2s-2-.9-2-2 .9-2 2-2 2 .9 2 2z"/>
                 </svg>
               </div>
@@ -25,12 +25,12 @@
             </div>
 
             <!-- Main Heading -->
-            <h2 class="text-3xl sm:text-4xl md:text-5xl lg:text-5xl font-black text-black leading-[1.12] tracking-tight mb-5">
+            <h2 class="text-2xl sm:text-4xl md:text-5xl lg:text-5xl font-black text-black leading-[1.12] tracking-tight mb-3 sm:mb-5">
               Register Yourself Now<br class="hidden sm:inline" /> for the Events
             </h2>
 
             <!-- Description -->
-            <p class="text-gray-500 text-sm sm:text-base leading-relaxed mb-8 font-normal">
+            <p class="text-gray-500 text-xs sm:text-base leading-relaxed mb-6 sm:mb-8 font-normal">
               Every man must decide whether he will walk in the light of creative altruism or in the darkness of eritdestructive selfishness. Ut porttitor et lectus ut tempus. Aliquam lacinia justo.
             </p>
 
@@ -38,7 +38,7 @@
             <div>
               <router-link 
                 to="/movies" 
-                class="inline-block bg-[#d6682b] hover:bg-[#e67536] text-white font-extrabold text-xs sm:text-sm uppercase tracking-wider px-8 py-3.5 shadow-md transition-colors duration-300"
+                class="inline-block bg-[#d6682b] hover:bg-[#e67536] text-white font-extrabold text-xs sm:text-sm uppercase tracking-wider px-6 sm:px-8 py-3 sm:py-3.5 shadow-md transition-colors duration-300"
               >
                 More Info
               </router-link>
@@ -47,16 +47,16 @@
         </div>
 
         <!-- Right Side: Dark Container with 2 Stacked Event Cards -->
-        <div class="lg:col-span-6 xl:col-span-6 bg-[#050505] p-6 sm:p-10 lg:p-12 xl:p-16 flex flex-col justify-center gap-6 sm:gap-8 relative overflow-hidden">
+        <div class="lg:col-span-6 xl:col-span-6 bg-[#050505] p-4 sm:p-8 lg:p-12 xl:p-16 flex flex-col justify-center gap-4 sm:gap-8 relative overflow-hidden">
           <!-- Dark Film Reel Overlay Watermark -->
           <div class="absolute inset-0 pointer-events-none opacity-15 card-strip-overlay"></div>
 
-          <div class="relative z-10 flex flex-col gap-6 sm:gap-8 max-w-2xl mx-auto w-full">
+          <div class="relative z-10 flex flex-col gap-4 sm:gap-8 max-w-2xl mx-auto w-full">
             
             <!-- Event Card 1: Best Magical Movies Ever Made -->
             <div class="group grid grid-cols-1 sm:grid-cols-12 bg-white overflow-hidden shadow-2xl cursor-pointer border border-transparent hover:border-[#d6682b]/40 transition-all duration-300">
               <!-- Left Image Container -->
-              <div class="sm:col-span-5 relative h-52 sm:h-auto min-h-[190px] overflow-hidden bg-gray-900">
+              <div class="sm:col-span-5 relative h-48 sm:h-auto min-h-[170px] sm:min-h-[190px] overflow-hidden bg-gray-900">
                 <img 
                   src="/event-magic.jpg" 
                   alt="Best Magical Movies" 
@@ -64,7 +64,7 @@
                 />
                 
                 <!-- Vertical Date Badge -->
-                <div class="absolute left-0 top-0 bottom-0 w-9 bg-[#d6682b] text-white font-extrabold text-[11px] tracking-widest flex items-center justify-center shadow-md">
+                <div class="absolute left-0 top-0 bottom-0 w-8 sm:w-9 bg-[#d6682b] text-white font-extrabold text-[10px] sm:text-[11px] tracking-widest flex items-center justify-center shadow-md">
                   <span class="rotate-180 [writing-mode:vertical-lr] uppercase whitespace-nowrap">
                     26 MAR, 2025
                   </span>
@@ -72,7 +72,7 @@
               </div>
 
               <!-- Right Content Info -->
-              <div class="sm:col-span-7 bg-white p-6 sm:p-7 flex flex-col justify-between text-left">
+              <div class="sm:col-span-7 bg-white p-4 sm:p-7 flex flex-col justify-between text-left">
                 <!-- Meta Info (Time & Location) -->
                 <div class="flex items-center gap-4 text-xs font-semibold text-gray-500 mb-3">
                   <div class="flex items-center gap-1.5">
@@ -106,7 +106,7 @@
             <!-- Event Card 2: The Strange Love Movie 2023 Festival -->
             <div class="group grid grid-cols-1 sm:grid-cols-12 bg-white overflow-hidden shadow-2xl cursor-pointer border border-transparent hover:border-[#d6682b]/40 transition-all duration-300">
               <!-- Left Image Container -->
-              <div class="sm:col-span-5 relative h-52 sm:h-auto min-h-[190px] overflow-hidden bg-gray-900">
+              <div class="sm:col-span-5 relative h-48 sm:h-auto min-h-[170px] sm:min-h-[190px] overflow-hidden bg-gray-900">
                 <img 
                   src="/event-festival.jpg" 
                   alt="Strange Love Movie Festival" 
@@ -114,7 +114,7 @@
                 />
                 
                 <!-- Vertical Date Badge -->
-                <div class="absolute left-0 top-0 bottom-0 w-9 bg-[#d6682b] text-white font-extrabold text-[11px] tracking-widest flex items-center justify-center shadow-md">
+                <div class="absolute left-0 top-0 bottom-0 w-8 sm:w-9 bg-[#d6682b] text-white font-extrabold text-[10px] sm:text-[11px] tracking-widest flex items-center justify-center shadow-md">
                   <span class="rotate-180 [writing-mode:vertical-lr] uppercase whitespace-nowrap">
                     26 APR, 2025
                   </span>
@@ -122,7 +122,7 @@
               </div>
 
               <!-- Right Content Info -->
-              <div class="sm:col-span-7 bg-white p-6 sm:p-7 flex flex-col justify-between text-left">
+              <div class="sm:col-span-7 bg-white p-4 sm:p-7 flex flex-col justify-between text-left">
                 <!-- Meta Info (Time & Location) -->
                 <div class="flex items-center gap-4 text-xs font-semibold text-gray-500 mb-3">
                   <div class="flex items-center gap-1.5">

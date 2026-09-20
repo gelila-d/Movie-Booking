@@ -15,14 +15,14 @@
     </div>
 
     <!-- Top Badges & Heart Toggle -->
-    <div class="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between z-30">
-      <span class="bg-black/60 backdrop-blur-md text-white text-[9px] font-semibold px-2 py-0.5 uppercase tracking-wider border border-white/10 rounded">
+    <div class="absolute top-2 left-2 right-2 sm:top-2.5 sm:left-2.5 sm:right-2.5 flex items-center justify-between z-30">
+      <span class="bg-black/60 backdrop-blur-md text-white text-[8px] sm:text-[9px] font-semibold px-1.5 sm:px-2 py-0.5 uppercase tracking-wider border border-white/10 rounded">
         4K HD
       </span>
       
-      <div class="flex items-center gap-1.5">
-        <span class="bg-[#ef6a26] text-white text-[10px] font-bold px-2 py-0.5 flex items-center gap-1 shadow-sm rounded">
-          <svg class="w-2.5 h-2.5 fill-current" viewBox="0 0 24 24">
+      <div class="flex items-center gap-1 sm:gap-1.5">
+        <span class="bg-[#ef6a26] text-white text-[9px] sm:text-[10px] font-bold px-1.5 sm:px-2 py-0.5 flex items-center gap-0.5 sm:gap-1 shadow-sm rounded">
+          <svg class="w-2 sm:w-2.5 h-2 sm:h-2.5 fill-current" viewBox="0 0 24 24">
             <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
           </svg>
           {{ movie.rating || '8.5' }}
@@ -31,7 +31,7 @@
         <!-- Watchlist Heart Toggle Button -->
         <button 
           @click.stop.prevent="toggleWatchlist" 
-          class="w-7 h-7 rounded-full bg-black/60 backdrop-blur-md border border-white/20 flex items-center justify-center text-xs transition-transform hover:scale-115 active:scale-95 shadow-md"
+          class="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-black/60 backdrop-blur-md border border-white/20 flex items-center justify-center text-[10px] sm:text-xs transition-transform hover:scale-115 active:scale-95 shadow-md"
           :title="inWatchlist ? 'Remove from Watchlist' : 'Add to Watchlist'"
         >
           <span v-if="inWatchlist" class="text-red-500 scale-110">❤️</span>
@@ -42,8 +42,8 @@
 
     <!-- Center Play Icon Hover Overlay -->
     <div class="absolute inset-0 z-20 flex items-center justify-center pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-      <div class="w-10 h-10 rounded-full bg-[#ef6a26]/90 text-white flex items-center justify-center shadow-md shadow-[#ef6a26]/40 transform scale-75 group-hover:scale-100 transition-transform duration-300">
-        <svg class="w-4 h-4 fill-current translate-x-0.5" viewBox="0 0 24 24">
+      <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-[#ef6a26]/90 text-white flex items-center justify-center shadow-md shadow-[#ef6a26]/40 transform scale-75 group-hover:scale-100 transition-transform duration-300">
+        <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-current translate-x-0.5" viewBox="0 0 24 24">
           <path d="M8 5v14l11-7z"/>
         </svg>
       </div>
@@ -53,26 +53,26 @@
     <div class="absolute inset-0 z-10 bg-gradient-to-t from-black via-black/40 to-transparent opacity-90 group-hover:opacity-95 transition-opacity duration-300"></div>
 
     <!-- Content (Bottom Anchored) -->
-    <div class="absolute inset-x-0 bottom-0 z-20 p-3.5 sm:p-4 flex flex-col justify-end text-white text-left">
+    <div class="absolute inset-x-0 bottom-0 z-20 p-2.5 sm:p-4 flex flex-col justify-end text-white text-left">
       <!-- Info (Genre & Duration) -->
-      <div class="text-[10px] text-[#ef6a26] font-semibold uppercase tracking-wider mb-0.5 flex items-center space-x-1.5 truncate">
+      <div class="text-[9px] sm:text-[10px] text-[#ef6a26] font-semibold uppercase tracking-wider mb-0.5 flex items-center space-x-1.5 truncate">
         <span class="truncate">{{ movie.genre || 'Action, Thriller' }}</span>
         <span class="text-gray-500">•</span>
         <span class="text-gray-300 font-normal normal-case shrink-0">{{ movie.duration || '180' }}m</span>
       </div>
 
       <!-- Title -->
-      <h3 class="text-xs sm:text-sm font-semibold mb-2.5 leading-snug tracking-tight group-hover:text-[#ef6a26] transition-colors duration-300 line-clamp-2">
+      <h3 class="text-xs sm:text-sm font-semibold mb-2 sm:mb-2.5 leading-snug tracking-tight group-hover:text-[#ef6a26] transition-colors duration-300 line-clamp-2">
         {{ movie.title }}
       </h3>
 
       <!-- Action Button -->
       <router-link 
         :to="'/movies/' + movie.id" 
-        class="inline-flex items-center justify-between bg-white hover:bg-[#ef6a26] text-black hover:text-white font-bold text-[10px] uppercase tracking-wider px-3.5 py-2 w-full transition-all duration-300 shadow-md group/btn rounded-lg"
+        class="inline-flex items-center justify-between bg-white hover:bg-[#ef6a26] text-black hover:text-white font-bold text-[9px] sm:text-[10px] uppercase tracking-wider px-2.5 sm:px-3.5 py-1.5 sm:py-2 w-full transition-all duration-300 shadow-md group/btn rounded-lg"
       >
         <span>Get Ticket</span>
-        <svg class="w-3 h-3 transform group-hover/btn:translate-x-0.5 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <svg class="w-2.5 sm:w-3 h-2.5 sm:h-3 transform group-hover/btn:translate-x-0.5 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/>
         </svg>
       </router-link>

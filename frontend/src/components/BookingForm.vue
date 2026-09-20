@@ -7,32 +7,32 @@
         <div class="h-full w-full rounded-xl bg-black/60 backdrop-blur-xl"></div>
       </div>
       
-      <div class="relative bg-black/60 py-1.5 px-2 rounded-xl border border-white/15 backdrop-blur-xl overflow-x-auto">
+      <div class="relative bg-black/60 py-1.5 px-2 rounded-xl border border-white/15 backdrop-blur-xl overflow-x-auto [webkit-overflow-scrolling:touch]">
         <!-- Cinema Screen -->
         <div class="w-full max-w-md mx-auto mb-2 relative">
-          <div class="h-6 bg-gradient-to-r from-red-900/30 via-orange-500/30 to-red-900/30 rounded-t-xl border-t border-l border-r border-orange-500/30 flex justify-center items-center backdrop-blur-sm">
-            <span class="text-[10px] font-bold text-orange-300 uppercase tracking-widest font-cinematic">── MOVIE SCREEN ──</span>
+          <div class="h-5 sm:h-6 bg-gradient-to-r from-red-900/30 via-orange-500/30 to-red-900/30 rounded-t-xl border-t border-l border-r border-orange-500/30 flex justify-center items-center backdrop-blur-sm">
+            <span class="text-[9px] sm:text-[10px] font-bold text-orange-300 uppercase tracking-widest font-cinematic">── MOVIE SCREEN ──</span>
           </div>
           <div class="absolute inset-0 bg-gradient-to-r from-transparent via-orange-500/20 to-transparent blur-sm rounded-t-xl"></div>
         </div>
         
         <!-- Seat Grid -->
-        <div class="flex flex-col gap-2 min-w-max pb-1 justify-center items-center">
-          <div v-for="(row, rIndex) in seatGrid" :key="row.label" class="flex items-center gap-3">
+        <div class="flex flex-col gap-1.5 sm:gap-2 min-w-max pb-1 justify-center items-center">
+          <div v-for="(row, rIndex) in seatGrid" :key="row.label" class="flex items-center gap-1.5 sm:gap-3">
             <!-- Row label & VIP indicator -->
-            <div class="w-10 text-center flex items-center justify-center gap-1 font-sans">
-              <span class="text-xs font-bold text-orange-400">{{ row.label }}</span>
-              <span v-if="row.isVip" class="text-[9px] text-orange-300 font-bold bg-orange-950/80 px-1 rounded border border-orange-500/30">VIP</span>
+            <div class="w-7 sm:w-10 text-center flex items-center justify-center gap-0.5 sm:gap-1 font-sans">
+              <span class="text-[11px] sm:text-xs font-bold text-orange-400">{{ row.label }}</span>
+              <span v-if="row.isVip" class="text-[8px] sm:text-[9px] text-orange-300 font-bold bg-orange-950/80 px-0.5 sm:px-1 rounded border border-orange-500/30">VIP</span>
             </div>
             
             <!-- Seats in row -->
-            <div class="flex gap-1.5">
+            <div class="flex gap-1 sm:gap-1.5">
               <button 
                 v-for="(seat, cIndex) in row.seats" 
                 :key="seat.id"
                 @click="toggleSeat(seat)"
                 :disabled="seat.unavailable"
-                class="seat-button w-9 h-9 rounded-lg flex items-center justify-center text-xs font-bold transition-all duration-300 relative group flex-shrink-0 border"
+                class="seat-button w-7 h-7 sm:w-8 sm:h-8 md:w-9 md:h-9 rounded-md sm:rounded-lg flex items-center justify-center text-[10px] sm:text-xs font-bold transition-all duration-300 relative group flex-shrink-0 border"
                 :class="{
                   'bg-red-950/40 border-red-900/40 text-red-500/50 cursor-not-allowed opacity-50 line-through': seat.unavailable,
                   'bg-gradient-to-br from-orange-500 to-orange-600 border-orange-400 text-white shadow-md shadow-orange-950/40 scale-105': !seat.unavailable && isSelected(seat.id),
@@ -126,13 +126,13 @@
     </div>
 
     <!-- MOCK ETHIOPIAN PAYMENT MODAL (Clean Border & Fit) -->
-    <div v-if="showPaymentModal" class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/90 backdrop-blur-md overflow-y-auto">
-      <div class="bg-black/90 border border-orange-500/40 w-full max-w-md my-auto rounded-2xl p-4 sm:p-5 space-y-3 shadow-2xl relative text-white font-sans">
+    <div v-if="showPaymentModal" class="fixed inset-0 z-[100] flex items-center justify-center p-3 sm:p-4 bg-black/90 backdrop-blur-md overflow-y-auto">
+      <div class="bg-black/95 border border-orange-500/40 w-full max-w-md my-auto rounded-2xl p-4 sm:p-5 space-y-3 shadow-2xl relative text-white font-sans max-h-[92vh] overflow-y-auto">
         <!-- Close button -->
-        <button @click="showPaymentModal = false" class="absolute top-4 right-4 text-slate-400 hover:text-white font-bold text-base transition-colors">✕</button>
+        <button @click="showPaymentModal = false" class="absolute top-4 right-4 text-slate-400 hover:text-white font-bold text-base transition-colors p-1">✕</button>
 
-        <div class="border-b border-white/10 pb-2.5">
-          <h3 class="text-base sm:text-lg font-bold text-orange-500 font-cinematic flex items-center gap-2">
+        <div class="border-b border-white/10 pb-2.5 pr-8">
+          <h3 class="text-sm sm:text-base md:text-lg font-bold text-orange-500 font-cinematic flex items-center gap-2">
             💳 ETHIOPIAN PAYMENT GATEWAY
           </h3>
           <p class="text-[11px] text-slate-400 font-sans mt-0.5">Select payment method for {{ selectedSeatDetails.length }} tickets</p>

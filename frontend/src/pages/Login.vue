@@ -13,7 +13,7 @@
     <div class="fixed w-[600px] h-[400px] bg-[#ef6a26]/15 rounded-full blur-[140px] pointer-events-none top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-0"></div>
 
     <!-- Glassy Form Card Container -->
-    <div class="relative z-10 bg-black/10 backdrop-blur-sm border border-white/8 hover:border-[#ef6a26]/30 transition-all duration-500 p-6 sm:p-7 rounded-3xl w-full max-w-md">
+    <div class="relative z-10 bg-black/40 backdrop-blur-md border border-white/10 hover:border-[#ef6a26]/30 transition-all duration-500 p-5 sm:p-7 rounded-2xl sm:rounded-3xl w-full max-w-md mx-auto shadow-2xl">
       
       <!-- Brand Logo Header -->
       <div class="flex flex-col items-center mb-5">

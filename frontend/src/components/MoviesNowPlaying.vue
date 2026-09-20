@@ -220,6 +220,7 @@ onMounted(fetchMovies)
   z-index: 0;
   filter: grayscale(100%);
   mix-blend-mode: multiply;
+  transition: all 0.3s ease;
 }
 
 .film-strip-right {
@@ -230,5 +231,35 @@ onMounted(fetchMovies)
 .film-strip-left {
   left: -120px;
   transform: rotate(12deg) scaleX(-1);
+}
+
+@media (max-width: 1024px) {
+  .film-strip-bg-img {
+    width: 480px;
+    max-width: 50%;
+    top: -20px;
+    opacity: 0.18;
+  }
+  .film-strip-right {
+    right: -80px;
+  }
+  .film-strip-left {
+    left: -80px;
+  }
+}
+
+@media (max-width: 640px) {
+  .film-strip-bg-img {
+    width: 280px;
+    max-width: 42%;
+    top: -10px;
+    opacity: 0.15;
+  }
+  .film-strip-right {
+    right: -50px;
+  }
+  .film-strip-left {
+    left: -50px;
+  }
 }
 </style>

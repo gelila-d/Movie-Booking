@@ -1,10 +1,10 @@
 <template>
-  <div class="container space-y-8 font-sans">
+  <div class="container mx-auto px-4 py-6 sm:py-10 space-y-6 sm:space-y-8 font-sans">
     <!-- Header & Search -->
     <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
       <div>
-        <h1 class="text-3xl font-bold text-white mb-1 font-cinematic tracking-wide">MY MOVIE TICKETS</h1>
-        <p class="text-slate-400 text-sm font-sans">View upcoming showtimes, past movie history, refunds, and scannable QR passes</p>
+        <h1 class="text-2xl sm:text-3xl font-bold text-white mb-1 font-cinematic tracking-wide">MY MOVIE TICKETS</h1>
+        <p class="text-slate-400 text-xs sm:text-sm font-sans">View upcoming showtimes, past movie history, refunds, and scannable QR passes</p>
       </div>
       <div class="relative w-full md:w-80" v-if="bookings.length > 0 || searchQuery">
         <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
@@ -14,61 +14,61 @@
           v-model="searchQuery" 
           type="text" 
           placeholder="Search by movie title or ref..." 
-          class="pl-10 pr-4 py-2.5 w-full border border-white/15 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none shadow-sm transition-all bg-black/80 text-white placeholder-slate-400 text-sm font-sans"
+          class="pl-10 pr-4 py-2 sm:py-2.5 w-full border border-white/15 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none shadow-sm transition-all bg-black/80 text-white placeholder-slate-400 text-xs sm:text-sm font-sans"
         />
       </div>
     </div>
 
     <!-- Explicit Cancellation & Refund Policy Banner -->
-    <div class="p-4 bg-black/60 backdrop-blur-2xl border border-white/15 rounded-2xl flex items-start gap-3 shadow-md">
-      <span class="text-xl">ℹ️</span>
+    <div class="p-3.5 sm:p-4 bg-black/60 backdrop-blur-2xl border border-white/15 rounded-2xl flex items-start gap-3 shadow-md">
+      <span class="text-lg sm:text-xl">ℹ️</span>
       <div class="space-y-0.5 text-xs text-slate-300 font-sans">
         <h4 class="font-bold text-orange-400 uppercase tracking-wider">Cancellation & Refund Policy</h4>
-        <p>100% Mobile Money refund (Telebirr / CBE Birr) is granted for ticket cancellations requested at least <strong>2 hours prior to showtime</strong>. Seats are immediately restored to the cinema hall.</p>
+        <p class="leading-relaxed">100% Mobile Money refund (Telebirr / CBE Birr) is granted for ticket cancellations requested at least <strong>2 hours prior to showtime</strong>. Seats are immediately restored to the cinema hall.</p>
       </div>
     </div>
 
-    <!-- Upcoming vs Past vs Cancelled Tab Filters -->
-    <div class="flex items-center justify-between border-b border-white/10 pb-4 gap-4 flex-wrap">
-      <div class="flex space-x-3 overflow-x-auto">
+    <!-- Upcoming vs Past vs Cancelled Tab Filters (Horizontally scrollable on mobile) -->
+    <div class="flex items-center justify-between border-b border-white/10 pb-3 sm:pb-4 gap-3 flex-wrap">
+      <div class="flex space-x-2 sm:space-x-3 overflow-x-auto pb-1 max-w-full scrollbar-none [webkit-overflow-scrolling:touch]">
         <button 
           @click="activeTab = 'upcoming'" 
-          class="px-5 py-2.5 rounded-xl font-bold text-xs font-sans uppercase tracking-wider transition-all flex items-center gap-2"
+          class="px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-xl font-bold text-xs font-sans uppercase tracking-wider transition-all flex items-center gap-1.5 sm:gap-2 whitespace-nowrap"
           :class="activeTab === 'upcoming' ? 'bg-orange-500 text-white shadow-md shadow-orange-950/30' : 'bg-black/60 border border-white/15 text-slate-300 hover:border-orange-500/50 hover:bg-black/80'"
         >
-          <span>🎟️ Upcoming Bookings</span>
-          <span class="px-2 py-0.5 rounded-full text-[10px] bg-black/40 text-white font-bold">{{ upcomingBookings.length }}</span>
+          <span>🎟️ Upcoming</span>
+          <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] bg-black/40 text-white font-bold">{{ upcomingBookings.length }}</span>
         </button>
 
         <button 
           @click="activeTab = 'past'" 
-          class="px-5 py-2.5 rounded-xl font-bold text-xs font-sans uppercase tracking-wider transition-all flex items-center gap-2"
+          class="px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-xl font-bold text-xs font-sans uppercase tracking-wider transition-all flex items-center gap-1.5 sm:gap-2 whitespace-nowrap"
           :class="activeTab === 'past' ? 'bg-orange-500 text-white shadow-md shadow-orange-950/30' : 'bg-black/60 border border-white/15 text-slate-300 hover:border-orange-500/50 hover:bg-black/80'"
         >
-          <span>⏳ Past Bookings</span>
-          <span class="px-2 py-0.5 rounded-full text-[10px] bg-black/40 text-slate-300 font-bold">{{ pastBookings.length }}</span>
+          <span>⏳ Past</span>
+          <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] bg-black/40 text-slate-300 font-bold">{{ pastBookings.length }}</span>
         </button>
 
         <button 
           @click="activeTab = 'cancelled'" 
-          class="px-5 py-2.5 rounded-xl font-bold text-xs font-sans uppercase tracking-wider transition-all flex items-center gap-2"
+          class="px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-xl font-bold text-xs font-sans uppercase tracking-wider transition-all flex items-center gap-1.5 sm:gap-2 whitespace-nowrap"
           :class="activeTab === 'cancelled' ? 'bg-red-950 border border-red-500/50 text-red-100 shadow-md shadow-red-900/30' : 'bg-black/60 border border-white/15 text-slate-300 hover:border-orange-500/50 hover:bg-black/80'"
         >
-          <span>🚫 Cancelled & Refunded</span>
-          <span class="px-2 py-0.5 rounded-full text-[10px] bg-black/40 text-red-300 font-bold">{{ cancelledBookings.length }}</span>
+          <span>🚫 Cancelled</span>
+          <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] bg-black/40 text-red-300 font-bold">{{ cancelledBookings.length }}</span>
         </button>
 
         <button 
           @click="activeTab = 'all'" 
-          class="px-5 py-2.5 rounded-xl font-bold text-xs font-sans uppercase tracking-wider transition-all flex items-center gap-2"
+          class="px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-xl font-bold text-xs font-sans uppercase tracking-wider transition-all flex items-center gap-1.5 sm:gap-2 whitespace-nowrap"
           :class="activeTab === 'all' ? 'bg-orange-500 text-white shadow-md shadow-orange-950/30' : 'bg-black/60 border border-white/15 text-slate-300 hover:border-orange-500/50 hover:bg-black/80'"
         >
-          <span>📋 All Reservations</span>
-          <span class="px-2 py-0.5 rounded-full text-[10px] bg-black/40 text-white font-bold">{{ bookings.length }}</span>
+          <span>📋 All</span>
+          <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] bg-black/40 text-white font-bold">{{ bookings.length }}</span>
         </button>
       </div>
 
-      <router-link to="/movies" class="text-xs font-bold text-orange-400 hover:text-orange-300 transition-colors flex items-center gap-1 font-sans">
+      <router-link to="/movies" class="text-xs font-bold text-orange-400 hover:text-orange-300 transition-colors flex items-center gap-1 font-sans py-1">
         <span>+ Book Another Movie</span>
       </router-link>
     </div>
