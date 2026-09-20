@@ -99,7 +99,8 @@ const login = async () => {
         localStorage.setItem("token", res.data.token)
         localStorage.setItem("user", JSON.stringify(res.data.user))
         window.dispatchEvent(new Event('storage'))
-        router.push("/movies")
+        const user = res.data.user
+        router.push(user.is_admin ? "/admin" : "/")
     } catch (err) {
         if (err.response && err.response.status === 401) {
              errorMessage.value = "Incorrect email or password.";
