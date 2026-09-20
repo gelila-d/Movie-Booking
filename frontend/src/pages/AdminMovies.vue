@@ -64,10 +64,10 @@
         </div>
 
         <!-- Movies Showing -->
-        <div class="bg-black/60 backdrop-blur-2xl p-4 sm:p-5 rounded-2xl border border-purple-500/40 shadow-xl flex flex-col justify-between">
-          <span class="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-purple-300 font-mono">🎬 Movies Showing</span>
+        <div class="bg-black/60 backdrop-blur-2xl p-4 sm:p-5 rounded-2xl border border-indigo-500/40 shadow-xl flex flex-col justify-between">
+          <span class="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-indigo-300 font-mono">🎬 Movies Showing</span>
           <div class="mt-2">
-            <span class="text-2xl sm:text-3xl font-extrabold text-purple-300 font-orbitron">{{ stats.today.movies_showing }}</span>
+            <span class="text-2xl sm:text-3xl font-extrabold text-indigo-300 font-orbitron">{{ stats.today.movies_showing }}</span>
             <span class="text-xs text-slate-400 font-mono block">Published</span>
           </div>
         </div>
@@ -94,53 +94,9 @@
       </div>
     </div>
 
-    <!-- Tab Navigation & Search -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between border-b border-white/10 gap-3">
-      <div class="flex space-x-1 sm:space-x-2 overflow-x-auto pb-1 max-w-full scrollbar-none [webkit-overflow-scrolling:touch]">
-        <button 
-          @click="activeTab = 'reports'" 
-          class="px-3.5 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm font-bold transition-colors border-b-2 whitespace-nowrap"
-          :class="activeTab === 'reports' ? 'border-[#ef6a26] text-[#ef6a26]' : 'border-transparent text-slate-400 hover:text-white'"
-        >
-          📊 Reports
-        </button>
-        <button 
-          @click="activeTab = 'catalog'" 
-          class="px-3.5 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm font-bold transition-colors border-b-2 whitespace-nowrap"
-          :class="activeTab === 'catalog' ? 'border-[#ef6a26] text-[#ef6a26]' : 'border-transparent text-slate-400 hover:text-white'"
-        >
-          Catalog
-        </button>
-        <button 
-          @click="activeTab = 'showtimes'" 
-          class="px-3.5 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm font-bold transition-colors border-b-2 whitespace-nowrap"
-          :class="activeTab === 'showtimes' ? 'border-[#ef6a26] text-[#ef6a26]' : 'border-transparent text-slate-400 hover:text-white'"
-        >
-          Showtimes
-        </button>
-        <button 
-          @click="activeTab = 'cinemas'" 
-          class="px-3.5 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm font-bold transition-colors border-b-2 whitespace-nowrap"
-          :class="activeTab === 'cinemas' ? 'border-[#ef6a26] text-[#ef6a26]' : 'border-transparent text-slate-400 hover:text-white'"
-        >
-          Cinemas
-        </button>
-        <button 
-          @click="activeTab = 'bookings'" 
-          class="px-3.5 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm font-bold transition-colors border-b-2 whitespace-nowrap"
-          :class="activeTab === 'bookings' ? 'border-[#ef6a26] text-[#ef6a26]' : 'border-transparent text-slate-400 hover:text-white'"
-        >
-          Bookings Audit
-        </button>
-        <button 
-          @click="activeTab = 'users'" 
-          class="px-3.5 sm:px-6 py-2.5 sm:py-3 text-xs sm:text-sm font-bold transition-colors border-b-2 whitespace-nowrap"
-          :class="activeTab === 'users' ? 'border-[#ef6a26] text-[#ef6a26]' : 'border-transparent text-slate-400 hover:text-white'"
-        >
-          Users & Roles
-        </button>
-      </div>
-      <div v-if="activeTab !== 'reports'" class="relative w-full md:w-64 mb-2 md:mb-0">
+    <!-- Search Bar -->
+    <div v-if="activeTab !== 'reports'" class="flex justify-end border-b border-white/10 pb-4">
+      <div class="relative w-full md:w-64">
         <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">🔍</span>
         <input 
           v-model="searchQuery" 
@@ -179,18 +135,18 @@
         </div>
 
         <!-- Most Popular Showtime Card -->
-        <div class="p-6 bg-gradient-to-r from-purple-950/60 via-slate-950 to-black border border-purple-500/40 rounded-3xl shadow-2xl relative overflow-hidden flex gap-5 items-center">
-          <div class="w-24 h-32 rounded-2xl bg-purple-950/40 border border-purple-500/30 flex flex-col items-center justify-center text-center p-2 flex-shrink-0">
+        <div class="p-6 bg-gradient-to-r from-orange-950/40 via-slate-950 to-black border border-orange-500/40 rounded-3xl shadow-2xl relative overflow-hidden flex gap-5 items-center">
+          <div class="w-24 h-32 rounded-2xl bg-orange-950/40 border border-orange-500/30 flex flex-col items-center justify-center text-center p-2 flex-shrink-0">
             <span class="text-2xl">🕒</span>
-            <span class="text-[10px] font-bold text-purple-300 font-mono mt-1">TOP SHOW</span>
+            <span class="text-[10px] font-bold text-orange-300 font-mono mt-1">TOP SHOW</span>
           </div>
 
           <div class="space-y-1.5 flex-grow">
-            <span class="text-[10px] font-bold uppercase tracking-widest text-purple-300 font-mono">🕒 MOST POPULAR SHOWTIME</span>
+            <span class="text-[10px] font-bold uppercase tracking-widest text-orange-300 font-mono">🕒 MOST POPULAR SHOWTIME</span>
             <h3 class="text-xl font-extrabold text-white font-orbitron">{{ stats.reports.most_popular_showtime?.movie_title || 'N/A' }}</h3>
-            <p class="text-xs text-purple-300 font-mono">🏛️ {{ stats.reports.most_popular_showtime?.cinema_hall || 'Main Screen' }}</p>
+            <p class="text-xs text-orange-300 font-mono">🏛️ {{ stats.reports.most_popular_showtime?.cinema_hall || 'Main Screen' }}</p>
             <div class="flex items-center gap-3 text-xs font-mono pt-1">
-              <span class="px-2.5 py-1 bg-purple-500/20 border border-purple-500/40 text-purple-300 rounded-lg font-bold">
+              <span class="px-2.5 py-1 bg-orange-500/20 border border-orange-500/40 text-orange-300 rounded-lg font-bold">
                 {{ stats.reports.most_popular_showtime?.fill_rate || 0 }}% Occupancy
               </span>
               <span class="text-slate-400 text-[11px]">
@@ -369,7 +325,7 @@
     </div>
 
     <!-- Showtime Form (Create/Edit) -->
-    <div v-if="showShowtimeForm && activeTab === 'showtimes'" class="card space-y-6 border-purple-500/40 bg-black/60 backdrop-blur-2xl shadow-2xl">
+    <div v-if="showShowtimeForm && activeTab === 'showtimes'" class="card space-y-6 border-[#ef6a26]/40 bg-black/60 backdrop-blur-2xl shadow-2xl">
       <div class="flex justify-between items-center border-b border-white/10 pb-4">
         <h2 class="text-xl font-bold text-white font-orbitron">{{ editingShowtimeId ? 'Edit Showtime & Pricing' : 'Schedule New Showtime & Pricing' }}</h2>
         <button @click="closeShowtimeForm" class="text-slate-400 hover:text-white transition-colors text-sm font-bold">Cancel</button>
@@ -381,24 +337,24 @@
       
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
         <div class="space-y-1.5 lg:col-span-2">
-          <label class="text-xs font-semibold uppercase tracking-wider text-purple-300 font-mono">Select Movie</label>
-          <select v-model="showtimeForm.movie_id" class="w-full text-white bg-slate-900 px-4 py-2.5 border border-white/10 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30">
+          <label class="text-xs font-semibold uppercase tracking-wider text-[#ef6a26] font-mono">Select Movie</label>
+          <select v-model="showtimeForm.movie_id" class="w-full text-white bg-slate-900 px-4 py-2.5 border border-white/10 rounded-xl focus:outline-none focus:border-[#ef6a26] focus:ring-2 focus:ring-[#ef6a26]/30">
             <option value="" disabled>Choose a movie...</option>
             <option v-for="m in movies" :key="m.id" :value="m.id">{{ m.title }}</option>
           </select>
         </div>
 
         <div class="space-y-1.5">
-          <label class="text-xs font-semibold uppercase tracking-wider text-purple-300 font-mono">Cinema Venue</label>
-          <select v-model="selectedCinemaId" @change="handleCinemaChange" class="w-full text-white bg-slate-900 px-4 py-2.5 border border-white/10 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30">
+          <label class="text-xs font-semibold uppercase tracking-wider text-[#ef6a26] font-mono">Cinema Venue</label>
+          <select v-model="selectedCinemaId" @change="handleCinemaChange" class="w-full text-white bg-slate-900 px-4 py-2.5 border border-white/10 rounded-xl focus:outline-none focus:border-[#ef6a26] focus:ring-2 focus:ring-[#ef6a26]/30">
             <option value="">Select Cinema...</option>
             <option v-for="c in cinemas" :key="c.id" :value="c.id">{{ c.name }} ({{ c.location || 'Main' }})</option>
           </select>
         </div>
 
         <div class="space-y-1.5">
-          <label class="text-xs font-semibold uppercase tracking-wider text-purple-300 font-mono">Auditorium / Hall</label>
-          <select v-model="showtimeForm.auditorium_id" @change="handleAuditoriumSelect" class="w-full text-white bg-slate-900 px-4 py-2.5 border border-white/10 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30">
+          <label class="text-xs font-semibold uppercase tracking-wider text-[#ef6a26] font-mono">Auditorium / Hall</label>
+          <select v-model="showtimeForm.auditorium_id" @change="handleAuditoriumSelect" class="w-full text-white bg-slate-900 px-4 py-2.5 border border-white/10 rounded-xl focus:outline-none focus:border-[#ef6a26] focus:ring-2 focus:ring-[#ef6a26]/30">
             <option value="">Choose Hall...</option>
             <option v-for="a in availableAuditoriums" :key="a.id" :value="a.id">
               {{ a.name }} — {{ a.total_seats }} seats ({{ a.rows_count }} R x {{ a.seats_per_row }} S)
@@ -407,13 +363,13 @@
         </div>
 
         <div class="space-y-1.5 lg:col-span-2">
-          <label class="text-xs font-semibold uppercase tracking-wider text-purple-300 font-mono">Start Time</label>
-          <input v-model="showtimeForm.start_time" type="datetime-local" @change="autoSetEndTime" class="w-full text-white bg-black/40 px-4 py-2.5 border border-white/10 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30" />
+          <label class="text-xs font-semibold uppercase tracking-wider text-[#ef6a26] font-mono">Start Time</label>
+          <input v-model="showtimeForm.start_time" type="datetime-local" @change="autoSetEndTime" class="w-full text-white bg-black/40 px-4 py-2.5 border border-white/10 rounded-xl focus:outline-none focus:border-[#ef6a26] focus:ring-2 focus:ring-[#ef6a26]/30" />
         </div>
 
         <div class="space-y-1.5 lg:col-span-2">
-          <label class="text-xs font-semibold uppercase tracking-wider text-purple-300 font-mono">End Time</label>
-          <input v-model="showtimeForm.end_time" type="datetime-local" class="w-full text-white bg-black/40 px-4 py-2.5 border border-white/10 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30" />
+          <label class="text-xs font-semibold uppercase tracking-wider text-[#ef6a26] font-mono">End Time</label>
+          <input v-model="showtimeForm.end_time" type="datetime-local" class="w-full text-white bg-black/40 px-4 py-2.5 border border-white/10 rounded-xl focus:outline-none focus:border-[#ef6a26] focus:ring-2 focus:ring-[#ef6a26]/30" />
         </div>
 
         <!-- Ticket Pricing Tiers in Birr -->
@@ -423,8 +379,8 @@
         </div>
 
         <div class="space-y-1.5">
-          <label class="text-xs font-semibold uppercase tracking-wider text-purple-300 font-mono">VIP Price (Birr)</label>
-          <input v-model="showtimeForm.vip_price" type="number" min="100" placeholder="150" class="w-full text-white bg-black/40 px-4 py-2.5 border border-purple-500/30 rounded-xl focus:outline-none focus:border-purple-400 font-mono font-bold" />
+          <label class="text-xs font-semibold uppercase tracking-wider text-amber-300 font-mono">VIP Price (Birr)</label>
+          <input v-model="showtimeForm.vip_price" type="number" min="100" placeholder="150" class="w-full text-white bg-black/40 px-4 py-2.5 border border-amber-500/30 rounded-xl focus:outline-none focus:border-amber-400 font-mono font-bold" />
         </div>
 
         <div class="space-y-1.5">
@@ -501,8 +457,8 @@
         </div>
 
         <div class="space-y-1.5">
-          <label class="text-xs font-semibold uppercase tracking-wider text-purple-300 font-mono">VIP Rows Count (Top Rows)</label>
-          <input v-model="auditoriumForm.vip_rows_count" type="number" min="0" max="10" placeholder="2" class="w-full text-white bg-black/40 px-4 py-2.5 border border-white/10 rounded-xl focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/30" />
+          <label class="text-xs font-semibold uppercase tracking-wider text-amber-300 font-mono">VIP Rows Count (Top Rows)</label>
+          <input v-model="auditoriumForm.vip_rows_count" type="number" min="0" max="10" placeholder="2" class="w-full text-white bg-black/40 px-4 py-2.5 border border-white/10 rounded-xl focus:outline-none focus:border-amber-500 focus:ring-2 focus:ring-amber-500/30" />
         </div>
 
         <div class="space-y-1.5">
@@ -559,7 +515,7 @@
                 {{ movie.is_published ? '✓ PUBLISHED' : '⏳ DRAFT / HIDDEN' }}
               </span>
               <!-- Rating Badge -->
-              <span class="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-purple-500/20 text-purple-300 border border-purple-500/40">
+              <span class="px-2 py-0.5 rounded text-[10px] font-bold font-mono bg-indigo-500/20 text-indigo-300 border border-indigo-500/40">
                 {{ movie.rating || 'PG-13' }}
               </span>
             </div>
@@ -589,36 +545,36 @@
     <div v-if="activeTab === 'showtimes'" class="space-y-4">
       <div class="flex items-center justify-between">
         <h2 class="text-xl font-bold text-white">Scheduled Showtimes & Pricing ({{ filteredShowtimes.length }})</h2>
-        <button @click="loadShowtimes" class="text-xs font-bold text-purple-400 hover:underline">Refresh</button>
+        <button @click="loadShowtimes" class="text-xs font-bold text-[#ef6a26] hover:underline">Refresh</button>
       </div>
 
       <div v-if="loadingShowtimes" class="flex justify-center p-10">
-        <div class="animate-spin h-6 w-6 border-2 border-purple-500 border-t-transparent rounded-full"></div>
+        <div class="animate-spin h-6 w-6 border-2 border-[#ef6a26] border-t-transparent rounded-full"></div>
       </div>
 
       <div v-else-if="filteredShowtimes.length === 0" class="text-center py-20 bg-black/40 border border-dashed border-white/10 rounded-xl">
         <p class="text-slate-300">No scheduled showtimes found.</p>
-        <button @click="openCreateShowtime" class="mt-3 text-purple-400 text-sm font-bold hover:underline">+ Schedule a Showtime</button>
+        <button @click="openCreateShowtime" class="mt-3 text-[#ef6a26] text-sm font-bold hover:underline">+ Schedule a Showtime</button>
       </div>
 
       <div v-else class="grid grid-cols-1 gap-4">
         <div 
           v-for="st in filteredShowtimes" 
           :key="st.id" 
-          class="card flex flex-col md:flex-row md:items-center justify-between border-purple-500/30 bg-black/50 backdrop-blur-xl hover:border-purple-500/70 transition-all gap-4"
+          class="card flex flex-col md:flex-row md:items-center justify-between border-[#ef6a26]/30 bg-black/50 backdrop-blur-xl hover:border-[#ef6a26]/70 transition-all gap-4"
         >
           <div class="flex items-start md:items-center gap-4">
             <div v-if="st.movie?.image" class="w-16 h-20 bg-slate-800 rounded-lg overflow-hidden flex-shrink-0 border border-white/10">
               <img :src="getImageUrl(st.movie.image)" alt="Poster" class="w-full h-full object-cover" />
             </div>
-            <div v-else class="w-16 h-20 bg-purple-950/40 rounded-lg flex items-center justify-center text-xl flex-shrink-0 border border-purple-500/20">
+            <div v-else class="w-16 h-20 bg-orange-950/40 rounded-lg flex items-center justify-center text-xl flex-shrink-0 border border-orange-500/20">
               🎬
             </div>
 
             <div class="space-y-1.5">
               <div class="flex items-center gap-2 flex-wrap">
                 <h3 class="text-lg font-bold text-white">{{ st.movie?.title || 'Unknown Movie' }}</h3>
-                <span class="px-3 py-0.5 rounded-full text-xs font-bold font-mono bg-purple-500/20 border border-purple-500/40 text-purple-300">
+                <span class="px-3 py-0.5 rounded-full text-xs font-bold font-mono bg-orange-500/20 border border-orange-500/40 text-orange-300">
                   🏛️ {{ st.auditoriumDetail?.cinema?.name ? `${st.auditoriumDetail.cinema.name} - ${st.auditoriumDetail.name}` : st.auditorium }}
                 </span>
               </div>
@@ -628,7 +584,7 @@
                 <span class="px-2.5 py-0.5 rounded bg-emerald-500/15 border border-emerald-500/30 text-emerald-300">
                   Regular: {{ Number(st.price).toFixed(0) }} Birr
                 </span>
-                <span class="px-2.5 py-0.5 rounded bg-purple-500/15 border border-purple-500/30 text-purple-300">
+                <span class="px-2.5 py-0.5 rounded bg-amber-500/15 border border-amber-500/30 text-amber-300">
                   VIP: {{ Number(st.vip_price || st.price * 1.5).toFixed(0) }} Birr
                 </span>
                 <span class="px-2.5 py-0.5 rounded bg-blue-500/15 border border-blue-500/30 text-blue-300">
@@ -653,7 +609,7 @@
           </div>
 
           <div class="flex space-x-2 self-end md:self-center">
-            <button @click="openEditShowtime(st)" class="text-purple-300 hover:text-purple-100 text-xs font-bold bg-purple-500/20 border border-purple-500/40 px-3.5 py-2 rounded-lg transition-colors">
+            <button @click="openEditShowtime(st)" class="text-orange-300 hover:text-orange-100 text-xs font-bold bg-orange-500/20 border border-orange-500/40 px-3.5 py-2 rounded-lg transition-colors">
               Edit
             </button>
             <button @click="deleteShowtime(st.id)" class="text-red-400 hover:text-red-300 text-xs font-bold bg-red-500/10 border border-red-500/20 px-3.5 py-2 rounded-lg transition-colors">
@@ -772,7 +728,7 @@
               </td>
               <td class="px-6 py-4 text-sm text-slate-200 font-medium">
                 <div>{{ booking.movie?.title || 'Deleted Movie' }}</div>
-                <div v-if="booking.showtime" class="text-xs text-purple-300 font-mono">
+                <div v-if="booking.showtime" class="text-xs text-orange-300 font-mono">
                   {{ new Date(booking.showtime.start_time).toLocaleString(undefined, {dateStyle: 'short', timeStyle: 'short'}) }}
                 </div>
               </td>
@@ -885,7 +841,7 @@
 
                 <button 
                   @click="toggleUserAdmin(user)" 
-                  class="px-2.5 py-1.5 rounded-lg font-bold text-xs bg-purple-500/10 text-purple-300 border border-purple-500/20 hover:bg-purple-500/20"
+                  class="px-2.5 py-1.5 rounded-lg font-bold text-xs bg-indigo-500/10 text-indigo-300 border border-indigo-500/20 hover:bg-indigo-500/20"
                 >
                   {{ user.is_admin ? 'Revoke Admin' : 'Make Admin' }}
                 </button>
@@ -931,7 +887,7 @@
           >
             <div>
               <div class="font-bold text-white text-sm font-sans">{{ b.movie?.title }}</div>
-              <div class="text-purple-300">🏛️ {{ b.showtime?.auditoriumDetail?.cinema?.name ? `${b.showtime.auditoriumDetail.cinema.name} - ${b.showtime.auditoriumDetail.name}` : (b.showtime?.auditorium || 'Main Cinema') }}</div>
+              <div class="text-orange-300">🏛️ {{ b.showtime?.auditoriumDetail?.cinema?.name ? `${b.showtime.auditoriumDetail.cinema.name} - ${b.showtime.auditoriumDetail.name}` : (b.showtime?.auditorium || 'Main Cinema') }}</div>
               <div class="text-slate-400 text-[11px] mt-1">
                 Seats: <strong class="text-orange-400">{{ b.seat_numbers?.join(', ') }}</strong> | Ref: {{ b.transaction_ref || 'N/A' }}
               </div>
@@ -951,7 +907,11 @@
 
 <script setup>
 import { ref, onMounted, watch, computed } from "vue"
+import { useRoute, useRouter } from "vue-router"
 import api from "../services/api"
+
+const route = useRoute()
+const router = useRouter()
 
 const movies = ref([])
 const showtimes = ref([])
@@ -981,7 +941,17 @@ const editingAuditoriumId = ref(null)
 const errorMessage = ref("")
 const showtimeError = ref("")
 const imageFile = ref(null)
-const activeTab = ref('reports')
+// Derive active tab from the current route path so sidebar links work
+const activeTab = computed(() => {
+    const path = route.path
+    if (path === '/admin' || path === '/admin/') return 'reports'
+    if (path.startsWith('/admin/movies'))   return 'catalog'
+    if (path.startsWith('/admin/showtimes')) return 'showtimes'
+    if (path.startsWith('/admin/cinemas'))  return 'cinemas'
+    if (path.startsWith('/admin/bookings')) return 'bookings'
+    if (path.startsWith('/admin/users'))    return 'users'
+    return 'reports'
+})
 const searchQuery = ref("")
 const selectedCinemaId = ref("")
 
@@ -1554,17 +1524,17 @@ const deleteAuditorium = async (id) => {
     }
 }
 
-watch(activeTab, (newTab) => {
-    if (newTab === 'showtimes') {
+watch(() => route.path, (newPath) => {
+    if (newPath.startsWith('/admin/showtimes')) {
         loadShowtimes()
         loadCinemas()
-    } else if (newTab === 'cinemas') {
+    } else if (newPath.startsWith('/admin/cinemas')) {
         loadCinemas()
-    } else if (newTab === 'bookings') {
+    } else if (newPath.startsWith('/admin/bookings')) {
         loadAllBookings()
-    } else if (newTab === 'users') {
+    } else if (newPath.startsWith('/admin/users')) {
         loadUsers()
-    } else if (newTab === 'reports') {
+    } else {
         loadStats()
     }
 })
