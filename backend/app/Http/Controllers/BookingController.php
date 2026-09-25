@@ -143,7 +143,7 @@ class BookingController extends Controller
                     }
                 }
 
-                return response()->json($booking->load(['movie', 'showtime.auditoriumDetail.cinema']), 201);
+                return response()->json($booking->load(['movie', 'showtime.auditoriumDetail.cinema', 'showtime.movie']), 201);
             } else {
                 $movie = Movie::lockForUpdate()->find($validated['movie_id']);
 
@@ -204,7 +204,7 @@ class BookingController extends Controller
     public function index()
     {
         $bookings = Booking::where('user_id', auth()->id())
-            ->with(['movie', 'showtime.auditoriumDetail.cinema'])
+            ->with(['movie', 'showtime.auditoriumDetail.cinema', 'showtime.movie'])
             ->latest()
             ->get();
         return response()->json($bookings);
