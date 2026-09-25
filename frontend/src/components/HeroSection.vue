@@ -239,14 +239,27 @@
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import api from '../services/api'
 
+// Dynamic Current Date Helper
+const currentDateFormatted = new Date().toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+
+const formatReleaseDate = (dateStr) => {
+  if (dateStr) {
+    const d = new Date(dateStr)
+    if (!isNaN(d.getTime())) {
+      return d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
+    }
+  }
+  return currentDateFormatted
+}
+
 // Featured Default Slides (3 distinct items)
 const defaultTrailers = [
   {
     id: 'dandelion',
     title: 'Dandelion &\nThe Wild',
     subtitle: 'Fantasy Adventure',
-    director: 'Written and Directed by Marcus Vance / UK 2024',
-    releaseDate: 'April 2024',
+    director: 'Written and Directed by Marcus Vance / UK 2026',
+    releaseDate: currentDateFormatted,
     bgImage: '/bg-dandelion.png',
     link: '/movies',
     ticketLink: '/movies',
@@ -257,7 +270,7 @@ const defaultTrailers = [
     title: 'The Witcher\nSeason 2',
     subtitle: 'Action Movie',
     director: 'Written and Directed by Aleesha Rose / Ireland 2023',
-    releaseDate: 'March 2023',
+    releaseDate: currentDateFormatted,
     bgImage: '/bg-skull.png',
     link: '/movies',
     ticketLink: '/movies',
@@ -267,8 +280,8 @@ const defaultTrailers = [
     id: 'avatar',
     title: 'Avatar: The Way\nof Water',
     subtitle: 'Sci-Fi Epic',
-    director: 'Written and Directed by James Cameron / USA 2023',
-    releaseDate: 'Dec 2022',
+    director: 'Written and Directed by James Cameron / USA 2026',
+    releaseDate: currentDateFormatted,
     bgImage: 'http://localhost:8000/storage/movies/XOP0koOlpALsrf2OJFhfSu79DMYpLEwHLBLMiciy.jpg',
     link: '/movies/5',
     ticketLink: '/movies/5',
@@ -299,8 +312,8 @@ const fetchMoviesForTrailers = async () => {
         id: movie.id,
         title: movie.title,
         subtitle: 'Now Showing',
-        director: movie.description ? movie.description : `Showtime: ${new Date(movie.show_time).toLocaleString()}`,
-        releaseDate: movie.show_time ? new Date(movie.show_time).toLocaleDateString('en-US', { month: 'short', year: 'numeric' }) : 'March 2026',
+        director: movie.description ? movie.description : (movie.show_time ? `Showtime: ${new Date(movie.show_time).toLocaleString()}` : 'Now Showing in Theaters'),
+        releaseDate: movie.show_time ? formatReleaseDate(movie.show_time) : currentDateFormatted,
         bgImage: getImageUrl(movie.image),
         link: `/movies/${movie.id}`,
         ticketLink: `/movies/${movie.id}`,

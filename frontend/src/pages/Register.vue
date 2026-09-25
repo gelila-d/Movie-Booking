@@ -45,7 +45,7 @@
             v-model="name" 
             type="text" 
             required
-            placeholder="John Doe" 
+            placeholder="Enter your full name" 
             class="w-full px-3.5 py-2.5 bg-white/5 text-white border border-white/15 rounded-xl focus:outline-none focus:border-[#ef6a26] focus:ring-2 focus:ring-[#ef6a26]/30 placeholder-slate-400 text-sm transition-all shadow-inner"
           />
         </div>
@@ -56,7 +56,7 @@
             v-model="email" 
             type="email" 
             required
-            placeholder="name@example.com" 
+            placeholder="Enter your email" 
             class="w-full px-3.5 py-2.5 bg-white/5 text-white border border-white/15 rounded-xl focus:outline-none focus:border-[#ef6a26] focus:ring-2 focus:ring-[#ef6a26]/30 placeholder-slate-400 text-sm transition-all shadow-inner"
           />
         </div>
@@ -67,7 +67,7 @@
             v-model="password" 
             type="password" 
             required
-            placeholder="•••••••• (min. 6 chars)" 
+            placeholder="Enter your password" 
             class="w-full px-3.5 py-2.5 bg-white/5 text-white border border-white/15 rounded-xl focus:outline-none focus:border-[#ef6a26] focus:ring-2 focus:ring-[#ef6a26]/30 placeholder-slate-400 text-sm transition-all shadow-inner"
           />
         </div>
