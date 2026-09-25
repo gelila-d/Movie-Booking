@@ -5,8 +5,12 @@ namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller; 
 use App\Models\User;
+use App\Mail\WelcomeMail;
+use App\Mail\LoginAlertMail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Log;
 
 class AuthController extends Controller
 {
@@ -25,11 +29,18 @@ class AuthController extends Controller
         ]);
 
         if (User::count() === 1) {
-    $user->is_admin = true;
-    $user->save();
-}
+            $user->is_admin = true;
+            $user->save();
+        }
 
         $token = $user->createToken('auth_token')->plainTextToken;
+
+        // Dispatch Welcome Email Notification
+        try {
+            Mail::to($user->email)->send(new WelcomeMail($user));
+        } catch (\Throwable $e) {
+            Log::error('Failed to send registration welcome email: ' . $e->getMessage());
+        }
 
         return response()->json([
             'token' => $token,
@@ -55,6 +66,17 @@ class AuthController extends Controller
         }
 
         $token = $user->createToken('auth_token')->plainTextToken;
+
+        // Dispatch Login Alert Email Notification
+        try {
+            $ipAddress = $request->ip() ?? 'Unknown IP';
+            $userAgent = $request->header('User-Agent') ?? 'Unknown Browser/Device';
+            $loginTime = now()->format('Y-m-d H:i:s T');
+
+            Mail::to($user->email)->send(new LoginAlertMail($user, $ipAddress, $userAgent, $loginTime));
+        } catch (\Throwable $e) {
+            Log::error('Failed to send login alert email: ' . $e->getMessage());
+        }
 
         return response()->json([
             'token' => $token,
