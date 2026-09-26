@@ -19,5 +19,5 @@ foreach (User::all() as $user) {
 
 echo "Movies:\n";
 foreach (Movie::all() as $movie) {
-    echo "- ID: {$movie->id}, Title: {$movie->title}, Description: {$movie->description}, Image: {$movie->image}, ShowTime: {$movie->show_time}\n";
+    echo "- ID: {$movie->id}, Title: {$movie->title}, Genre: '{$movie->genre}', Description: {$movie->description}\n";
 }

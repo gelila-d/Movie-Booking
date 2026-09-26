@@ -28,10 +28,10 @@
       <button 
         v-for="category in categories" 
         :key="category"
-        @click="selectedCategory = category"
+        @click="selectCategory(category)"
         :class="[
           'px-5 py-2 rounded-full text-xs font-semibold uppercase tracking-wider transition-all whitespace-nowrap',
-          selectedCategory === category 
+          selectedCategory.toLowerCase() === category.toLowerCase() 
             ? 'bg-[#ef6a26] text-white shadow-md shadow-[#ef6a26]/30' 
             : 'bg-gray-200/70 text-gray-700 hover:bg-gray-300'
         ]"
@@ -75,25 +75,72 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue"
+import { ref, onMounted, computed, watch } from "vue"
+import { useRoute, useRouter } from "vue-router"
 import api from "../services/api"
 import MovieCard from "../components/MovieCard.vue"
+
+const route = useRoute()
+const router = useRouter()
 
 const movies = ref([])
 const loading = ref(true)
 const searchQuery = ref("")
 const selectedCategory = ref("All")
 
-const categories = ["All", "Action", "Thriller", "Adventure", "Comedy", "Animation", "Sci-Fi"]
+const categories = ["All", "Action", "Adventure", "Animation", "Comedy", "Crime", "Drama", "Mystery", "Sci-Fi", "Thriller"]
+
+const getMovieGenre = (movie) => {
+    if (movie.genre && movie.genre.trim()) {
+        return movie.genre
+    }
+    const titleLower = (movie.title || '').toLowerCase()
+    if (titleLower.includes('avatar')) return 'Action, Adventure, Sci-Fi'
+    if (titleLower.includes('knives out')) return 'Comedy, Drama, Mystery'
+    if (titleLower.includes('gone girl')) return 'Drama, Mystery, Thriller'
+    if (titleLower.includes('fast x') || titleLower.includes('fast')) return 'Action, Crime, Thriller'
+    if (titleLower.includes('dune')) return 'Action, Adventure, Sci-Fi'
+    if (titleLower.includes('wild')) return 'Adventure, Drama'
+    if (titleLower.includes('fifth day')) return 'Comedy'
+    if (titleLower.includes('twins')) return 'Animation, Comedy'
+    return 'Action, Thriller'
+}
+
+const syncCategoryFromRoute = () => {
+    const queryCat = route.query.category || route.query.genre
+    if (queryCat) {
+        const found = categories.find(c => c.toLowerCase() === queryCat.toString().toLowerCase())
+        if (found) {
+            selectedCategory.value = found
+            return
+        }
+    }
+    selectedCategory.value = "All"
+}
+
+const selectCategory = (category) => {
+    selectedCategory.value = category
+    const query = { ...route.query }
+    if (category === "All") {
+        delete query.category
+        delete query.genre
+    } else {
+        query.category = category
+        delete query.genre
+    }
+    router.replace({ query })
+}
 
 const filteredMovies = computed(() => {
     return movies.value.filter(movie => {
+        const movieGenre = getMovieGenre(movie);
         const matchesSearch = !searchQuery.value || 
             movie.title.toLowerCase().includes(searchQuery.value.toLowerCase()) || 
-            (movie.description && movie.description.toLowerCase().includes(searchQuery.value.toLowerCase()));
+            (movie.description && movie.description.toLowerCase().includes(searchQuery.value.toLowerCase())) ||
+            movieGenre.toLowerCase().includes(searchQuery.value.toLowerCase());
         
         const matchesCategory = selectedCategory.value === "All" || 
-            (movie.genre && movie.genre.toLowerCase().includes(selectedCategory.value.toLowerCase()));
+            movieGenre.toLowerCase().includes(selectedCategory.value.toLowerCase());
 
         return matchesSearch && matchesCategory;
     });
@@ -101,7 +148,7 @@ const filteredMovies = computed(() => {
 
 const resetFilters = () => {
     searchQuery.value = "";
-    selectedCategory.value = "All";
+    selectCategory("All");
 }
 
 const loadMovies = async () => {
@@ -116,5 +163,12 @@ const loadMovies = async () => {
     }
 }
 
-onMounted(loadMovies)
+watch(() => [route.query.category, route.query.genre], () => {
+    syncCategoryFromRoute()
+})
+
+onMounted(() => {
+    syncCategoryFromRoute()
+    loadMovies()
+})
 </script>

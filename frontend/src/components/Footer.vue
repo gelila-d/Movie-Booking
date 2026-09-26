@@ -90,11 +90,11 @@
           </div>
 
           <ul class="space-y-2.5 text-sm text-gray-400">
-            <li><router-link to="/movies" class="hover:text-white transition-colors block py-0.5">Action</router-link></li>
-            <li><router-link to="/movies" class="hover:text-white transition-colors block py-0.5">Adventure</router-link></li>
-            <li><router-link to="/movies" class="hover:text-white transition-colors block py-0.5">Animation</router-link></li>
-            <li><router-link to="/movies" class="hover:text-white transition-colors block py-0.5">Comedy</router-link></li>
-            <li><router-link to="/movies" class="hover:text-white transition-colors block py-0.5">Crime</router-link></li>
+            <li><router-link to="/movies?category=Action" class="hover:text-white transition-colors block py-0.5">Action</router-link></li>
+            <li><router-link to="/movies?category=Adventure" class="hover:text-white transition-colors block py-0.5">Adventure</router-link></li>
+            <li><router-link to="/movies?category=Animation" class="hover:text-white transition-colors block py-0.5">Animation</router-link></li>
+            <li><router-link to="/movies?category=Comedy" class="hover:text-white transition-colors block py-0.5">Comedy</router-link></li>
+            <li><router-link to="/movies?category=Crime" class="hover:text-white transition-colors block py-0.5">Crime</router-link></li>
           </ul>
         </div>
 
