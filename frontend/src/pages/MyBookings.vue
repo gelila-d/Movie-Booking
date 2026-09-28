@@ -251,62 +251,133 @@
     />
 
     <!-- CANCELLATION & REFUND CONFIRMATION MODAL -->
-    <div v-if="showCancelModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
-      <div class="bg-slate-950 border border-red-500/40 w-full max-w-md rounded-3xl p-6 space-y-6 shadow-2xl relative text-white font-sans">
-        <button @click="showCancelModal = false" class="absolute top-5 right-5 text-slate-400 hover:text-white font-bold">✕</button>
+    <Transition name="fade">
+      <div v-if="showCancelModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
+        <div class="bg-slate-950/95 border border-red-500/40 w-full max-w-md rounded-3xl p-6 space-y-5 shadow-2xl relative text-white font-sans overflow-hidden">
+          <!-- Subtle Glow Orbs -->
+          <div class="absolute -top-16 -right-16 w-36 h-36 bg-red-500/10 rounded-full blur-2xl pointer-events-none"></div>
+          <div class="absolute -bottom-16 -left-16 w-36 h-36 bg-orange-500/10 rounded-full blur-2xl pointer-events-none"></div>
 
-        <div class="border-b border-white/10 pb-4">
-          <h3 class="text-xl font-bold text-red-400 font-orbitron flex items-center gap-2">
-            🚫 CANCEL & REFUND TICKET
-          </h3>
-          <p class="text-xs text-slate-400 font-mono mt-1">Review 2-hour policy and refund details</p>
+          <button @click="showCancelModal = false" class="absolute top-5 right-5 w-8 h-8 rounded-full bg-white/5 border border-white/10 hover:bg-white/10 flex items-center justify-center text-slate-400 hover:text-white transition-all text-xs">✕</button>
+
+          <div class="border-b border-white/10 pb-4">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-500/15 border border-red-500/30 text-red-400 text-xs font-bold uppercase tracking-wider mb-2">
+              <span>🚫</span> Ticket Cancellation
+            </div>
+            <h3 class="text-xl font-bold text-white font-cinematic tracking-wide">CANCEL & REFUND RESERVATION</h3>
+            <p class="text-xs text-slate-400 font-sans mt-0.5">Please review the cancellation details and 100% refund summary below.</p>
+          </div>
+
+          <div v-if="cancellingBooking" class="space-y-4 text-xs font-sans">
+            <!-- Ticket Info Card -->
+            <div class="p-4 bg-black/60 border border-white/10 rounded-2xl space-y-2.5 backdrop-blur-md shadow-inner">
+              <div class="flex justify-between items-center border-b border-white/5 pb-2">
+                <span class="text-slate-400">Movie Title</span>
+                <span class="font-bold text-white text-sm">{{ cancellingBooking.movie?.title }}</span>
+              </div>
+              <div class="flex justify-between items-center border-b border-white/5 pb-2">
+                <span class="text-slate-400">Showtime</span>
+                <span class="font-bold text-orange-400">{{ new Date(cancellingBooking.showtime?.start_time || cancellingBooking.movie?.show_time).toLocaleString(undefined, {dateStyle:'medium', timeStyle:'short'}) }}</span>
+              </div>
+              <div class="flex justify-between items-center">
+                <span class="text-slate-400">Seats to Release</span>
+                <span class="font-bold text-emerald-400 px-2 py-0.5 bg-emerald-500/10 border border-emerald-500/30 rounded-lg">{{ cancellingBooking.seat_numbers?.join(', ') }}</span>
+              </div>
+            </div>
+
+            <!-- Refund Summary Pill -->
+            <div class="p-4 bg-emerald-950/40 border border-emerald-500/30 rounded-2xl flex justify-between items-center shadow-lg">
+              <div>
+                <span class="text-[10px] text-emerald-400 uppercase tracking-wider font-bold block">100% Instant Refund</span>
+                <span class="text-xs font-bold text-white flex items-center gap-1.5 mt-0.5">
+                  <span>{{ getPaymentIcon(cancellingBooking.payment_method) }}</span>
+                  <span>{{ getPaymentName(cancellingBooking.payment_method) }}</span>
+                </span>
+              </div>
+              <div class="text-right">
+                <span class="text-xl font-extrabold text-emerald-400 font-mono">{{ Number(cancellingBooking.total_price || 0).toLocaleString() }} ETB</span>
+              </div>
+            </div>
+
+            <!-- Policy Badge -->
+            <div class="text-[11px] text-slate-300 bg-slate-900/90 p-3 rounded-xl border border-white/10 leading-relaxed flex items-start gap-2">
+              <span class="text-amber-400 text-sm">ℹ️</span>
+              <div>
+                <strong>2-Hour Policy Passed:</strong> Clicking confirm will immediately issue your full refund and release seats back to the hall.
+              </div>
+            </div>
+          </div>
+
+          <div class="flex gap-3 pt-2">
+            <button @click="showCancelModal = false" class="w-1/2 py-3 rounded-xl border border-white/15 text-slate-300 text-xs font-bold hover:bg-white/10 transition-all font-sans">
+              Keep My Ticket
+            </button>
+            <button @click="confirmCancellation" :disabled="processingCancel" class="w-1/2 py-3 rounded-xl text-xs font-bold bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white shadow-lg shadow-red-950/50 flex items-center justify-center gap-2 transition-all font-sans">
+              <span v-if="processingCancel" class="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>
+              <span>{{ processingCancel ? 'CANCELING...' : 'CONFIRM REFUND' }}</span>
+            </button>
+          </div>
         </div>
+      </div>
+    </Transition>
 
-        <div v-if="cancellingBooking" class="space-y-4 text-xs font-mono">
-          <div class="p-4 bg-red-950/40 border border-red-500/30 rounded-2xl space-y-2">
-            <div class="flex justify-between">
-              <span class="text-slate-400">Movie:</span>
-              <span class="font-bold text-white">{{ cancellingBooking.movie?.title }}</span>
+    <!-- CUSTOM STYLED CANCELLATION RESULT POPUP MODAL -->
+    <Transition name="fade">
+      <div v-if="feedbackNotification.show" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md">
+        <div 
+          class="bg-slate-950/95 border w-full max-w-sm rounded-3xl p-6 text-center space-y-5 shadow-2xl relative text-white font-sans overflow-hidden"
+          :class="feedbackNotification.type === 'success' ? 'border-emerald-500/40' : 'border-red-500/40'"
+        >
+          <!-- Ambient Radial Background Glow -->
+          <div 
+            class="absolute -top-20 -right-20 w-44 h-44 rounded-full blur-3xl pointer-events-none"
+            :class="feedbackNotification.type === 'success' ? 'bg-emerald-500/20' : 'bg-red-500/20'"
+          ></div>
+
+          <!-- Top Animated Icon Badge -->
+          <div 
+            class="w-16 h-16 mx-auto rounded-full flex items-center justify-center text-3xl shadow-xl border border-white/20"
+            :class="feedbackNotification.type === 'success' ? 'bg-emerald-950/80 border-emerald-500/50 text-emerald-400' : 'bg-red-950/80 border-red-500/50 text-red-400'"
+          >
+            {{ feedbackNotification.type === 'success' ? '🎟️' : '🛑' }}
+          </div>
+
+          <!-- Header Title & Message -->
+          <div class="space-y-1.5">
+            <h3 
+              class="text-lg font-bold uppercase tracking-wider font-cinematic"
+              :class="feedbackNotification.type === 'success' ? 'text-emerald-400' : 'text-red-400'"
+            >
+              {{ feedbackNotification.title }}
+            </h3>
+            <p class="text-xs text-slate-300 font-sans leading-relaxed px-2">
+              {{ feedbackNotification.message }}
+            </p>
+          </div>
+
+          <!-- Extra Refund Detail Card (if success) -->
+          <div v-if="feedbackNotification.type === 'success' && (feedbackNotification.refundRef || feedbackNotification.refundAmount)" class="p-3.5 bg-black/60 border border-emerald-500/30 rounded-2xl text-xs space-y-1 text-left font-mono">
+            <div v-if="feedbackNotification.refundRef" class="flex justify-between items-center">
+              <span class="text-slate-400">Refund Ref:</span>
+              <span class="font-bold text-emerald-300">{{ feedbackNotification.refundRef }}</span>
             </div>
-            <div class="flex justify-between">
-              <span class="text-slate-400">Showtime:</span>
-              <span class="font-bold text-orange-400">{{ new Date(cancellingBooking.showtime?.start_time || cancellingBooking.movie?.show_time).toLocaleString(undefined, {dateStyle:'short', timeStyle:'short'}) }}</span>
-            </div>
-            <div class="flex justify-between">
-              <span class="text-slate-400">Seats to Restore:</span>
-              <span class="font-bold text-emerald-400">{{ cancellingBooking.seat_numbers?.join(', ') }}</span>
+            <div v-if="feedbackNotification.refundAmount" class="flex justify-between items-center">
+              <span class="text-slate-400">Amount Issued:</span>
+              <span class="font-bold text-white">{{ feedbackNotification.refundAmount }} ETB</span>
             </div>
           </div>
 
-          <!-- Refund Summary Pill -->
-          <div class="p-4 bg-emerald-950/40 border border-emerald-500/30 rounded-2xl flex justify-between items-center">
-            <div>
-              <span class="text-[10px] text-slate-400 uppercase block">100% Refund Destination</span>
-              <span class="text-xs font-bold text-white flex items-center gap-1 mt-0.5">
-                {{ getPaymentIcon(cancellingBooking.payment_method) }} {{ getPaymentName(cancellingBooking.payment_method) }}
-              </span>
-            </div>
-            <div class="text-right">
-              <span class="text-xl font-bold text-emerald-400">{{ Number(cancellingBooking.total_price || 0).toLocaleString() }} ETB</span>
-            </div>
-          </div>
-
-          <div class="text-[11px] text-slate-300 bg-slate-900 p-3 rounded-xl border border-white/10">
-            ℹ️ <strong>Rule Check Passed:</strong> Showtime is more than 2 hours away. Clicking confirm will issue a full refund and immediately release seats back to the hall.
-          </div>
-        </div>
-
-        <div class="flex gap-3 pt-2">
-          <button @click="showCancelModal = false" class="w-1/2 py-3 rounded-xl border border-slate-700 text-slate-300 text-xs font-bold hover:bg-slate-800">
-            Keep My Ticket
-          </button>
-          <button @click="confirmCancellation" :disabled="processingCancel" class="w-1/2 btn-primary py-3 text-xs font-bold bg-red-600 hover:bg-red-700 flex items-center justify-center gap-2">
-            <span v-if="processingCancel" class="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>
-            <span>{{ processingCancel ? 'PROCESSING...' : 'CONFIRM REFUND' }}</span>
+          <!-- Close / Action Button -->
+          <button 
+            @click="closeNotification" 
+            class="w-full py-3 rounded-xl font-bold text-xs uppercase tracking-wider transition-all shadow-lg font-sans"
+            :class="feedbackNotification.type === 'success' ? 'bg-emerald-600 hover:bg-emerald-500 text-white shadow-emerald-950/50' : 'bg-slate-800 hover:bg-slate-700 text-slate-200 border border-white/10'"
+          >
+            {{ feedbackNotification.type === 'success' ? 'Done & Close' : 'Understand' }}
           </button>
         </div>
       </div>
-    </div>
+    </Transition>
   </div>
 </template>
 
@@ -325,6 +396,30 @@ const activeBooking = ref(null)
 const showCancelModal = ref(false)
 const cancellingBooking = ref(null)
 const processingCancel = ref(false)
+
+const feedbackNotification = ref({
+  show: false,
+  type: 'success',
+  title: '',
+  message: '',
+  refundRef: null,
+  refundAmount: null
+})
+
+const showNotification = (type, title, message, refundRef = null, refundAmount = null) => {
+  feedbackNotification.value = {
+    show: true,
+    type,
+    title,
+    message,
+    refundRef,
+    refundAmount
+  }
+}
+
+const closeNotification = () => {
+  feedbackNotification.value.show = false
+}
 
 const openTicket = (booking) => {
   activeBooking.value = booking
@@ -422,16 +517,21 @@ const confirmCancellation = async () => {
     processingCancel.value = true
     try {
         const res = await api.delete(`/bookings/${cancellingBooking.value.id}`)
-        alert(res.data.message || "Ticket cancelled and refund processed!")
+        const msg = res.data.message || "Ticket cancelled successfully and refund issued!"
+        const bObj = res.data.booking || {}
         showCancelModal.value = false
         cancellingBooking.value = null
+        showNotification(
+          'success', 
+          'Ticket Cancelled & Refunded', 
+          msg, 
+          bObj.refund_ref, 
+          bObj.refund_amount
+        )
         loadBookings()
     } catch (err) {
-        if (err.response && err.response.data && err.response.data.message) {
-          alert(`Cancellation Denied: ${err.response.data.message}`)
-        } else {
-          alert("Cancellation failed. Please check policy conditions.")
-        }
+        const errMsg = err.response?.data?.message || "Cancellation failed. Please check policy conditions."
+        showNotification('error', 'Cancellation Request Denied', errMsg)
     } finally {
         processingCancel.value = false
     }

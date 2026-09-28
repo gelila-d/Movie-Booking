@@ -265,7 +265,7 @@ class BookingController extends Controller
             }
 
             // 2. Issue 100% Refund Simulation & Record Audit History
-            $refundRef = 'REF-' + strtoupper(Str::random(4)) . rand(1000, 9999);
+            $refundRef = 'REF-' . strtoupper(Str::random(4)) . rand(1000, 9999);
             $refundAmount = $booking->total_price ?? 0;
 
             $booking->update([
